@@ -6,6 +6,7 @@ A hands-on project for learning ABAP programming from basics to advanced topics.
 
 Each section has detailed explanations in the `doc/` folder:
 - [01-basics.md](doc/01-basics.md) - Hello World, Data Types, Operators
+- [02-selection-screen.md](doc/02-selection-screen.md) - Parameters, Select-Options, Events
 
 ## Learning Path
 
