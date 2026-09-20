@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 ABAP Basics — Tutorial</title>
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --text: #1a2433;
+    --muted: #5b6b80;
+    --border: #e2e8f0;
+    --primary: #0f7bff;
+    --primary-dark: #0b5fc4;
+    --accent: #00a870;
+    --accent-bg: #e6f7f0;
+    --warn: #ff9800;
+    --warn-bg: #fff4e0;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --radius: 14px;
+    --shadow: 0 4px 20px rgba(15, 32, 39, 0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.65; padding: 0 0 4rem;
+  }
+  header.hero {
+    background: linear-gradient(135deg, #0f2027, #2c5364); color: #fff;
+    padding: 3.5rem 1.5rem 4.5rem; text-align: center;
+  }
+  header.hero .badge {
+    display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35);
+    color: #fff; padding: .25rem .9rem; border-radius: 999px; font-size: .8rem; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  header.hero h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: 800; margin-bottom: .5rem; }
+  header.hero p { color: rgba(255,255,255,.85); font-size: 1.1rem; max-width: 660px; margin: 0 auto; }
+  header.hero .chips { margin-top: 1.3rem; }
+  header.hero .chip {
+    display: inline-block; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px; padding: .35rem .9rem; font-size: .83rem; color: rgba(255,255,255,.9); margin: .2rem;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .progress-wrap {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); max-width: 760px; margin: -2.8rem auto 2.5rem; padding: 1.4rem 1.6rem; position: relative;
+  }
+  .progress-wrap p.top { font-size: .85rem; color: var(--muted); margin-bottom: .5rem; font-weight: 600; }
+  .progress-bar { height: 10px; background: #e8edf3; border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; transition: width .6s ease; }
+  .progress-stats { display: flex; justify-content: space-between; margin-top: .6rem; font-size: .83rem; color: var(--muted); }
+  .progress-stats b { color: var(--primary); }
+
+  nav.toc { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.6rem; }
+  nav.toc h2 { font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--primary); margin-bottom: 1rem; }
+  nav.toc ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: .35rem 1.5rem; }
+  nav.toc a { display: flex; align-items: center; gap: .55rem; text-decoration: none; color: var(--muted); padding: .45rem .6rem; border-radius: 8px; font-size: .94rem; transition: background .15s,color .15s; }
+  nav.toc a:hover { background: #eef4ff; color: var(--primary); }
+  nav.toc .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+  nav.toc a.done .dot { background: var(--accent); }
+
+  section { margin-top: 2.2rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem 2.2rem 2.4rem; scroll-margin-top: 1rem; }
+  section h2.header { display: flex; align-items: center; gap: .7rem; font-size: 1.5rem; font-weight: 800; margin-bottom: .2rem; }
+  section h2.header .num { display: inline-flex; align-items: center; justify-content: center; width: 2.3rem; height: 2.3rem; background: var(--primary); color: #fff; border-radius: 10px; font-size: 1.1rem; flex-shrink: 0; }
+  section > p.lead { color: var(--muted); margin-top: .6rem; }
+
+  h3 { font-size: 1.18rem; font-weight: 750; margin: 1.8rem 0 .8rem; color: var(--primary-dark); }
+  h4 { font-size: 1.02rem; font-weight: 700; margin: 1.2rem 0 .4rem; color: var(--text); }
+
+  ul, ol { padding-left: 1.5rem; margin: .5rem 0; }
+  ul li, ol li { margin: .35rem 0; }
+
+  pre { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 1.1rem 1.3rem; overflow-x: auto; margin: .8rem 0; font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; font-size: .87rem; line-height: 1.6; }
+  pre .cmt { color: #64748b; }
+  p.caption { font-size: .8rem; color: var(--muted); margin: -.4rem 0 .8rem .2rem; }
+
+  .table-wrap { overflow-x: auto; margin: .8rem 0; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; min-width: 460px; font-size: .93rem; }
+  thead th { background: var(--primary); color: #fff; text-align: left; padding: .7rem 1rem; font-weight: 600; }
+  tbody td { padding: .7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:nth-child(even) { background: #f9fbfe; }
+  tbody tr:last-child td { border-bottom: none; }
+  code { background: #eef1f6; border-radius: 4px; padding: .1rem .35rem; font-size: .88em; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  pre code { background: transparent; padding: 0; color: inherit; }
+
+  .tip, .warn, .note { border-radius: 10px; padding: 1rem 1.2rem; margin: 1.1rem 0; font-size: .94rem; }
+  .tip { background: #eef4ff; border-left: 4px solid var(--primary); }
+  .tip::before { content: "💡 Tip: "; font-weight: 800; color: var(--primary); }
+  .warn { background: var(--warn-bg); border-left: 4px solid var(--warn); }
+  .warn::before { content: "⚠ Common pitfall: "; font-weight: 800; color: #b26b00; }
+  .note { background: var(--accent-bg); border-left: 4px solid var(--accent); }
+  .note::before { content: "📌 Note: "; font-weight: 800; color: var(--accent); }
+
+  .exercise { border: 2px dashed var(--primary); background: #fbfdff; border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.3rem 0; }
+  .exercise h4 { color: var(--primary); margin-top: 0; }
+  .exercise h4::before { content: "✏️ "; }
+
+  blockquote.callout { background: var(--accent-bg); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.4rem; margin: 1.2rem 0; font-size: .95rem; }
+  blockquote.callout strong { color: var(--accent); }
+
+  .file-tag { display: inline-block; font-size: .78rem; font-weight: 700; color: var(--primary); background: #eef4ff; border-radius: 999px; padding: .2rem .8rem; margin-bottom: .5rem; }
+
+  footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 3rem; padding: 1.5rem 1rem; }
+  @media (max-width:640px){ section{padding:1.5rem 1.2rem;} nav.toc ul{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="badge">ABAP Learning &middot; Section 01</span>
+  <h1>ABAP Basics</h1>
+  <p>Hello World, Data Types, and Operators — your first steps in SAP's programming language.</p>
+  <div class="chips">
+    <span class="chip">From a PHP background</span>
+    <span class="chip">Free online editor</span>
+    <span class="chip">~30 min read + practice</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="progress-wrap">
+    <p class="top">Section progress</p>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-stats"><span>3 lessons</span><span id="progLabel">0% complete</span></div>
+  </div>
+
+  <nav class="toc">
+    <h2>Lessons in this section</h2>
+    <ul>
+      <li><a href="#hello"><span class="dot"></span>Lesson 1 — Hello World</a></li>
+      <li><a href="#datatypes"><span class="dot"></span>Lesson 2 — Data Types</a></li>
+      <li><a href="#operators"><span class="dot"></span>Lesson 3 — Operators &amp; Logic</a></li>
+      <li><a href="#practice"><span class="dot"></span>Practice &amp; Next Steps</a></li>
+    </ul>
+  </nav>
+
+  <!-- ============ OVERVIEW ============ -->
+  <section id="overview">
+    <h2 class="header"><span class="num">▶</span> Before You Start</h2>
+    <p class="lead">If you know PHP, you already understand 80% of ABAP. The goal here is the <em>syntax and conventions</em>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Concern</th><th>PHP</th><th>ABAP</th></tr></thead>
+        <tbody>
+          <tr><td>Declaring a variable</td><td><code>$x = 10;</code></td><td><code>DATA x TYPE i.</code></td></tr>
+          <tr><td>Output</td><td><code>echo $x;</code></td><td><code>WRITE: x.</code></td></tr>
+          <tr><td>Statement end</td><td><code>;</code></td><td><code>.</code> (period)</td></tr>
+          <tr><td>Strings</td><td><code>'text'</code> or <code>"text"</code></td><td><code>'text'</code> only</td></tr>
+          <tr><td>If block</td><td><code>if (...) { }</code></td><td><code>IF ... ENDIF.</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">ABAP is case-insensitive and keywords are typed in capitals by convention. Every statement ends with a period <code>.</code> — not a semicolon.</div>
+    <div class="tip">Use <a href="https://abapdojo.com" target="_blank">ABAP Dojo</a> to run every example — it's free, in your browser, no SAP system needed.</div>
+  </section>
+
+  <!-- ============ LESSON 1 ============ -->
+  <section id="hello">
+    <h2 class="header"><span class="num">1</span> Hello World</h2>
+    <p class="lead">Every ABAP program starts with a <code>REPORT</code> header and uses <code>WRITE</code> for output.</p>
+    <span class="file-tag">01-basics/hello_world.abap</span>
+    <pre><span class="cmt">* REPORT is the mandatory header of a standalone program</span>
+REPORT z_hello_world.
+
+<span class="cmt">* WRITE prints text to the output screen</span>
+WRITE: 'Hello, World!'.</pre>
+    <h3>Line by line</h3>
+    <ul>
+      <li><code>REPORT z_hello_world.</code> — Program header. The <code>z</code> prefix is <strong>mandatory</strong> for custom objects in SAP. Names must start with <code>Z</code> or <code>Y</code>.</li>
+      <li><code>WRITE: 'Hello, World!'.</code> — Outputs text. The <code>:</code> is a <strong>chain operator</strong> that lets you write multiple outputs on one statement.</li>
+      <li><code>'...'</code> — strings use <strong>single quotes</strong>, never double quotes.</li>
+      <li><code>.</code> — every statement ends with a period.</li>
+    </ul>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Keyword</th><th>Meaning (PHP equivalent)</th></tr></thead>
+        <tbody>
+          <tr><td><code>REPORT</code></td><td>Program declaration header</td></tr>
+          <tr><td><code>WRITE</code></td><td><code>echo</code> / <code>print</code></td></tr>
+          <tr><td><code>:</code></td><td>Chain operator (multiple statements on one line)</td></tr>
+          <tr><td><code>.</code></td><td>Statement terminator (like <code>;</code>)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warn">Do not write <code>WRITE: "Hello"</code> with double quotes — ABAP only accepts single-quoted strings.</div>
+  </section>
+
+  <!-- ============ LESSON 2 ============ -->
+  <section id="datatypes">
+    <h2 class="header"><span class="num">2</span> Data Types</h2>
+    <p class="lead">Declare variables with <code>DATA</code> and a <code>TYPE</code>. The <code>lv_</code> prefix means "local variable".</p>
+    <span class="file-tag">01-basics/data_types.abap</span>
+    <pre>REPORT z_data_types.
+
+DATA: lv_integer   TYPE i,
+      lv_decimal   TYPE p LENGTH 8 DECIMALS 2,
+      lv_string    TYPE string,
+      lv_date      TYPE d,
+      lv_time      TYPE t,
+      lv_boolean   TYPE abap_bool.
+
+lv_integer = 100.
+lv_decimal = '123.45'.
+lv_string = 'ABAP Programming'.
+lv_date = sy-datum.
+lv_time = sy-uzeit.
+lv_boolean = abap_true.
+
+WRITE: / 'Integer:', lv_integer.
+WRITE: / 'Decimal:', lv_decimal.
+WRITE: / 'String:', lv_string.
+WRITE: / 'Date:', lv_date.
+WRITE: / 'Time:', lv_time.
+WRITE: / 'Boolean:', lv_boolean.</pre>
+    <p class="caption"><code>/</code> inside <code>WRITE</code> starts a new line before the output.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Description</th><th>Example</th><th>PHP equivalent</th></tr></thead>
+        <tbody>
+          <tr><td><code>TYPE i</code></td><td>Integer (whole number)</td><td>100, -50, 0</td><td><code>int</code></td></tr>
+          <tr><td><code>TYPE p</code></td><td>Packed decimal (money)</td><td>123.45</td><td><code>float</code></td></tr>
+          <tr><td><code>TYPE string</code></td><td>Text/string</td><td>'Hello'</td><td><code>string</code></td></tr>
+          <tr><td><code>TYPE d</code></td><td>Date (YYYYMMDD)</td><td>20260819</td><td><code>DateTime</code></td></tr>
+          <tr><td><code>TYPE t</code></td><td>Time (HHMMSS)</td><td>143025</td><td><code>DateTime</code></td></tr>
+          <tr><td><code>TYPE abap_bool</code></td><td>Boolean</td><td>abap_true / abap_false</td><td><code>bool</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Built-in system variables</h3>
+    <ul>
+      <li><code>sy-datum</code> — current system date</li>
+      <li><code>sy-uzeit</code> — current system time</li>
+      <li><code>abap_true</code> / <code>abap_false</code> — boolean constants</li>
+    </ul>
+    <div class="tip">Use <code>DECIMALS 2</code> for all money values. Floating point imprecision in money is a serious business-logic bug.</div>
+  </section>
+
+  <!-- ============ LESSON 3 ============ -->
+  <section id="operators">
+    <h2 class="header"><span class="num">3</span> Operators &amp; Logic</h2>
+    <p class="lead">Same math you know, with a few ABAP-specific quirks.</p>
+    <span class="file-tag">01-basics/operators.abap</span>
+    <pre>REPORT z_operators.
+
+DATA: lv_num1     TYPE i,
+      lv_num2     TYPE i,
+      lv_result   TYPE i,
+      lv_string1  TYPE string,
+      lv_string2  TYPE string,
+      lv_concat   TYPE string.
+
+lv_num1 = 10.
+lv_num2 = 3.
+
+lv_result = lv_num1 + lv_num2.
+WRITE: / 'Addition:', lv_result.
+
+lv_result = lv_num1 - lv_num2.
+WRITE: / 'Subtraction:', lv_result.
+
+lv_result = lv_num1 * lv_num2.
+WRITE: / 'Multiplication:', lv_result.
+
+lv_result = lv_num1 / lv_num2.
+WRITE: / 'Division:', lv_result.
+
+lv_result = lv_num1 MOD lv_num2.
+WRITE: / 'Modulus:', lv_result.
+
+lv_string1 = 'Hello'.
+lv_string2 = 'World'.
+lv_concat = lv_string1 && ' ' && lv_string2.
+WRITE: / 'Concatenation:', lv_concat.
+
+IF lv_num1 > lv_num2.
+  WRITE: / 'Num1 is greater'.
+ENDIF.
+
+IF lv_num1 = lv_num2.
+  WRITE: / 'Numbers are equal'.
+ELSE.
+  WRITE: / 'Numbers are not equal'.
+ENDIF.</pre>
+
+    <h3>Arithmetic operators</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Operator</th><th>Description</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>+</code></td><td>Addition</td><td>10 + 3 = 13</td></tr>
+          <tr><td><code>-</code></td><td>Subtraction</td><td>10 - 3 = 7</td></tr>
+          <tr><td><code>*</code></td><td>Multiplication</td><td>10 * 3 = 30</td></tr>
+          <tr><td><code>/</code></td><td>Division</td><td>10 / 3 = 3.33</td></tr>
+          <tr><td><code>MOD</code></td><td>Modulus (remainder)</td><td>10 MOD 3 = 1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>String operator</h3>
+    <ul>
+      <li><code>&&</code> — concatenation: <code>'Hello' && ' ' && 'World'</code> → <code>Hello World</code>. (In PHP you'd use <code>.</code>.)</li>
+    </ul>
+
+    <h3>Comparison operators</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Operator</th><th>Meaning</th><th>PHP equivalent</th></tr></thead>
+        <tbody>
+          <tr><td><code>=</code></td><td>Equal to</td><td><code>==</code></td></tr>
+          <tr><td><code>&lt;&gt;</code></td><td>Not equal to</td><td><code>!=</code></td></tr>
+          <tr><td><code>&gt;</code></td><td>Greater than</td><td><code>&gt;</code></td></tr>
+          <tr><td><code>&lt;</code></td><td>Less than</td><td><code>&lt;</code></td></tr>
+          <tr><td><code>&gt;=</code></td><td>Greater or equal</td><td><code>&gt;=</code></td></tr>
+          <tr><td><code>&lt;=</code></td><td>Less or equal</td><td><code>&lt;=</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>IF / ELSE</h3>
+    <pre>IF lv_num1 > lv_num2.
+  WRITE: / 'Num1 is greater'.
+ELSE.
+  WRITE: / 'Num1 is not greater'.
+ENDIF.</pre>
+    <ul>
+      <li><code>IF ...</code> ends with <code>ENDIF.</code> (mandatory) — there's no <code>}</code>.</li>
+      <li>Optional <code>ELSE.</code> for the fallback branch.</li>
+    </ul>
+    <div class="warn">Every <code>IF</code> must have a matching <code>ENDIF.</code> Many beginner bugs come from a forgotten <code>ENDIF</code>. Indent by 2 spaces to keep blocks readable.</div>
+  </section>
+
+  <!-- ============ PRACTICE ============ -->
+  <section id="practice">
+    <h2 class="header"><span class="num">✓</span> Practice &amp; Next Steps</h2>
+    <p class="lead">Try these in <a href="https://abapdojo.com" target="_blank">ABAP Dojo</a> before moving on.</p>
+
+    <div class="exercise">
+      <h4>Exercise 1 — Your profile card</h4>
+      <ol>
+        <li>Create a report called <code>z_my_profile</code>.</li>
+        <li>Declare variables: name (string), age (integer), salary (packed decimal, 2 decimals).</li>
+        <li>Assign values to each.</li>
+        <li>Print them each on a new line with <code>WRITE: /</code>.</li>
+      </ol>
+      <pre>REPORT z_my_profile.
+
+DATA: lv_name   TYPE string,
+      lv_age    TYPE i,
+      lv_salary TYPE p LENGTH 8 DECIMALS 2.
+
+lv_name = 'Anwar'.
+lv_age = 30.
+lv_salary = '55000.00'.
+
+WRITE: / 'Name:', lv_name.
+WRITE: / 'Age:', lv_age.
+WRITE: / 'Salary:', lv_salary.</pre>
+    </div>
+
+    <div class="exercise">
+      <h4>Exercise 2 — Arithmetic logic</h4>
+      <ol>
+        <li>Declare two integers <code>lv_a = 7</code> and <code>lv_b = 2</code>.</li>
+        <li>Compute and print their sum, difference, product, and modulus.</li>
+        <li>Use <code>IF</code> to print whether <code>lv_a</code> is odd or even (hint: <code>lv_a MOD 2 = 0</code> means even).</li>
+        <li>Concatenate <code>lv_a</code> and <code>lv_b</code> into a string with <code>&&</code> and print it.</li>
+      </ol>
+      <pre>REPORT z_arithmetic.
+
+DATA: lv_a TYPE i VALUE 7,
+      lv_b TYPE i VALUE 2,
+      lv_c TYPE string.
+
+WRITE: / 'Sum:', lv_a + lv_b.
+WRITE: / 'Diff:', lv_a - lv_b.
+WRITE: / 'Prod:', lv_a * lv_b.
+WRITE: / 'Mod:', lv_a MOD lv_b.
+
+IF lv_a MOD 2 = 0.
+  WRITE: / 'lv_a is even'.
+ELSE.
+  WRITE: / 'lv_a is odd'.
+ENDIF.
+
+lv_c = lv_a && ' and ' && lv_b.
+WRITE: / lv_c.</pre>
+    </div>
+
+    <h3>Key takeaways to remember</h3>
+    <ul>
+      <li>Custom object names start with <strong>Z</strong> or <strong>Y</strong>.</li>
+      <li><code>REPORT</code> opens a program; statements end with <strong>.</strong></li>
+      <li>Strings use <strong>single quotes</strong>; concatenate with <code>&&</code>.</li>
+      <li><code>IF ... ENDIF.</code> — don't forget the <code>ENDIF</code>.</li>
+      <li>Keep <code>DATA</code> declarations together at the top.</li>
+    </ul>
+
+    <blockquote class="callout"><strong>Next up:</strong> Section 02 — Selection Screens (<code>PARAMETERS</code>, <code>SELECT-OPTIONS</code>), where programs start accepting user input.</blockquote>
+  </section>
+
+  <footer>ABAP Learning &middot; Section 01 — Basics &middot; Open in any browser</footer>
+
+</div>
+
+<script>
+  const steps = ['#overview','#hello','#datatypes','#operators','#practice'];
+  let completed = new Set();
+  completed.add('#overview');
+
+  function updateProgress() {
+    const pct = Math.round((completed.size / steps.length) * 100);
+    document.getElementById('progFill').style.width = pct + '%';
+    document.getElementById('progLabel').textContent = pct + '% complete';
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        completed.add('#' + e.target.id);
+        const link = document.querySelector(`nav.toc a[href="#${e.target.id}"]`);
+        if (link) link.classList.add('done');
+        updateProgress();
+      }
+    });
+  }, { threshold: 0.15 });
+
+  steps.forEach(s => {
+    const el = document.querySelector(s);
+    if (el) observer.observe(el);
+  });
+  updateProgress();
+</script>
+
+</body>
+</html>

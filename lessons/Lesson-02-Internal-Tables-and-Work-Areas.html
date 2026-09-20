@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP Lesson 2 — Internal Tables &amp; Work Areas</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #171a23;
+    --card-hover: #1d2130;
+    --text: #e8eaf0;
+    --muted: #9aa0b4;
+    --accent: #1a80d6;
+    --accent-2: #47a3ff;
+    --border: #2a2f3d;
+    --green: #3fb950;
+    --amber: #d29922;
+    --red: #f85149;
+    --code-bg: #0b0d12;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+  h1 { font-size: 1.7rem; margin-bottom: .4rem; }
+  h1 span { color: var(--accent-2); }
+  .badge {
+    display:inline-block; padding:.2rem .7rem; border-radius:999px; font-size:.72rem; font-weight:700;
+    background:#12304a; color:var(--accent-2); margin-bottom:.8rem; text-transform:uppercase; letter-spacing:.04em;
+  }
+  .updated { color: var(--muted); font-size: .9rem; }
+  .note {
+    background: var(--card);
+    border-left: 4px solid var(--accent);
+    padding: .9rem 1.1rem;
+    border-radius: 6px;
+    margin: 1rem 0 1.5rem;
+    color: var(--muted);
+  }
+  h2 { font-size: 1.15rem; margin: 2rem 0 1rem; color: var(--accent-2); border-bottom:1px solid var(--border); padding-bottom:.4rem; }
+  h3 { font-size: 1rem; margin: 1.5rem 0 .6rem; color: var(--text); }
+  p { margin-bottom:.8rem; }
+  strong { color: var(--text); }
+  em { color: var(--muted); }
+  code {
+    background:#0b0d12; border:1px solid var(--border); border-radius:5px;
+    padding:.1rem .4rem; font-size:.86em; color:#99d6ff; font-family:"SF Mono",Consolas,Menlo,monospace;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  pre code { background:none; border:none; padding:0; font-size:.86rem; color:#d7e3f5; line-height:1.55; }
+  pre .kw { color:#ff7b72; }
+  pre .cm { color:#6a7386; }
+  pre .st { color:#7ee787; }
+  pre .nu { color:#79c0ff; }
+  table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:.88rem; }
+  th { text-align:left; background:var(--card); color:var(--accent-2); padding:.5rem .7rem; border:1px solid var(--border); }
+  td { padding:.5rem .7rem; border:1px solid var(--border); color:var(--muted); }
+  td strong { color: var(--text); }
+  ul, ol { margin: 0 0 1rem 1.3rem; }
+  li { margin-bottom:.35rem; }
+  .mono {
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:1rem 1.2rem; font-family:"SF Mono",Consolas,Menlo,monospace; font-size:.85rem;
+    color:#99d6ff; overflow-x:auto; white-space:pre; line-height:1.6;
+  }
+  .drill {
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:1rem 1.2rem; margin-bottom:.8rem; font-size:.92rem; color:var(--muted);
+  }
+  .drill b { color:var(--green); }
+  .warn {
+    background:#2a2218; border:1px solid #5a4a24; border-radius:8px; padding:.8rem 1rem; margin:1rem 0;
+    color:var(--amber); font-size:.9rem;
+  }
+  footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .8rem; }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="badge">SAP Study Map · Month 1/2</div>
+    <h1>Lesson 2 — <span>Internal Tables &amp; Work Areas</span></h1>
+    <div class="updated">Internal tables are the single most-used ABAP construct — if Lesson 1 was &ldquo;hello world&rdquo;, this is where you actually start writing professional business code. Your PHP-brain will keep trying to translate; resist the urge — internal tables have their own idioms that don't map 1:1 to arrays.</div>
+  </header>
+
+  <h2>1. What an internal table really is</h2>
+  <p>An internal table is an <strong>in-memory, typed data set</strong> of a single structure — think of it as a PHP array of associative arrays, but with a fixed, known shape and strict types, living in ABAP's runtime memory.</p>
+  <div class="mono">it_people          the internal table (the collection)
+   ├── ls_person   a work area = one row (a single structure)
+   ├── ls_person
+   └── ls_person</div>
+  <p>ABAP works in two shapes: <strong>table</strong> (many rows) and <strong>work area</strong> (exactly one row). Confusing them with each other is the #1 beginner bug. Develop a reflex: write <code>gt_</code>/<code>it_</code> for tables, <code>ls_</code>/<code>gs_</code> for work areas/structures, and you'll catch half your own mistakes just from the names.</p>
+
+  <h2>2. The three table types (know this cold — interviewers ask)</h2>
+  <table>
+    <tr><th>Kind</th><th>Key</th><th>Behaviour</th><th>Like PHP</th></tr>
+    <tr><td><strong>STANDARD</strong></td><td>no key</td><td>rows appended in insert order, access is sequential</td><td>array</td></tr>
+    <tr><td><strong>SORTED</strong></td><td>unique/non-unique</td><td>rows auto-sorted on the key, binary search</td><td>sorted array / keyed lookup</td></tr>
+    <tr><td><strong>HASHED</strong></td><td>must be unique key</td><td>lookups by full key via hash, order not preserved</td><td>associative array / map</td></tr>
+  </table>
+  <p>Picking by use: you <strong>read data sequentially / do ALV output</strong> → STANDARD. You <strong>look up one row by key repeatedly</strong> → SORTED or HASHED. You <strong>loop and add from a database table roughly in order</strong> → SORTED (self-sorting saves you a <code>SORT</code> and speeds up the LOOP).</p>
+  <pre><code><span class="kw">DATA:</span> t_std  TYPE TABLE <span class="kw">OF</span> ty_person,
+      t_srt  TYPE SORTED   TABLE <span class="kw">OF</span> ty_person <span class="kw">WITH UNIQUE KEY</span> name,
+      t_hsh  TYPE HASHED   TABLE <span class="kw">OF</span> ty_person <span class="kw">WITH UNIQUE KEY</span> name.</code></pre>
+
+  <h2>3. Declaring internal tables — three syntax styles</h2>
+  <pre><code><span class="cm">* Style 1: inline types (types are declared separately)</span>
+<span class="kw">TYPES:</span> BEGIN <span class="kw">OF</span> ty_person,
+         name TYPE string,
+         age  TYPE i,
+       END <span class="kw">OF</span> ty_person.
+<span class="kw">DATA</span> t_people TYPE TABLE <span class="kw">OF</span> ty_person.
+
+<span class="cm">* Style 2: inline declaration of the table + line type together (common)</span>
+<span class="kw">DATA</span> t_people2 TYPE TABLE <span class="kw">OF</span> (
+         name TYPE string,
+         age  TYPE i ).
+<span class="cm">*   ^ modern inline table type syntax in one shot</span>
+
+<span class="cm">* Style 3: reference an existing dictionary table automatically</span>
+<span class="kw">DATA</span> t_kna1 TYPE TABLE <span class="kw">OF</span> kna1.   <span class="cm">" kna1 = SAP customer master table</span></code></pre>
+  <p>Style 3 is the workhorse for business code — you <code>SELECT</code> straight into a table typed from the real table's structure, no manual field-by-field typing.</p>
+
+  <h2>4. Adding rows</h2>
+  <pre><code><span class="kw">DATA</span> t_people  TYPE TABLE <span class="kw">OF</span> ty_person.
+<span class="kw">DATA</span> ls_person TYPE ty_person.   <span class="cm">" work area</span>
+
+<span class="cm">* 1) APPEND (add at the end)</span>
+ls_person-name = <span class="st">'Shaik'</span>.
+ls_person-age = <span class="nu">37</span>.
+<span class="kw">APPEND</span> ls_person TO t_people.
+
+<span class="cm">* 2) INSERT (respects kind/order — for SORTED/HASHED)</span>
+ls_person-name = <span class="st">'Ayesha'</span>.
+<span class="kw">INSERT</span> ls_person INTO t_people.
+
+<span class="cm">* 3) COLLECT (aggregate on numeric fields — used for totals/reporting)</span>
+ls_person-name = <span class="st">'Shaik'</span>.
+ls_person-age  = <span class="nu">5</span>.
+<span class="kw">COLLECT</span> ls_person INTO t_people.
+<span class="cm">* if a row with same name exists, age stays as SUM instead of adding a new row</span></code></pre>
+  <p><code>COLLECT</code> is SAP's version of <code>sum += </code> keyed on non-numeric fields — it's the standard trick for building summary reports. File it away now; you'll need it in Lesson 3's ALV checkpoint.</p>
+
+  <h2>5. Reading rows — LOOP</h2>
+  <pre><code><span class="kw">DATA</span> ls_person TYPE ty_person.
+
+<span class="kw">LOOP AT</span> t_people INTO ls_person.        <span class="cm">" forward, one row at a time</span>
+  <span class="kw">WRITE:</span> / ls_person-name.
+<span class="kw">ENDLOOP</span>.
+
+<span class="kw">LOOP AT</span> t_people INTO ls_person          <span class="cm">" reverse loop</span>
+     <span class="kw">FROM</span> <span class="nu">1</span> TO <span class="nu">3</span>.                        <span class="cm">" range too</span>
+  ...
+<span class="kw">ENDLOOP</span>.
+
+<span class="kw">READ TABLE</span> t_people INTO ls_person       <span class="cm">" single-row lookup by key</span>
+     <span class="kw">WITH KEY</span> name = <span class="st">'Shaik'</span>.
+<span class="kw">IF</span> sy-subrc = <span class="nu">0</span>.
+  <span class="kw">WRITE:</span> / <span class="st">'Found:'</span>, ls_person-age.
+<span class="kw">ENDIF</span>.</code></pre>
+  <p>Key discipline: <strong><code>sy-subrc</code></strong>. EVERY database/table operation in ABAP sets <code>sy-subrc</code> (0 = success, 4 = not found in READ, etc.). In PHP you'd check <code>if ($row)</code>. In ABAP you check the system variable every single time:</p>
+  <pre><code><span class="kw">READ TABLE</span> ... .
+<span class="kw">IF</span> sy-subrc = <span class="nu">0</span>.
+   ... do something <span class="kw">WITH</span> the found row ...
+<span class="kw">ENDIF</span>.</code></pre>
+  <div class="warn">Forgetting this check is how ABAP bugs get born. Make it a reflex — like checking <code>-&gt;fetch()</code> for <code>false</code> in PDO.</div>
+
+  <h2>6. Modifying and deleting rows</h2>
+  <pre><code><span class="cm">* MODIFY: change an existing row (APPEND if missing on STANDARD? No — MODIFY replaces or appends on STANDARD keyless)</span>
+ls_person-name = <span class="st">'Shaik'</span>.
+ls_person-age  = <span class="nu">38</span>.
+<span class="kw">MODIFY</span> t_people <span class="kw">FROM</span> ls_person <span class="kw">TRANSPORTING</span> age <span class="kw">WHERE</span> name = <span class="st">'Shaik'</span>.
+
+<span class="cm">* DELETE: by condition</span>
+<span class="kw">DELETE</span> t_people <span class="kw">WHERE</span> name = <span class="st">'Ayesha'</span>.
+
+<span class="cm">* DELETE: by work area (uses the key)</span>
+<span class="kw">READ TABLE</span> t_people INTO ls_person <span class="kw">WITH KEY</span> name = <span class="st">'Shaik'</span>.
+<span class="kw">DELETE</span> t_people.                    <span class="cm">" deletes the 'current row' from last READ/LOOP -- careful!</span></code></pre>
+  <p>Grouped updates (modern ABAP) — the successor to the work-area churn:</p>
+  <pre><code><span class="kw">MODIFY</span> t_people <span class="kw">FROM</span> ls_person <span class="kw">TRANSPORTING</span> age <span class="kw">WHERE</span> name = <span class="st">'Shaik'</span>.
+<span class="kw">MODIFY</span> t_people <span class="kw">FROM</span> VALUE ty_person( name = <span class="st">'Nadia'</span> age = <span class="nu">10</span> ).</code></pre>
+  <p>Don't brute-force every operation row-by-row — <code>TRANSPORTING</code> + <code>WHERE</code> lets you update a field across many rows in one call.</p>
+
+  <h2>7. Sorting and searching</h2>
+  <pre><code><span class="kw">SORT</span> t_people <span class="kw">BY</span> age DESCENDING.            <span class="cm">" stable sort</span>
+<span class="kw">SORT</span> t_people ASCENDING.                    <span class="cm">" whole structure, ascending</span>
+
+<span class="cm">* Binary search requires the table sorted on that key first</span>
+<span class="kw">SORT</span> t_people <span class="kw">BY</span> name.
+<span class="kw">READ TABLE</span> t_people INTO ls_person <span class="kw">WITH KEY</span> name = <span class="st">'Shaik'</span> BINARY SEARCH.
+<span class="kw">IF</span> sy-subrc = <span class="nu">0</span>.
+  <span class="kw">WRITE:</span> / <span class="st">'Binary found'</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+  <p><strong>Performance rule of thumb:</strong> <code>READ ... WITH KEY</code> without sorted table = linear scan. With <code>SORT</code> + <code>BINARY SEARCH</code> = logarithmic. On a 100,000-row customer table, that's the difference between a report that takes 3 seconds and one that takes 10 minutes. This is a classic interview question (&ldquo;how do you speed up READ TABLE?&rdquo; → &ldquo;sort + BINARY SEARCH, or use SORTED/HASHED TABLE&rdquo;).</p>
+
+  <h2>8. Passing tables around (modularization preview)</h2>
+  <pre><code><span class="kw">FORM</span> fill_data <span class="kw">CHANGING</span> ct_people TYPE TABLE <span class="kw">OF</span> ty_person.
+  <span class="kw">DATA</span> ls_person TYPE ty_person.
+  ls_person-name = <span class="st">'Ayesha'</span>.
+  ls_person-age  = <span class="nu">30</span>.
+  <span class="kw">APPEND</span> ls_person TO ct_people.
+<span class="kw">ENDFORM</span>.</code></pre>
+  <p><code>CHANGING</code> passes by reference — the subroutine fills the caller's table. (Actually, in ABAP internal tables passed to <code>FORM</code> are passed <strong>by reference by default</strong> — you must write <code>USING</code>/<code>CHANGING</code> carefully. Preview of Lesson 3's modularization topic.)</p>
+
+  <h2>9. One real-world pattern to tie it together</h2>
+  <p>Kill two birds: read from a real SAP table, hold it in an internal table, and produce a small report.</p>
+  <pre><code><span class="kw">REPORT</span> zreport_people_demo.
+
+<span class="kw">DATA:</span> t_kna1  TYPE TABLE <span class="kw">OF</span> kna1,       <span class="cm">" customer master table from the system</span>
+      ls_kna1 TYPE kna1.
+
+<span class="kw">SELECT</span> kunnr, name1
+       <span class="kw">FROM</span> kna1
+       <span class="kw">INTO</span> CORRESPONDING FIELDS <span class="kw">OF</span> TABLE @t_kna1
+       <span class="kw">UP TO</span> <span class="nu">20</span> ROWS.
+
+<span class="kw">SORT</span> t_kna1 <span class="kw">BY</span> name1 ASCENDING.
+
+<span class="kw">LOOP AT</span> t_kna1 INTO ls_kna1.
+  <span class="kw">WRITE:</span> / ls_kna1-kunnr, ls_kna1-name1.
+<span class="kw">ENDLOOP</span>.</code></pre>
+  <p>If <code>kna1</code> doesn't exist in your trial system, any master-data table does (e.g. <code>t001</code> company codes: <code>SELECT bukrs BUTXT FROM t001 ...</code>). Swap and go.</p>
+
+  <h2>10. Drills (do these on your system, in order)</h2>
+  <div class="drill"><b>1.</b> Declare a STANDARD, SORTED, HASHED table of <code>ty_person</code>; APPEND 5 rows to each; print with LOOP. Note SORTED prints pre-sorted, HASHED prints in arbitrary order.</div>
+  <div class="drill"><b>2.</b> Build a summary count with <code>COLLECT</code> (age as the summed field, name the key). Verify repeated names sum instead of duplicating.</div>
+  <div class="drill"><b>3.</b> Do a <code>READ TABLE ... WITH KEY ... BINARY SEARCH</code> with <code>sy-subrc</code> check, and a <code>READ</code> without BINARY SEARCH. Swap the data to 1,000 rows and observe the difference (or measure with <code>GET RUN TIME</code>).</div>
+  <div class="drill"><b>4.</b> <code>DELETE ... WHERE age LT 25</code> — check how many rows survive.</div>
+  <div class="drill"><b>5.</b> Write the kna1/t001 report above in under 20 lines, run it green, and screenshot it for your note-taking.</div>
+
+  <h2>Reading (free)</h2>
+  <ul>
+    <li>openSAP <em>ABAP Development</em> course; SAP Community section &ldquo;Internal Tables — Never Omit SORT/READ BINARY SEARCH&rdquo;.</li>
+  </ul>
+
+  <footer>
+    Done? Next in the Month-2 sequence: <strong>Lesson 3 — Open SQL in depth (SELECT, joins, aggregates, INTO clauses)</strong> — right in your SQL wheelhouse — or a Lesson 1–2 quiz first.
+  </footer>
+
+</div>
+</body>
+</html>

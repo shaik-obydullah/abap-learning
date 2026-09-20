@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Prep &amp; Tips | ABAP Study Guide</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#phase-1">Phase 1</a>
+      <a href="index.html#phase-2">Phase 2</a>
+      <a href="index.html#phase-3">Phase 3</a>
+      <a href="environment.html">Environment</a>
+      <a href="interviews.html" class="active">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Interview Prep &amp; Tips</h1>
+  <p class="muted">The job market for SAP developers in Bangladesh is dominated by <strong>classic ABAP</strong> (S/4HANA implementation + AMS support). Weeks 1–8 are the job-getting weeks. Here's how to present yourself and what to expect.</p>
+
+  <h2>1. Reality check: what employers want</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Focus</th><th>Demand</th><th>Example skills asked</th></tr>
+      <tr><td>Classic ABAP</td><td>High (most openings)</td><td>Reports, ALV, internal tables, BAPIs, RFCs, BADIs, function modules</td></tr>
+      <tr><td>ABAP Cloud / RAP</td><td>Growing, fewer junior seats</td><td>CDS, RAP, OData, Fiori, clean core</td></tr>
+      <tr><td>AMS support</td><td>Ongoing</td><td>Troubleshooting, short-dump analysis, enhancements, debugging</td></tr>
+    </table>
+  </div>
+
+  <h2>2. Most likely technical questions (and how to prep)</h2>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Question</th><th>Study link</th></tr>
+      <tr><td>When do you use STANDARD vs SORTED vs HASHED tables?</td><td><a href="weeks/week-02.html">Week 2</a>, <a href="weeks/week-12.html">Week 12</a></td></tr>
+      <tr><td>Explain FOR ALL ENTRIES and its gotchas.</td><td><a href="weeks/week-03.html">Week 3</a>, <a href="weeks/week-12.html">Week 12</a></td></tr>
+      <tr><td>What's the difference between a work area and a field symbol?</td><td><a href="weeks/week-03.html">Week 3</a></td></tr>
+      <tr><td>What must you do after a BAPI call? Why?</td><td><a href="weeks/week-08.html">Week 8</a>, <a href="weeks/week-12.html">Week 12</a></td></tr>
+      <tr><td>What's a BADI vs a customer exit?</td><td><a href="weeks/week-07.html">Week 7</a></td></tr>
+      <tr><td>How do ABAP locks work (ENQUEUE/DEQUEUE)?</td><td><a href="weeks/week-12.html">Week 12</a></td></tr>
+      <tr><td>What does COMMIT WORK do vs ROLLBACK?</td><td><a href="weeks/week-12.html">Week 12</a></td></tr>
+      <tr><td>What is a dynpro and what are PBO/PAI?</td><td><a href="weeks/week-12.html">Week 12</a></td></tr>
+      <tr><td>How do you improve the performance of a large report?</td><td><a href="weeks/week-03.html">Week 3</a>, <a href="weeks/week-12.html">Week 12</a></td></tr>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <strong class="label">Explain out loud</strong>
+    Don't just memorize definitions — practice explaining them conversationally, as if teaching a junior. Interviewers probe for real understanding, not memorized lines.
+  </div>
+
+  <h2>3. Behavioral / general questions</h2>
+  <ul>
+    <li>"Tell me about a project you've delivered" — use your Week 11 GitHub project: what it does, how you structured it, one problem you solved.</li>
+    <li>"How do you handle a support ticket / a short dump?" — walk through: reproduce, analyze ST22, check the app log (SLG1), fix, test, note the enhancement/object changed.</li>
+    <li>"What's your SAP learning path?" — have a clear narrative: from your portfolio project to certifications.</li>
+  </ul>
+
+  <h2>4. A 1-minute answer about ST22 (short dumps)</h2>
+  <p><code>ST22</code> shows runtime errors. A good support answer: "If a transaction short-dumps, I open ST22, read the exception (e.g., <code>CX_SY_ZERODIVIDE</code>, <code>CX_SY_ARITHMETIC_ERROR</code>), check the raising program and line, then reproduce the input and decide whether it's a data issue or a program/ABAP bug. For a custom program I fix the code; for standard code I look for an enhancement or a config fix rather than modifying core."</p>
+
+  <h2>5. Portfolio &amp; resume tips</h2>
+  <ul>
+    <li>List concrete deliverables ("built an ALV material report", "extended PO create via BADI").</li>
+    <li>Link the GitHub repo and a short README walkthrough with screenshots.</li>
+    <li>Be honest about cloud vs classic; most employers value solid classic fundamentals.</li>
+    <li>Mention trades/transactions you know (SE11, SE38/80, SE37, BADIs, BAPIs).</li>
+  </ul>
+
+  <h2>6. Certification direction</h2>
+  <p>Choose based on target role (Week 12):</p>
+  <ul>
+    <li><code>C_TAW12_750</code> — classic ABAP. Best if applying to on-prem implementation/AMS roles now.</li>
+    <li><code>C_ABAPD_2309</code> — ABAP Cloud / RAP. Best for BTP/cloud-focused growth roles.</li>
+  </ul>
+
+  <div class="callout info">
+    <strong class="label">Bottom line</strong>
+    Weeks 1–8 (foundations + OO + enhancements + BAPIs) are the job-getting weeks in Bangladesh. Weeks 9–11 add modern/cloud differentiation. Week 12 ties it together for interviews.
+  </div>
+
+  <div class="pagination">
+    <a href="environment.html">← Environment &amp; Setup</a>
+    <span></span>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Interview Prep &amp; Tips
+</footer>
+
+</body>
+</html>

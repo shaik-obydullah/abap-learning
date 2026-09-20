@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 2 — Internal Tables | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 2 — Internal Tables</h1>
+  <p class="muted">The ABAP bread-and-butter. If you only deeply learn one data structure, make it the internal table. If you come from Laravel, think of them as Laravel <strong>collections</strong>.</p>
+
+  <div class="callout info">
+    <strong class="label">What you'll build this week</strong>
+    A report that loads data, then filters and aggregates it using internal tables.
+  </div>
+
+  <h2>1. What is an Internal Table?</h2>
+  <p>An internal table is a runtime, in-memory table. Its rows (lines) all have the same structure — usually a <strong>structure</strong> or ABAP Dictionary table type. It's the main structure for processing data in ABAP, the way you'd use collections/arrays in PHP or JavaScript.</p>
+
+  <p>Every internal table operation happens in three typical steps:</p>
+  <ol>
+    <li>Declare the table.</li>
+    <li>Fill it (APPEND / INSERT).</li>
+    <li>Read it back (LOOP AT / READ TABLE).</li>
+  </ol>
+
+  <h2>2. Declaring an Internal Table</h2>
+  <p>The classic way is to declare a <strong>work area</strong> (structure) plus a <strong>table</strong> of that structure:</p>
+
+  <pre><code>DATA: BEGIN OF ls_person,
+        name TYPE string,
+        age  TYPE i,
+      END OF ls_person.
+
+DATA lt_persons TYPE TABLE OF ls_person.</code></pre>
+
+  <p>A more common and concise approach uses <code>TYPE STANDARD TABLE OF</code> with an inline structure:</p>
+
+  <pre><code>DATA: BEGIN OF ls_person,
+        name TYPE string,
+        age  TYPE i,
+      END OF ls_person,
+      lt_persons LIKE STANDARD TABLE OF ls_person.</code></pre>
+
+  <div class="callout info">
+    <strong class="label">Modern inline declarations</strong>
+    ABAP allows inline declarations &mdash; the type is inferred from the right-hand side:
+    <pre><code>SELECT name, age FROM persons INTO TABLE @DATA(lt_persons).</code></pre>
+    Here <code>@DATA(lt_persons)</code> declares the table automatically.
+  </div>
+
+  <h2>3. Standard vs Sorted vs Hashed Tables</h2>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Type</th><th>Key</th><th>Best for</th><th>Note</th></tr>
+      <tr><td><strong>STANDARD</strong></td><td>Optional (non-unique by default)</td><td>Anything; order = insertion order</td><td>Slow random access by key; no automatic sort</td></tr>
+      <tr><td><strong>SORTED</strong></td><td>Required; rows auto-sorted</td><td>Reads by key, range searches, binary search</td><td>Keep key small; insert is a bit slower</td></tr>
+      <tr><td><strong>HASHED</strong></td><td>Required; must be UNIQUE</td><td>Very fast single-row lookup by key</td><td>No sorting; no range access; no index</td></tr>
+    </table>
+  </div>
+
+  <pre><code>* Standard table (default)
+DATA lt_std TYPE STANDARD TABLE OF ls_person.
+
+* Sorted table
+DATA lt_srt TYPE SORTED TABLE OF ls_person WITH UNIQUE KEY name.
+
+* Hashed table
+DATA lt_hsh TYPE HASHED TABLE OF ls_person WITH UNIQUE KEY name.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Rule of thumb</strong>
+    Start with <strong>STANDARD</strong>. Move to <strong>SORTED</strong> or <strong>HASHED</strong> only when you need fast key-based reads and the key is known up front.
+  </div>
+
+  <h2>4. Filling a Table — APPEND, INSERT, MOVE</h2>
+
+  <pre><code>ls_person-name = 'Alice'.  ls_person-age = 30.
+APPEND ls_person TO lt_persons.
+
+ls_person-name = 'Bob'.    ls_person-age = 25.
+APPEND ls_person TO lt_persons.
+
+* INSERT adds at a specific index (or sorted position for sorted tables)
+INSERT ls_person INTO lt_persons INDEX 1.
+
+* CLEAR resets the work area before reusing it
+CLEAR ls_person.
+MOVE 'Carol' TO ls_person-name.
+ls_person-age = 28.
+APPEND ls_person TO lt_persons.</code></pre>
+
+  <div class="callout warn">
+    <strong class="label">Always CLEAR the work area</strong>
+    After <code>APPEND</code>, the work area still holds the old data. Clear it (or reassign every field) before filling again, or you'll duplicate values.
+  </div>
+
+  <h2>5. Reading a Table</h2>
+
+  <h3>LOOP AT — read every row</h3>
+  <pre><code>LOOP AT lt_persons INTO ls_person.
+  WRITE: / ls_person-name, ls_person-age.
+ENDLOOP.</code></pre>
+
+  <h3>READ TABLE — read one specific row</h3>
+  <pre><code>READ TABLE lt_persons INTO ls_person WITH KEY name = 'Bob'.
+IF sy-subrc EQ 0.
+  WRITE: / 'Found: ', ls_person-name, ls_person-age.
+ELSE.
+  WRITE: / 'Not found'.
+ENDIF.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Always check sy-subrc</strong>
+    After <code>READ TABLE</code>, <code>sy-subrc = 0</code> means found; anything else means the row doesn't exist. Check it before using the work area.
+  </div>
+
+  <h3>Assigning instead of copying</h3>
+  <p>For large data, avoid copying with <code>INTO</code>; instead use a <strong>field symbol</strong> or a table line reference. You'll meet field symbols in Week 3.</p>
+
+  <h2>6. MODIFY — change existing rows</h2>
+  <pre><code>ls_person-name = 'Bob'.
+ls_person-age = 26.
+MODIFY lt_persons FROM ls_person INDEX 2.</code></pre>
+
+  <h2>7. DELETE — remove rows</h2>
+  <pre><code>* Delete by index
+DELETE lt_persons INDEX 1.
+
+* Delete current row inside a loop
+LOOP AT lt_persons INTO ls_person.
+  IF ls_person-age LT 18.
+    DELETE lt_persons.
+  ENDIF.
+ENDLOOP.
+
+* Delete all
+CLEAR lt_persons.</code></pre>
+
+  <h2>8. SORT, DESCRIBE, lines( )</h2>
+  <pre><code>* Sort ascending by name
+SORT lt_persons BY name.
+
+* Sort descending by age
+SORT lt_persons BY age DESCENDING.
+
+* Count rows
+DATA lv_count TYPE i.
+lv_count = lines( lt_persons ).
+WRITE: / 'Total rows: ', lv_count.
+
+* Number of rows also available via DESCRIBE
+DESCRIBE TABLE lt_persons LINES lv_count.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">lines( ) is your friend</strong>
+    <code>lines( lt_table )</code> returns the number of rows — works everywhere and is the modern way to count.
+  </div>
+
+  <h2>9. Filtering &amp; Aggregating (the Laravel-collection way)</h2>
+  <pre><code>* Filter + count adults
+DATA lv_adults TYPE i.
+lv_adults = 0.
+LOOP AT lt_persons INTO ls_person.
+  IF ls_person-age GE 18.
+    lv_adults = lv_adults + 1.
+  ENDIF.
+ENDLOOP.
+
+* Sum of ages
+DATA lv_sum TYPE i.
+LOOP AT lt_persons INTO ls_person.
+  ADD ls_person-age TO lv_sum.
+ENDLOOP.</code></pre>
+
+  <p>This pattern — loop, check a condition, accumulate — is the everyday heart of ABAP report code.</p>
+
+  <h2>10. Internal Table of a Dictionary Type</h2>
+  <p>Most real code works with tables whose row type is a database table or structure defined in <code>SE11</code> (Week 4). For example:</p>
+  <pre><code>DATA lt_ekko TYPE TABLE OF ekko.   " EKKO = header table of purchase orders</code></pre>
+
+  <h2>11. Exercises</h2>
+  <ol>
+    <li>Declare a structure with <code>product</code> (string) and <code>price</code> (P). Fill a standard table with 5 rows.</li>
+    <li>Loop the table and print all products over a given price.</li>
+    <li>Sort by price descending and <code>READ TABLE</code> to find the cheapest product by name.</li>
+    <li>Count how many products have prices above 100 using <code>lines( )</code> and filtering.</li>
+    <li>Build an internal table of type <code>TYPE TABLE OF ekko</code> and fill/loop it (even with empty data, the syntax should compile).</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    <code>TYPE TABLE OF</code>, <code>APPEND</code>, <code>INSERT</code>, <code>READ TABLE</code>, <code>MODIFY</code>, <code>DELETE</code>, <code>LOOP AT ... ENDLOOP</code>, <code>SORT</code>, <code>lines( )</code>, <code>sy-subrc</code>, <code>WITH KEY</code>, work area.
+  </div>
+
+  <div class="pagination">
+    <a href="week-01.html">← Week 1</a>
+    <a class="next" href="week-03.html">Next: Week 3 — Open SQL &amp; Field Symbols →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 2
+</footer>
+
+</body>
+</html>

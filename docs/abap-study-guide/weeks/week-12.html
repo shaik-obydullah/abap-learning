@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 12 — Job-Package Polish | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 12 — Job-Package Polish</h1>
+  <p class="muted">Tighten the topics Bangladeshi interviewers most often probe, take a mock test, and decide on certification direction.</p>
+
+  <div class="callout info">
+    <strong class="label">Goal this week</strong>
+    Solidify the tricky, high-frequency topics and be interview-ready.
+  </div>
+
+  <h2>1. The high-frequency tricky topics</h2>
+
+  <h3>Internal table performance</h3>
+  <p>Interviewers love this. Know when to use each table type and why:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Scenario</th><th>Recommended table</th><th>Why</th></tr>
+      <tr><td>Process rows in insertion order, often re-sorting</td><td>STANDARD</td><td>Fast inserts/loops; sort as needed</td></tr>
+      <tr><td>Many key lookups, key known up front, unique</td><td>HASHED</td><td>O(1) single-row access</td></tr>
+      <tr><td>Range / partial-key reads, want sorted output</td><td>SORTED</td><td>Binary search, ordered iteration</td></tr>
+    </table>
+  </div>
+  <p>Also mention: avoid <code>READ TABLE</code> inside a <code>LOOP AT</code> on a large standard table (O(n²)); prefer a hashed secondary table or <code>FOR ALL ENTRIES</code>.</p>
+
+  <h3>FOR ALL ENTRIES</h3>
+  <p>Refresher of Week 3: selects DB rows matching many keys from an internal table. Recall the rules — check <code>IS NOT INITIAL</code>, be careful with huge source lists, and that FAE can behave like a DISTINCT join.</p>
+
+  <h3>COMMIT / ROLLBACK</h3>
+  <p><code>COMMIT WORK</code> commits the current database LUW (logical unit of work); <code>ROLLBACK WORK</code> undoes untransmitted changes. BAPIs need a commit (Week 8). <code>COMMIT WORK AND WAIT</code> waits for async processing.</p>
+
+  <h3>Locks — ENQUEUE_* / DEQUEUE_*</h3>
+  <p>ABAP locking uses lock objects (defined in <code>SE11</code>, lock object <code>EZ_..._LOCK</code>). Enqueue/Dequeue function modules are auto-generated:</p>
+  <pre><code>CALL FUNCTION 'ENQUEUE_EZ_MATERIAL'
+  EXPORTING
+    mode_mara   = 'E'
+    matnr       = lv_matnr
+  EXCEPTIONS
+    foreign_lock = 1
+    system_failure = 2.
+
+IF sy-subrc EQ 0.
+  " locked - safe to change
+  " ... do the work ...
+  CALL FUNCTION 'DEQUEUE_EZ_MATERIAL'
+    EXPORTING
+      matnr = lv_matnr.
+ELSE.
+  MESSAGE 'Material locked by another user' TYPE 'E'.
+ENDIF.</code></pre>
+  <p>Know the difference between database locks (implicit, short) and SAP logical locks (ENQUEUE, explicit, longer) and that SAP locks must be released before the transaction commits.</p>
+
+  <h3>Message handling</h3>
+  <pre><code>MESSAGE 'Record not found' TYPE 'E'.   " error - aborts
+MESSAGE 'Saved' TYPE 'S'.              " success
+MESSAGE 'Check input' TYPE 'W'.        " warning
+MESSAGE 'Info' TYPE 'I'.               " info box
+MESSAGE e042(zz) WITH lv_matnr.        " message from message class zz</code></pre>
+  <p>Message classes group reusable messages; you call them by number and class. <code>MESSAGE ... TYPE 'E'</code> is the standard error.</p>
+
+  <h3>Dynpro basics (SE51)</h3>
+  <p>A dynpro (dynamic program / screen) is an SAP GUI screen with layouts, flow logic (PBO/PAI), and field attributes. Key concepts:</p>
+  <ul>
+    <li><strong>PBO</strong> (Process Before Output) — runs before the screen is shown; set field/visibility here.</li>
+    <li><strong>PAI</strong> (Process After Input) — runs after the user presses a function key; validate/read input here.</li>
+    <li>Screen fields map to ABAP variables via field list.</li>
+    <li>Created/maintained in <code>SE51</code> or SE80 Screen Painter.</li>
+  </ul>
+
+  <h2>2. A few more classics</h2>
+  <ul>
+    <li><code>MOVE-CORRESPONDING</code> vs <code>SELECT</code> field alignment — mapping similar fields between structures/tables.</li>
+    <li>Field symbols vs work areas (Week 3).</li>
+    <li><code>PARAMETERS</code> vs <code>SELECT-OPTIONS</code> (ranges with options for multiple values/operators).</li>
+    <li>The <code>sy-subrc</code> checks after every SELECT/READ.</li>
+    <li>Performance: use <code>UP TO 1 ROWS</code>, avoid <code>SELECT *</code> where possible, use proper keys.</li>
+  </ul>
+
+  <h3>SELECT-OPTIONS quick example</h3>
+  <pre><code>SELECT-OPTIONS: s_matnr FOR mara-matnr.   " user can enter ranges
+
+SELECT matnr, maktx
+  FROM makt
+  WHERE matnr IN @s_matnr
+  INTO TABLE @DATA(lt_m).</code></pre>
+
+  <h2>3. Take a mock test</h2>
+  <p>Self-test with the tricky topics above and the exercises from all 12 weeks. Time-box yourself. Then choose a certification direction:</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Cert</th><th>Focus</th><th>Best if…</th></tr>
+      <tr><td><code>C_TAW12_750</code></td><td>Classic ABAP (reporting, internal tables, dynpro, ALV, OO)</td><td>Targeting classic on-prem roles now</td></tr>
+      <tr><td><code>C_ABAPD_2309</code></td><td>ABAP Cloud / RAP / CDS (clean core)</td><td>Targeting BTP/cloud growth roles</td></tr>
+    </table>
+  </div>
+
+  <h2>4. Interview week checklist</h2>
+  <ul>
+    <li>GitHub project polished (Week 11) — README current, code clean.</li>
+    <li>Hands-on comfort: you can write an ALV report or call a BAPI from memory.</li>
+    <li>Rehearse answers for: table-type selection, FAE caveats, BAPI commit, locking, BADI vs customer exit.</li>
+    <li>Prepare 2–3 short stories of problems you solved while building the project.</li>
+  </ul>
+
+  <h2>5. Exercises</h2>
+  <ol>
+    <li>Explain (out loud) when you'd use STANDARD vs SORTED vs HASHED — with an example each.</li>
+    <li>Write a <code>FOR ALL ENTRIES</code> snippet and defend why the <code>IS NOT INITIAL</code> check exists.</li>
+    <li>Create a lock object for a custom table and use its ENQUEUE/DEQUEUE in a report.</li>
+    <li>Convert a <code>PARAMETERS</code>-based report to use <code>SELECT-OPTIONS</code>.</li>
+    <li>Create a simple dynpro in SE51 with a PBO/PAI and one field.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    LUW, <code>COMMIT WORK</code>, <code>ROLLBACK WORK</code>, lock object, <code>ENQUEUE_*</code>/<code>DEQUEUE_*</code>, <code>MESSAGE ... TYPE 'E'</code>, dynpro, PBO, PAI, <code>SELECT-OPTIONS</code>, <code>MOVE-CORRESPONDING</code>, certification.
+  </div>
+
+  <div class="pagination">
+    <a href="week-11.html">← Week 11</a>
+    <a class="next" href="../environment.html">Next: Environment &amp; Setup →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 12
+</footer>
+
+</body>
+</html>

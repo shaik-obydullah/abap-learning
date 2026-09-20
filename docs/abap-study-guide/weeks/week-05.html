@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5 — ABAP Objects Core | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 5 — ABAP Objects Core</h1>
+  <p class="muted">ABAP is fully object-oriented. If you know OOP in PHP, the concepts transfer 1:1 — only the syntax changes. This week is about the core building blocks: classes, objects, methods, attributes, inheritance, interfaces, exceptions, and constructors.</p>
+
+  <div class="callout info">
+    <strong class="label">Goal this week</strong>
+    Be able to write and call your own OO classes in ABAP — the daily currency of an SE80 developer.
+  </div>
+
+  <h2>1. Class &amp; Object</h2>
+  <p>A <strong>class</strong> is a template (blueprint); an <strong>object</strong> (instance) is a concrete copy created from it. In ABAP you define classes with <code>CLASS ... ENDCLASS</code>.</p>
+
+  <h3>Local classes (defined in a report/program)</h3>
+  <pre><code>CLASS lcl_calculator DEFINITION.
+  PUBLIC SECTION.
+    METHODS add
+      IMPORTING
+        iv_a TYPE i
+        iv_b TYPE i
+      RETURNING
+        VALUE(rv_sum) TYPE i.
+
+    METHODS multiply
+      IMPORTING
+        iv_a TYPE i
+        iv_b TYPE i
+      RETURNING
+        VALUE(rv_result) TYPE i.
+ENDCLASS.
+
+CLASS lcl_calculator IMPLEMENTATION.
+  METHOD add.
+    rv_sum = iv_a + iv_b.
+  ENDMETHOD.
+
+  METHOD multiply.
+    rv_result = iv_a * iv_b.
+  ENDMETHOD.
+ENDCLASS.</code></pre>
+
+  <p>Two parts: the <code>DEFINITION</code> (signatures) and the <code>IMPLEMENTATION</code> (bodies).</p>
+
+  <h2>2. Creating and using objects</h2>
+  <pre><code>DATA lo_calc TYPE REF TO lcl_calculator.
+CREATE OBJECT lo_calc.
+
+DATA(lv_result) = lo_calc-&gt;add(
+  iv_a = 4
+  iv_b = 5 ).
+WRITE: / 'Sum:', lv_result.
+
+" Alternative modern inline creation
+DATA(lo_calc2) = NEW lcl_calculator( ).</code></pre>
+
+  <h2>3. Attributes (fields) &amp; visibility</h2>
+  <pre><code>CLASS lcl_counter DEFINITION.
+  PUBLIC SECTION.
+    METHODS increment.
+    METHODS get_value
+      RETURNING VALUE(rv_value) TYPE i.
+  PRIVATE SECTION.
+    DATA mv_count TYPE i.   " only methods of this class can touch it
+ENDCLASS.
+
+CLASS lcl_counter IMPLEMENTATION.
+  METHOD increment.
+    mv_count = mv_count + 1.
+  ENDMETHOD.
+  METHOD get_value.
+    rv_value = mv_count.
+  ENDMETHOD.
+ENDCLASS.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Visibility sections</strong>
+    <ul>
+      <li><code>PUBLIC SECTION</code> — callable from anywhere</li>
+      <li><code>PROTECTED SECTION</code> — only this class and subclasses</li>
+      <li><code>PRIVATE SECTION</code> — only this class</li>
+    </ul>
+    Attributes (DATA) usually belong in PRIVATE/PROTECTED.
+  </div>
+
+  <h2>4. Constructors</h2>
+  <p>The <code>CONSTRUCTOR</code> runs automatically when the object is created. Define it in the class and call with <code>NEW</code>.</p>
+
+  <pre><code>CLASS lcl_person DEFINITION.
+  PUBLIC SECTION.
+    METHODS constructor
+      IMPORTING iv_name TYPE string.
+    METHODS greet.
+  PRIVATE SECTION.
+    DATA mv_name TYPE string.
+ENDCLASS.
+
+CLASS lcl_person IMPLEMENTATION.
+  METHOD constructor.
+    mv_name = iv_name.
+  ENDMETHOD.
+  METHOD greet.
+    WRITE: / 'Hello', mv_name.
+  ENDMETHOD.
+ENDCLASS.
+
+DATA(lo_person) = NEW lcl_person( iv_name = 'Alice' ).
+lo_person-&gt;greet( ).</code></pre>
+
+  <h2>5. Inheritance (EXTENDS)</h2>
+  <pre><code>CLASS lcl_animal DEFINITION.
+  PUBLIC SECTION.
+    METHODS sound.
+ENDCLASS.
+CLASS lcl_animal IMPLEMENTATION.
+  METHOD sound.
+    WRITE: / 'generic sound'.
+  ENDMETHOD.
+ENDCLASS.
+
+* Subclass inherits + overrides
+CLASS lcl_dog DEFINITION INHERITING FROM lcl_animal.
+  PUBLIC SECTION.
+    METHODS sound REDEFINITION.
+ENDCLASS.
+CLASS lcl_dog IMPLEMENTATION.
+  METHOD sound.
+    WRITE: / 'Woof!'.
+  ENDMETHOD.
+ENDCLASS.</code></pre>
+
+  <p>Use <code>REDEFINITION</code> to override an inherited method. Protected/private members follow normal rules.</p>
+
+  <h2>6. Interfaces (INTERFACE ... ENDINTERFACE)</h2>
+  <p>An interface declares a contract; any class implementing it must provide the methods. This enables polymorphism — different classes treated through the same interface.</p>
+
+  <pre><code>INTERFACE lif_drawable.
+  METHODS draw.
+ENDINTERFACE.
+
+CLASS lcl_circle DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_drawable.
+ENDCLASS.
+
+CLASS lcl_circle IMPLEMENTATION.
+  METHOD lif_drawable~draw.
+    WRITE: / 'Drawing a circle'.
+  ENDMETHOD.
+ENDCLASS.
+
+DATA(lo_shape) = NEW lcl_circle( ).
+lo_shape-&gt;lif_drawable~draw( ).</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Interface method names</strong>
+    An implemented interface method is named after the interface with <code>~</code>, e.g., <code>lif_drawable~draw</code>.
+  </div>
+
+  <h2>7. Exception Classes (CX_*)</h2>
+  <p>ABAP uses <strong>class-based exceptions</strong>. A method can raise an exception; the caller handles it with <code>TRY</code> / <code>CATCH</code>.</p>
+
+  <pre><code>CLASS cx_calc_error DEFINITION INHERITING FROM cx_static_check.
+ENDCLASS.</code></pre>
+
+  <p>Custom exception classes inherit from one of the abstract base classes <code>cx_static_check</code> (recoverable), <code>cx_dynamic_check</code>, or <code>cx_no_check</code> (not recoverable / must not propagate unchecked).</p>
+
+  <pre><code>CLASS lcl_divider DEFINITION.
+  PUBLIC SECTION.
+    METHODS divide
+      IMPORTING iv_a TYPE i
+                iv_b TYPE i
+      RETURNING VALUE(rv_q) TYPE i
+      RAISING   cx_calc_error.
+ENDCLASS.
+
+CLASS lcl_divider IMPLEMENTATION.
+  METHOD divide.
+    IF iv_b EQ 0.
+      RAISE EXCEPTION TYPE cx_calc_error.
+    ENDIF.
+    rv_q = iv_a DIV iv_b.
+  ENDMETHOD.
+ENDCLASS.
+
+DATA(lo_d) = NEW lcl_divider( ).
+TRY.
+    DATA(lv_q) = lo_d-&gt;divide( iv_a = 10 iv_b = 0 ).
+    WRITE: / lv_q.
+  CATCH cx_calc_error.
+    WRITE: / 'Cannot divide by zero!'.
+ENDTRY.</code></pre>
+
+  <p>Built-in exceptions also exist, e.g., <code>cx_sy_zerodivide</code>, <code>cx_sy_arithmetic_error</code>. Use the right base class and always consider <code>MESSAGE</code> to show user-friendly texts.</p>
+
+  <h2>8. STATIC vs INSTANCE</h2>
+  <p>Instance members belong to an object. <code>CLASS-METHODS</code> / <code>CLASS-DATA</code> belong to the class itself and are callable without creating an object:</p>
+
+  <pre><code>CLASS lcl_math DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS square
+      IMPORTING iv_n TYPE i
+      RETURNING VALUE(rv_sq) TYPE i.
+ENDCLASS.
+
+CLASS lcl_math IMPLEMENTATION.
+  METHOD square.
+    rv_sq = iv_n * iv_n.
+  ENDMETHOD.
+ENDCLASS.
+
+" No object needed:
+DATA(lv_sq) = lcl_math=&gt;square( iv_n = 6 ).   " 36</code></pre>
+
+  <h2>9. Exercises</h2>
+  <ol>
+    <li>Create a local class <code>lcl_bank_account</code> with <code>deposit</code> and <code>withdraw</code> methods and a private balance. Prevent negative balance.</li>
+    <li>Add a constructor that sets an initial balance.</li>
+    <li>Create a subclass that adds an overdraft feature (REDEFINITION).</li>
+    <li>Define an interface <code>lif_loggable</code> with a <code>log</code> method and implement it in two different classes.</li>
+    <li>Write a method that raises a custom exception on invalid input and handle it with TRY/CATCH.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    <code>CLASS</code>/<code>ENDCLASS</code>, <code>METHODS</code>, <code>CLASS-METHODS</code>, <code>IMPORTING</code>, <code>EXPORTING</code>, <code>RETURNING</code>, <code>CONSTRUCTOR</code>, <code>INHERITING FROM</code>, <code>REDEFINITION</code>, <code>INTERFACE</code>, <code>TRY/CATCH/ENDTRY</code>, <code>RAISE EXCEPTION</code>, <code>cx_*</code>, <code>NEW</code>.
+  </div>
+
+  <div class="pagination">
+    <a href="week-04.html">← Week 4</a>
+    <a class="next" href="week-06.html">Next: Week 6 — OO in Practice →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 5
+</footer>
+
+</body>
+</html>

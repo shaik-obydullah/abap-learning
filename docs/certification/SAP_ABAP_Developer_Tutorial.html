@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP ABAP Developer Tutorial</title>
+<style>
+  :root {
+    --primary: #0f62fe;
+    --primary-dark: #0043ce;
+    --code-bg: #f4f4f4;
+    --sidebar-width: 280px;
+    --border: #e0e0e0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: #333;
+    display: flex;
+  }
+
+  /* ---------- Sidebar ---------- */
+  nav {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    overflow-y: auto;
+    background: #1a1f36;
+    color: #fff;
+    padding: 20px 0;
+  }
+
+  nav h1 {
+    font-size: 18px;
+    padding: 0 20px 15px;
+    border-bottom: 1px solid #3a4160;
+  }
+
+  nav ul { list-style: none; margin-top: 10px; }
+
+  nav ul li a {
+    display: block;
+    color: #c5cbdd;
+    text-decoration: none;
+    padding: 8px 20px;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+  }
+
+  nav ul li a:hover,
+  nav ul li a.active {
+    background: #262c4a;
+    color: #fff;
+    border-left-color: var(--primary);
+  }
+
+  nav ul li ul { margin-top: 0; padding-left: 15px; }
+
+  nav ul li ul li a { font-size: 13px; padding: 5px 15px; }
+
+  /* ---------- Main Content ---------- */
+  main {
+    margin-left: var(--sidebar-width);
+    padding: 40px 50px;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  section {
+    margin-bottom: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  section:first-of-type { border-top: none; padding-top: 0; }
+
+  h1 { font-size: 32px; color: var(--primary-dark); margin-bottom: 20px; }
+  h2 { font-size: 26px; color: var(--primary-dark); margin: 40px 0 20px; }
+  h3 { font-size: 20px; margin: 25px 0 15px; color: #0f1b2d; }
+  h4 { font-size: 16px; margin: 15px 0 10px; color: #333; }
+
+  p { margin-bottom: 15px; }
+
+  /* ---------- Code Blocks ---------- */
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin: 15px 0 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    position: relative;
+  }
+
+  code {
+    font-family: 'Consolas', 'Courier New', monospace;
+  }
+
+  p code, li code, td code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #c7254e;
+  }
+
+  /* Syntax colors */
+  .kw { color: #ff7de9; font-weight: bold; }        /* ABAP keywords */
+  .kw2 { color: #7dd3fc; }                          /* Additional keywords */
+  .str { color: #a5d6a7; }                          /* Strings */
+  .num { color: #ffd54f; }                          /* Numbers */
+  .com { color: #8b96ab; font-style: italic; }      /* Comments */
+  .cls { color: #ffab40; }                          /* Class/method names */
+  .tbl { color: #f48fb1; }                          /* Tables */
+
+  /* ---------- Tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0 25px;
+    font-size: 14px;
+  }
+
+  th {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:nth-child(even) { background: #f9fafb; }
+  tr:hover td { background: #eef4ff; }
+
+  /* ---------- Callout Boxes ---------- */
+  .note {
+    background: #e7f3ff;
+    border-left: 4px solid var(--primary);
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 15px 0 25px;
+  }
+
+  .note strong { color: var(--primary-dark); }
+
+  .warning {
+    background: #fff4e5;
+    border-left: 4px solid #ff9800;
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 15px 0 25px;
+  }
+
+  .warning strong { color: #e65100; }
+
+  /* ---------- Lists ---------- */
+  ul, ol { margin: 0 0 15px 25px; }
+  li { margin-bottom: 5px; }
+
+  /* ---------- Top link ---------- */
+  .top-link {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--primary);
+    text-decoration: none;
+  }
+  .top-link:hover { text-decoration: underline; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    text-align: center;
+    padding: 30px 0;
+    color: #888;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  /* ---------- Scrollbar ---------- */
+  nav::-webkit-scrollbar { width: 6px; }
+  nav::-webkit-scrollbar-track { background: #1a1f36; }
+  nav::-webkit-scrollbar-thumb { background: #4a5170; border-radius: 3px; }
+
+  pre::-webkit-scrollbar { height: 8px; }
+  pre::-webkit-scrollbar-track { background: #0f172a; }
+  pre::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    body { flex-direction: column; }
+    nav {
+      position: static;
+      width: 100%;
+      height: auto;
+      max-height: 300px;
+    }
+    main { margin-left: 0; padding: 25px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<nav>
+  <h1>&#128187; SAP ABAP<br>Developer Tutorial</h1>
+  <ul>
+    <li><a href="#introduction">1. Introduction</a></li>
+    <li><a href="#hello-world">2. Hello World</a></li>
+    <li><a href="#basic-syntax">3. Basic Syntax &amp; Data Types</a></li>
+    <li><a href="#control-structures">4. Control Structures</a></li>
+    <li><a href="#internal-tables">5. Internal Tables</a></li>
+    <li><a href="#modularization">6. Modularization</a>
+      <ul>
+        <li><a href="#subroutines">Subroutines</a></li>
+        <li><a href="#function-modules">Function Modules</a></li>
+        <li><a href="#classes">Global Classes</a></li>
+      </ul>
+    </li>
+    <li><a href="#database-ops">7. Database Operations</a></li>
+    <li><a href="#selection-screens">8. Selection Screens</a></li>
+    <li><a href="#alv-reports">9. ALV Reports</a></li>
+    <li><a href="#custom-report">10. Custom Report</a></li>
+    <li><a href="#case-studies">11. Case Studies</a>
+      <ul>
+        <li><a href="#case-report-perf">Slow Report</a></li>
+        <li><a href="#case-alv-symbol">ALV &amp; Field Symbols</a></li>
+        <li><a href="#case-selection">Selection Screen</a></li>
+        <li><a href="#case-db-issue">Database Issue</a></li>
+        <li><a href="#case-conversion">Data Conversion</a></li>
+        <li><a href="#case-file">File Upload</a></li>
+        <li><a href="#case-history">Support Incident</a></li>
+        <li><a href="#case-oop-refactor">OOP Refactor</a></li>
+      </ul>
+    </li>
+    <li><a href="#troubleshooting">12. Issue-Solving Guide</a></li>
+    <li><a href="#quick-reference">Quick Reference</a></li>
+    <li><a href="#tips">Tips for Beginners</a></li>
+    <li><a href="#next-steps">Next Steps</a></li>
+  </ul>
+</nav>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<main>
+
+  <!-- ========== 1. INTRODUCTION ========== -->
+  <section id="introduction">
+    <h1>1. Introduction to SAP ABAP</h1>
+
+    <p><strong>ABAP</strong> (Advanced Business Application Programming) is SAP&#39;s proprietary programming language used to develop business applications on the SAP platform. It runs on the SAP NetWeaver Application Server and powers everything from simple reports to complex enterprise solutions.</p>
+
+    <h3>Key Concepts</h3>
+    <table>
+      <thead><tr><th>Concept</th><th>Description</th><th>T-Code</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ABAP Dictionary</strong></td><td>Central metadata repository for tables, views, types</td><td>SE11</td></tr>
+        <tr><td><strong>Programs</strong></td><td>Executable code units (reports, includes, module pools)</td><td>SE38</td></tr>
+        <tr><td><strong>Includes</strong></td><td>Reusable code fragments for program modularization</td><td>SE38</td></tr>
+        <tr><td><strong>Function Modules</strong></td><td>Reusable function blocks (encapsulated logic)</td><td>SE37</td></tr>
+        <tr><td><strong>Classes</strong></td><td>Object-oriented programming units</td><td>SE24</td></tr>
+        <tr><td><strong>Screens</strong></td><td>UI elements (selection screens, dynpros)</td><td>SE51</td></tr>
+      </tbody>
+    </table>
+
+    <h3>How to Access the ABAP Editor</h3>
+    <ul>
+      <li>Transaction Code: <code>SE38</code> — ABAP Editor</li>
+      <li>Transaction Code: <code>SE80</code> — Object Navigator</li>
+    </ul>
+
+    <div class="note"><strong>Note:</strong> All program names you create should start with <code>Z</code> or <code>Y</code> to avoid conflicts with SAP standard objects. This is a strict naming convention in SAP systems.</div>
+  </section>
+
+  <!-- ========== 2. HELLO WORLD ========== -->
+  <section id="hello-world">
+    <h2>2. Hello World Program</h2>
+
+    <h3>Step 1: Create a New Program</h3>
+    <ol>
+      <li>Open Transaction <code>SE38</code></li>
+      <li>Enter program name: <code>ZHELLO_WORLD</code></li>
+      <li>Click <strong>Create</strong></li>
+      <li>Select type: <strong>Executable Program</strong></li>
+      <li>Enter a title and save</li>
+    </ol>
+
+    <h3>Step 2: Write the Code</h3>
+<pre><code><span class="kw">REPORT</span> zhello_world.
+
+<span class="kw">WRITE</span>: <span class="str">'Hello, World!'</span>.
+<span class="kw">WRITE</span>: / <span class="str">'Welcome to SAP ABAP Development'</span>.</code></pre>
+
+    <h3>Step 3: Execute</h3>
+    <p>Press <strong>F8</strong> or click the <strong>Execute</strong> button.</p>
+
+    <h3>Expected Output</h3>
+<pre><code>Hello, World!
+Welcome to SAP ABAP Development</code></pre>
+
+    <div class="note"><strong>Tip:</strong> The <code>/</code> is a write-cursor control — it moves to a new line before writing. This is essential for proper list output formatting.</div>
+
+    <h3>Understanding the WRITE Statement</h3>
+    <table>
+      <thead><tr><th>Statement</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td><code>WRITE value.</code></td><td>Writes value at current cursor position</td></tr>
+        <tr><td><code>WRITE / value.</code></td><td>Moves to new line, then writes</td></tr>
+        <tr><td><code>WRITE: / a, b, c.</code></td><td>Colon notation for chaining multiple writes</td></tr>
+        <tr><td><code>ULINE.</code></td><td>Draws a horizontal line</td></tr>
+        <tr><td><code>SKIP n.</code></td><td>Skips n empty lines</td></tr>
+        <tr><td><code>FORMAT COLOR COL_TOTAL.</code></td><td>Sets output formatting</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ========== 3. BASIC SYNTAX ========== -->
+  <section id="basic-syntax">
+    <h2>3. Basic Syntax &amp; Data Types</h2>
+
+    <h3>Basic Program Structure</h3>
+<pre><code><span class="kw">REPORT</span> zbasic_syntax.                <span class="com">" Program name (must start with Z)</span>
+
+<span class="com">* --- Global Data Declarations ---</span>
+<span class="kw">DATA</span>: <span class="cls">lv_name</span> <span class="kw">TYPE</span> <span class="tbl">string</span>.
+
+<span class="com">* --- Event Blocks ---</span>
+<span class="kw">INITIALIZATION</span>.                   <span class="com">" Runs at program start</span>
+
+<span class="kw">START-OF-SELECTION</span>.               <span class="com">" Main processing logic</span>
+
+<span class="kw">END-OF-SELECTION</span>.                 <span class="com">" Final processing / output</span></code></pre>
+
+    <h3>ABAP Execution Events</h3>
+    <table>
+      <thead><tr><th>Event Block</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>INITIALIZATION</code></td><td>Set default values, called once at start</td></tr>
+        <tr><td><code>AT SELECTION-SCREEN</code></td><td>Validate user input on selection screen</td></tr>
+        <tr><td><code>START-OF-SELECTION</code></td><td>Main logic (for executable/report programs)</td></tr>
+        <tr><td><code>END-OF-SELECTION</code></td><td>Final output after processing</td></tr>
+        <tr><td><code>LOAD-OF-PROGRAM</code></td><td>Initialization for global data</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Data Declarations &amp; Types</h3>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_name</span>  <span class="kw">TYPE</span> <span class="tbl">string</span>,              <span class="com">" Character string</span>
+      <span class="cls">lv_id</span>    <span class="kw">TYPE</span> <span class="tbl">i</span>,                 <span class="com">" Integer</span>
+      <span class="cls">lv_price</span> <span class="kw">TYPE</span> <span class="tbl">p</span> <span class="kw">LENGTH</span> <span class="num">8</span> <span class="kw">DECIMALS</span> <span class="num">2</span>,  <span class="com">" Packed number</span>
+      <span class="cls">lv_date</span>  <span class="kw">TYPE</span> <span class="tbl">d</span>,                <span class="com">" Date</span>
+      <span class="cls">lv_time</span>  <span class="kw">TYPE</span> <span class="tbl">t</span>,                <span class="com">" Time</span>
+      <span class="cls">lv_flag</span>  <span class="kw">TYPE</span> <span class="tbl">abap_bool</span>.         <span class="com">" Boolean (abap_true / abap_false)</span>
+
+<span class="kw">CONSTANTS</span>: <span class="cls">c_max</span> <span class="kw">TYPE</span> <span class="tbl">i</span> <span class="kw">VALUE</span> <span class="num">100</span>.     <span class="com">" Constant</span>
+
+<span class="kw">STATICS</span>:  <span class="cls">lv_counter</span> <span class="kw">TYPE</span> <span class="tbl">i</span> <span class="kw">VALUE</span> <span class="num">0</span>. <span class="com">" Retains value across calls</span>
+
+<span class="com">* --- Simple Assignment ---</span>
+<span class="cls">lv_name</span>  = <span class="str">'John Doe'</span>.
+<span class="cls">lv_id</span>    = <span class="num">1001</span>.
+<span class="cls">lv_price</span> = <span class="str">'29.99'</span>.
+<span class="cls">lv_date</span>  = sy-datum.    <span class="com">" System date</span>
+<span class="cls">lv_time</span>  = sy-uzeit.    <span class="com">" System time</span>
+
+<span class="com">* --- WRITE Output ---</span>
+<span class="kw">WRITE</span>: / <span class="str">'Name:'</span>, <span class="cls">lv_name</span>.
+<span class="kw">WRITE</span>: / <span class="str">'ID:'</span>, <span class="cls">lv_id</span>.
+<span class="kw">WRITE</span>: / <span class="str">'Price:'</span>, <span class="cls">lv_price</span> <span class="kw">CURRENCY</span> <span class="str">'USD'</span>.
+<span class="kw">WRITE</span>: / <span class="str">'Date:'</span>, <span class="cls">lv_date</span>.</code></pre>
+
+    <h3>Data Types Reference</h3>
+    <table>
+      <thead><tr><th>Type</th><th>Description</th><th>Example</th><th>Default Length</th></tr></thead>
+      <tbody>
+        <tr><td><code>i</code></td><td>Integer (4-byte)</td><td><code>DATA: lv_num TYPE i.</code></td><td>4 bytes</td></tr>
+        <tr><td><code>p</code></td><td>Packed/decimal number</td><td><code>DATA: lv_dec TYPE p LENGTH 8 DECIMALS 2.</code></td><td>8 digits</td></tr>
+        <tr><td><code>c</code></td><td>Character (fixed length)</td><td><code>DATA: lv_char TYPE c LENGTH 10.</code></td><td>1 char</td></tr>
+        <tr><td><code>string</code></td><td>Variable-length string</td><td><code>DATA: lv_str TYPE string.</code></td><td>variable</td></tr>
+        <tr><td><code>d</code></td><td>Date (YYYYMMDD)</td><td><code>DATA: lv_date TYPE d.</code></td><td>8 chars</td></tr>
+        <tr><td><code>t</code></td><td>Time (HHMMSS)</td><td><code>DATA: lv_time TYPE t.</code></td><td>6 chars</td></tr>
+        <tr><td><code>x</code></td><td>Hexadecimal</td><td><code>DATA: lv_hex TYPE x LENGTH 4.</code></td><td>1 byte</td></tr>
+        <tr><td><code>n</code></td><td>Numeric character</td><td><code>DATA: lv_numc TYPE n LENGTH 6.</code></td><td>varies</td></tr>
+      </tbody>
+    </table>
+
+    <h3>System Fields (SY-*)</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>sy-datum</code></td><td>Current system date</td></tr>
+        <tr><td><code>sy-uzeit</code></td><td>Current system time</td></tr>
+        <tr><td><code>sy-subrc</code></td><td>Return code: 0 = success, non-zero = error</td></tr>
+        <tr><td><code>sy-uname</code></td><td>Current user name</td></tr>
+        <tr><td><code>sy-tcode</code></td><td>Current transaction code</td></tr>
+        <tr><td><code>sy-mandt</code></td><td>Current client</td></tr>
+        <tr><td><code>sy-langu</code></td><td>Log-on language key</td></tr>
+        <tr><td><code>sy-index</code></td><td>Loop counter (inside LOOP/DO)</td></tr>
+        <tr><td><code>sy-tabix</code></td><td>Current table line index</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note"><strong>Naming Convention:</strong> <code>lv_</code> = local variable, <code>ls_</code> = local structure, <code>lt_</code> = local table, <code>gv_</code>/<code>gv_</code> = global variable, <code>gs_</code> = global structure, <code>gt_</code> = global table, <code>c_</code> = constant.</div>
+  </section>
+
+  <!-- ========== 4. CONTROL STRUCTURES ========== -->
+  <section id="control-structures">
+    <h2>4. Control Structures</h2>
+
+    <h3>IF...ELSEIF...ELSE...ENDIF</h3>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_grade</span> <span class="kw">TYPE</span> <span class="tbl">c</span> <span class="kw">LENGTH</span> <span class="num">1</span>,
+      <span class="cls">lv_score</span> <span class="kw">TYPE</span> <span class="tbl">i</span> <span class="kw">VALUE</span> <span class="num">85</span>.
+
+<span class="kw">IF</span> <span class="cls">lv_score</span> <span class="kw">>=</span> <span class="num">90</span>.
+  <span class="cls">lv_grade</span> = <span class="str">'A'</span>.
+<span class="kw">ELSEIF</span> <span class="cls">lv_score</span> <span class="kw">>=</span> <span class="num">80</span>.
+  <span class="cls">lv_grade</span> = <span class="str">'B'</span>.
+<span class="kw">ELSEIF</span> <span class="cls">lv_score</span> <span class="kw">>=</span> <span class="num">70</span>.
+  <span class="cls">lv_grade</span> = <span class="str">'C'</span>.
+<span class="kw">ELSE</span>.
+  <span class="cls">lv_grade</span> = <span class="str">'F'</span>.
+<span class="kw">ENDIF</span>.
+
+<span class="kw">WRITE</span>: / <span class="str">'Score:'</span>, <span class="cls">lv_score</span>.
+<span class="kw">WRITE</span>: / <span class="str">'Grade:'</span>, <span class="cls">lv_grade</span>.</code></pre>
+
+    <div class="note"><strong>Boolean Operators:</strong> <code>AND</code>, <code>OR</code>, <code>NOT</code> can be combined: <code>IF a = 1 AND b = 2 OR c &lt;&gt; 3.</code></div>
+
+    <h3>CASE...ENDCASE</h3>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_day</span>       <span class="kw">TYPE</span> <span class="tbl">i</span> <span class="kw">VALUE</span> <span class="num">3</span>,
+      <span class="cls">lv_day_name</span> <span class="kw">TYPE</span> <span class="tbl">string</span>.
+
+<span class="kw">CASE</span> <span class="cls">lv_day</span>.
+  <span class="kw">WHEN</span> <span class="num">1</span>.
+    <span class="cls">lv_day_name</span> = <span class="str">'Monday'</span>.
+  <span class="kw">WHEN</span> <span class="num">2</span>.
+    <span class="cls">lv_day_name</span> = <span class="str">'Tuesday'</span>.
+  <span class="kw">WHEN</span> <span class="num">3</span>.
+    <span class="cls">lv_day_name</span> = <span class="str">'Wednesday'</span>.
+  <span class="kw">WHEN OTHERS</span>.
+    <span class="cls">lv_day_name</span> = <span class="str">'Other Day'</span>.
+<span class="kw">ENDCASE</span>.</code></pre>
+
+    <h3>DO...ENDDO Loop</h3>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_count</span> <span class="kw">TYPE</span> <span class="tbl">i</span> <span class="kw">VALUE</span> <span class="num">1</span>.
+
+<span class="kw">DO</span> <span class="num">5</span> <span class="kw">TIMES</span>.                       <span class="com">" Fixed iterations</span>
+  <span class="kw">WRITE</span>: / <span class="str">'Iteration:'</span>, sy-index.   <span class="com">" sy-index is the loop counter</span>
+<span class="kw">ENDDO</span>.
+
+<span class="com">* --- Infinite loop with EXIT ---</span>
+<span class="kw">DO</span>.
+  <span class="cls">lv_count</span> = <span class="cls">lv_count</span> + <span class="num">1</span>.
+  <span class="kw">IF</span> <span class="cls">lv_count</span> <span class="kw">&gt;</span> <span class="num">10</span>.
+    <span class="kw">EXIT</span>.                            <span class="com">" Leave the loop</span>
+  <span class="kw">ENDIF</span>.
+<span class="kw">ENDDO</span>.
+
+<span class="com">* --- CONTINUE skips one iteration ---</span>
+<span class="kw">DO</span> <span class="num">5</span> <span class="kw">TIMES</span>.
+  <span class="kw">IF</span> sy-index = <span class="num">3</span>.
+    <span class="kw">CONTINUE</span>.
+  <span class="kw">ENDIF</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Value:'</span>, sy-index.
+<span class="kw">ENDDO</span>.</code></pre>
+
+    <h3>WHILE...ENDWHILE</h3>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_counter</span> <span class="kw">TYPE</span> <span class="tbl">i</span> <span class="kw">VALUE</span> <span class="num">1</span>.
+
+<span class="kw">WHILE</span> <span class="cls">lv_counter</span> <span class="kw">&lt;=</span> <span class="num">10</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Counter:'</span>, <span class="cls">lv_counter</span>.
+  <span class="cls">lv_counter</span> = <span class="cls">lv_counter</span> + <span class="num">1</span>.
+<span class="kw">ENDWHILE</span>.</code></pre>
+
+    <h3>Comparison Operators</h3>
+    <table>
+      <thead><tr><th>Operator</th><th>Description</th><th>Alternate</th></tr></thead>
+      <tbody>
+        <tr><td><code>=</code> / <code>EQ</code></td><td>Equal</td><td>&nbsp;</td></tr>
+        <tr><td><code>&lt;&gt;</code> / <code>NE</code></td><td>Not equal</td><td>&nbsp;</td></tr>
+        <tr><td><code>&gt;</code> / <code>GT</code></td><td>Greater than</td><td>&nbsp;</td></tr>
+        <tr><td><code>&lt;</code> / <code>LT</code></td><td>Less than</td><td>&nbsp;</td></tr>
+        <tr><td><code>&gt;=</code> / <code>GE</code></td><td>Greater than or equal</td><td>&nbsp;</td></tr>
+        <tr><td><code>&lt;=</code> / <code>LE</code></td><td>Less than or equal</td><td>&nbsp;</td></tr>
+        <tr><td><code>CO</code></td><td>Contains only</td><td>&nbsp;</td></tr>
+        <tr><td><code>CS</code></td><td>Contains string</td><td>&nbsp;</td></tr>
+        <tr><td><code>CA</code></td><td>Contains any character</td><td>&nbsp;</td></tr>
+        <tr><td><code>IS INITIAL</code></td><td>Field is empty</td><td><code>IS NOT INITIAL</code></td></tr>
+        <tr><td><code>IS ASSIGNED</code></td><td>Field symbol is assigned</td><td>&nbsp;</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ========== 5. INTERNAL TABLES ========== -->
+  <section id="internal-tables">
+    <h2>5. Internal Tables</h2>
+
+    <p>Internal tables are the most important data structure in ABAP. They are runtime objects that store multiple data records in memory.</p>
+
+    <h3>Types of Internal Tables</h3>
+    <table>
+      <thead><tr><th>Type</th><th>Access Type</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Standard Table</strong></td><td>Index (sequential scan)</td><td>Default; flexible, fast for APPEND</td></tr>
+        <tr><td><strong>Sorted Table</strong></td><td>Binary search on key</td><td>Sorted by key; faster READ with key</td></tr>
+        <tr><td><strong>Hashed Table</strong></td><td>Hash on unique key</td><td>Very fast lookups by key, no indexing</td></tr>
+        <tr><td><strong>Index Table</strong></td><td>Generic index access</td><td>Abstract type for standard/sorted</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Defining Structures &amp; Tables</h3>
+<pre><code><span class="com">* --- Define a flat structure ---</span>
+<span class="kw">TYPES</span>: <span class="kw">BEGIN OF</span> <span class="cls">ty_employee</span>,
+         emp_id     <span class="kw">TYPE</span> <span class="tbl">i</span>,
+         name       <span class="kw">TYPE</span> <span class="tbl">string</span>,
+         department <span class="kw">TYPE</span> <span class="tbl">string</span>,
+         salary     <span class="kw">TYPE</span> <span class="tbl">p</span> <span class="kw">LENGTH</span> <span class="num">8</span> <span class="kw">DECIMALS</span> <span class="num">2</span>,
+       <span class="kw">END OF</span> <span class="cls">ty_employee</span>.
+
+<span class="com">* --- Declare work area + internal table ---</span>
+<span class="kw">DATA</span>: <span class="cls">lt_employees</span> <span class="kw">TYPE STANDARD TABLE OF</span> <span class="cls">ty_employee</span>,
+      <span class="cls">ls_employee</span>  <span class="kw">TYPE</span> <span class="cls">ty_employee</span>.</code></pre>
+
+    <h3>Core Operations</h3>
+<pre><code><span class="com">* ============ INSERT ============</span>
+<span class="cls">ls_employee</span>-emp_id = <span class="num">1001</span>.
+<span class="cls">ls_employee</span>-name = <span class="str">'Alice Johnson'</span>.
+<span class="cls">ls_employee</span>-department = <span class="str">'IT'</span>.
+<span class="cls">ls_employee</span>-salary = <span class="num">75000</span>.
+<span class="kw">APPEND</span> <span class="cls">ls_employee</span> <span class="kw">TO</span> <span class="cls">lt_employees</span>.       <span class="com">" Append to end</span>
+
+<span class="kw">INSERT</span> <span class="cls">ls_employee</span> <span class="kw">INTO</span> <span class="cls">lt_employees</span> <span class="kw">INDEX</span> <span class="num">1</span>.  <span class="com">" Insert at position 1</span>
+<span class="kw">INSERT</span> <span class="cls">ls_employee</span> <span class="kw">INTO TABLE</span> <span class="cls">lt_employees</span>.       <span class="com">" Insert sorted (for sorted tables)</span>
+
+<span class="com">* ============ READ ============</span>
+<span class="kw">READ TABLE</span> <span class="cls">lt_employees</span> <span class="kw">INTO</span> <span class="cls">ls_employee</span>
+  <span class="kw">WITH KEY</span> emp_id = <span class="num">1002</span>.
+<span class="kw">IF</span> sy-subrc = <span class="num">0</span>.                        <span class="com">" 0 = record found</span>
+  <span class="kw">WRITE</span>: / <span class="str">'Found:'</span>, <span class="cls">ls_employee</span>-name.
+<span class="kw">ENDIF</span>.
+
+<span class="com">* ============ LOOP (sequential processing) ============</span>
+<span class="kw">LOOP AT</span> <span class="cls">lt_employees</span> <span class="kw">INTO</span> <span class="cls">ls_employee</span>.
+  <span class="kw">WRITE</span>: / <span class="cls">ls_employee</span>-emp_id, <span class="cls">ls_employee</span>-name,
+           <span class="cls">ls_employee</span>-department, <span class="cls">ls_employee</span>-salary.
+<span class="kw">ENDLOOP</span>.
+
+<span class="com">* ============ SORT ============</span>
+<span class="kw">SORT</span> <span class="cls">lt_employees</span> <span class="kw">BY</span> salary <span class="kw">DESCENDING</span>.
+
+<span class="com">* ============ MODIFY (update) ============</span>
+<span class="kw">LOOP AT</span> <span class="cls">lt_employees</span> <span class="kw">INTO</span> <span class="cls">ls_employee</span> <span class="kw">WHERE</span> department = <span class="str">'IT'</span>.
+  <span class="cls">ls_employee</span>-salary = <span class="cls">ls_employee</span>-salary * <span class="num">1.10</span>.   <span class="com">" 10% raise</span>
+  <span class="kw">MODIFY</span> <span class="cls">lt_employees</span> <span class="kw">FROM</span> <span class="cls">ls_employee</span>.
+<span class="kw">ENDLOOP</span>.
+
+<span class="com">* ============ DELETE ============</span>
+<span class="kw">DELETE</span> <span class="cls">lt_employees</span> <span class="kw">WHERE</span> emp_id = <span class="num">1002</span>.
+
+<span class="com">* ============ DESCRIBE ============</span>
+<span class="kw">DATA</span>: <span class="cls">lv_lines</span> <span class="kw">TYPE</span> <span class="tbl">i</span>.
+<span class="kw">DESCRIBE TABLE</span> <span class="cls">lt_employees</span> <span class="kw">LINES</span> <span class="cls">lv_lines</span>.
+<span class="kw">WRITE</span>: / <span class="str">'Total Employees:'</span>, <span class="cls">lv_lines</span>.
+
+<span class="com">* ============ CLEAR / REFRESH / FREE ============</span>
+<span class="kw">CLEAR</span>  <span class="cls">lt_employees</span>.     <span class="com">" Removes content on CURRENT line (for tables: header line only)</span>
+<span class="kw">REFRESH</span> <span class="cls">lt_employees</span>.   <span class="com">" Removes all lines</span>
+<span class="kw">FREE</span>   <span class="cls">lt_employees</span>.     <span class="com">" Frees memory immediately</span></code></pre>
+
+    <div class="warning"><strong>Important:</strong> Always check <code>sy-subrc</code> after <code>READ TABLE</code>, <code>APPEND</code>, <code>DELETE</code>, and <code>MODIFY</code>. A non-zero return code means the operation did not find the target.</div>
+
+    <h3>Field Symbols (Performance)</h3>
+<pre><code><span class="com">* --- Field symbols avoid copying data (faster) ---</span>
+<span class="kw">FIELD-SYMBOLS</span>: &lt;fs_emp&gt; <span class="kw">LIKE</span> <span class="cls">ls_employee</span>.
+
+<span class="kw">LOOP AT</span> <span class="cls">lt_employees</span> <span class="kw">ASSIGNING</span> &lt;fs_emp&gt;.
+  &lt;fs_emp&gt;-salary = &lt;fs_emp&gt;-salary * <span class="num">1.05</span>.  <span class="com">" Direct modification</span>
+<span class="kw">ENDLOOP</span>.</code></pre>
+
+    <div class="note"><strong>Why field symbols?</strong> <code>LOOP AT ... INTO</code> copies each line into a work area (memory + time cost). <code>ASSIGNING</code> works on the line directly — recommended for large data volumes.</div>
+  </section>
+
+  <!-- ========== 6. MODULARIZATION ========== -->
+  <section id="modularization">
+    <h2>6. Modularization</h2>
+
+    <p>Modularization keeps your code clean, reusable, and maintainable. ABAP offers three main techniques:</p>
+
+    <h3 id="subroutines">Subroutines (FORM...PERFORM)</h3>
+<pre><code><span class="kw">REPORT</span> zmodularization.
+
+<span class="com">* --- Call the subroutines ---</span>
+<span class="kw">PERFORM</span> display_header.
+<span class="kw">PERFORM</span> calculate_area <span class="kw">USING</span> <span class="num">10</span> <span class="num">5</span>.   <span class="com">" Pass values by reference</span>
+
+<span class="kw">DATA</span>: <span class="cls">ls_employee</span> <span class="kw">TYPE</span> <span class="cls">ty_employee</span>.
+<span class="kw">PERFORM</span> get_employee_info <span class="kw">CHANGING</span> <span class="cls">ls_employee</span>.
+
+<span class="com">* ============================================</span>
+<span class="com">* Subroutine definitions (usually in a form include)</span>
+<span class="com">* ============================================</span>
+<span class="kw">FORM</span> display_header.
+  <span class="kw">WRITE</span>: / <span class="str">'================================'</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'     EMPLOYEE REPORT'</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'================================'</span>.
+<span class="kw">ENDFORM</span>.
+
+<span class="kw">FORM</span> calculate_area <span class="kw">USING</span> iv_length <span class="kw">TYPE</span> <span class="tbl">i</span>
+                           iv_width  <span class="kw">TYPE</span> <span class="tbl">i</span>.
+  <span class="kw">DATA</span>: <span class="cls">lv_area</span> <span class="kw">TYPE</span> <span class="tbl">i</span>.
+  <span class="cls">lv_area</span> = iv_length * iv_width.
+  <span class="kw">WRITE</span>: / <span class="str">'Area:'</span>, <span class="cls">lv_area</span>.
+<span class="kw">ENDFORM</span>.
+
+<span class="kw">FORM</span> get_employee_info <span class="kw">CHANGING</span> cs_employee <span class="kw">TYPE</span> <span class="cls">ty_employee</span>.
+  cs_employee-emp_id = <span class="num">1001</span>.
+  cs_employee-name   = <span class="str">'John Doe'</span>.
+<span class="kw">ENDFORM</span>.</code></pre>
+
+    <table>
+      <thead><tr><th>Parameter Type</th><th>Keyword</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td>Input (passing value)</td><td><code>USING</code> / <code>VALUE()</code></td><td>Caller can't be changed</td></tr>
+        <tr><td>Output (return value)</td><td><code>CHANGING</code> / <code>VALUE()</code></td><td>Callee can change caller variable</td></tr>
+        <tr><td>Both (by reference)</td><td><code>USING</code> (default)</td><td>Changes propagate to caller</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="function-modules">Function Modules</h3>
+    <p>Function modules are reusable, centrally stored wherever in the system (domain RF).</p>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_result</span> <span class="kw">TYPE</span> <span class="tbl">p</span> <span class="kw">LENGTH</span> <span class="num">8</span> <span class="kw">DECIMALS</span> <span class="num">2</span>.
+
+<span class="kw">CALL FUNCTION</span> <span class="str">'CONVERT_TO_LOCAL_CURRENCY'</span>
+  <span class="kw">EXPORTING</span>
+    date             = sy-datum
+    foreign_amount   = <span class="num">1000</span>
+    foreign_currency = <span class="str">'USD'</span>
+  <span class="kw">IMPORTING</span>
+    exchange_rate    = <span class="cls">lv_result</span>
+  <span class="kw">EXCEPTIONS</span>
+    no_rate_found    = <span class="num">1</span>
+    overflow         = <span class="num">2</span>
+    <span class="kw">OTHERS</span>           = <span class="num">99</span>.
+
+<span class="kw">IF</span> sy-subrc = <span class="num">0</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Exchange Rate:'</span>, <span class="cls">lv_result</span>.
+<span class="kw">ELSE</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Conversion failed'</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <h3 id="classes">Object-Oriented Classes</h3>
+<pre><code><span class="kw">REPORT</span> zoo_concepts.
+
+<span class="com">* --- Local class definition ---</span>
+<span class="kw">CLASS</span> <span class="cls">lcl_vehicle</span> <span class="kw">DEFINITION</span>.
+  <span class="kw">PUBLIC SECTION</span>.
+    <span class="kw">METHODS</span>: set_make    <span class="kw">IMPORTING</span> iv_make  <span class="kw">TYPE</span> <span class="tbl">string</span>,
+              set_model   <span class="kw">IMPORTING</span> iv_model <span class="kw">TYPE</span> <span class="tbl">string</span>,
+              display_info.
+  <span class="kw">PRIVATE SECTION</span>.
+    <span class="kw">DATA</span>: <span class="cls">mv_make</span>  <span class="kw">TYPE</span> <span class="tbl">string</span>,
+          <span class="cls">mv_model</span> <span class="kw">TYPE</span> <span class="tbl">string</span>.
+<span class="kw">ENDCLASS</span>.
+
+<span class="kw">CLASS</span> <span class="cls">lcl_vehicle</span> <span class="kw">IMPLEMENTATION</span>.
+  <span class="kw">METHOD</span> set_make.
+    <span class="cls">mv_make</span> = iv_make.
+  <span class="kw">ENDMETHOD</span>.
+
+  <span class="kw">METHOD</span> set_model.
+    <span class="cls">mv_model</span> = iv_model.
+  <span class="kw">ENDMETHOD</span>.
+
+  <span class="kw">METHOD</span> display_info.
+    <span class="kw">WRITE</span>: / <span class="str">'Make:'</span>,  <span class="cls">mv_make</span>.
+    <span class="kw">WRITE</span>: / <span class="str">'Model:'</span>, <span class="cls">mv_model</span>.
+  <span class="kw">ENDMETHOD</span>.
+<span class="kw">ENDCLASS</span>.
+
+<span class="com">* --- Usage ---</span>
+<span class="kw">DATA</span>: <span class="cls">lo_vehicle</span> <span class="kw">TYPE REF TO</span> <span class="cls">lcl_vehicle</span>.
+
+<span class="kw">CREATE OBJECT</span> <span class="cls">lo_vehicle</span>.                    <span class="com">" Instantiates the object</span>
+<span class="cls">lo_vehicle</span><span class="kw">-&gt;</span>set_make( <span class="str">'Toyota'</span> ).        <span class="com">" Method call (functional style)</span>
+<span class="cls">lo_vehicle</span><span class="kw">-&gt;</span>set_model( <span class="str">'Camry'</span> ).
+<span class="cls">lo_vehicle</span><span class="kw">-&gt;</span>display_info( ).</code></pre>
+
+    <h3>Inheritance &amp; Interfaces</h3>
+<pre><code><span class="kw">CLASS</span> <span class="cls">lcl_vehicle</span> <span class="kw">DEFINITION</span>.
+  <span class="kw">PUBLIC SECTION</span>.
+    <span class="kw">METHODS</span>: start_engine.
+  <span class="kw">PROTECTED SECTION</span>.  <span class="com">" Accessible by this class AND subclasses</span>
+    <span class="kw">DATA</span>: <span class="cls">mv_fuel</span> <span class="kw">TYPE</span> <span class="tbl">i</span>.
+<span class="kw">ENDCLASS</span>.
+
+<span class="kw">CLASS</span> <span class="cls">lcl_car</span> <span class="kw">DEFINITION</span> <span class="kw">INHERITING FROM</span> <span class="cls">lcl_vehicle</span>.
+  <span class="kw">PUBLIC SECTION</span>.
+    <span class="kw">METHODS</span>: set_doors <span class="kw">IMPORTING</span> iv_doors <span class="kw">TYPE</span> <span class="tbl">i</span>.
+  <span class="kw">PRIVATE SECTION</span>.
+    <span class="kw">DATA</span>: <span class="cls">mv_doors</span> <span class="kw">TYPE</span> <span class="tbl">i</span>.
+<span class="kw">ENDCLASS</span>.
+
+<span class="com">* --- Call inherited method on the subclass ---</span>
+<span class="kw">DATA</span>: <span class="cls">lo_car</span> <span class="kw">TYPE REF TO</span> <span class="cls">lcl_car</span>.
+<span class="kw">CREATE OBJECT</span> <span class="cls">lo_car</span>.
+<span class="cls">lo_car</span><span class="kw">-&gt;</span>start_engine( ).          <span class="com">" Inherited from parent</span></code></pre>
+
+    <div class="note"><strong>Visibility Sections:</strong> <code>PUBLIC</code> — accessible everywhere; <code>PROTECTED</code> — class + subclasses; <code>PRIVATE</code> — only this class.</div>
+  </section>
+
+  <!-- ========== 7. DATABASE OPERATIONS ========== -->
+  <section id="database-ops">
+    <h2>7. Database Operations (Open SQL)</h2>
+
+    <p>Open SQL gives you a database-independent way to read and modify data. Imagine you work with SAP flight demo tables (<code>sflight</code>, <code>spfli</code>, <code>scarr</code>) when learning.</p>
+
+    <h3>SELECT (Read Data)</h3>
+<pre><code><span class="kw">DATA</span>: <span class="cls">ls_sflight</span>  <span class="kw">TYPE</span> <span class="tbl">sflight</span>,             <span class="com">" Use dictionary structure directly</span>
+      <span class="cls">lt_sflights</span> <span class="kw">TYPE STANDARD TABLE OF</span> <span class="tbl">sflight</span>.
+
+<span class="com">* --- Single record ---</span>
+<span class="kw">SELECT SINGLE</span> carrid connid fldate seatsmax seatsocc
+  <span class="kw">INTO</span> <span class="cls">ls_sflight</span>
+  <span class="kw">FROM</span> <span class="tbl">sflight</span>
+  <span class="kw">WHERE</span> carrid = <span class="str">'LH'</span>.
+<span class="kw">IF</span> sy-subrc = <span class="num">0</span>.
+  <span class="kw">WRITE</span>: / <span class="cls">ls_sflight</span>-carrid, <span class="cls">ls_sflight</span>-connid, <span class="cls">ls_sflight</span>-fldate.
+<span class="kw">ENDIF</span>.
+
+<span class="com">* --- Multiple records ---</span>
+<span class="kw">SELECT</span> carrid connid fldate seatsmax seatsocc
+  <span class="kw">INTO TABLE</span> <span class="cls">lt_sflights</span>
+  <span class="kw">FROM</span> <span class="tbl">sflight</span>
+  <span class="kw">WHERE</span> carrid = <span class="str">'LH'</span>
+  <span class="kw">ORDER BY</span> connid.                 <span class="com">" Sorted ascending</span>
+
+<span class="com">* --- Aggregate functions ---</span>
+<span class="kw">DATA</span>: <span class="cls">lv_count</span> <span class="kw">TYPE</span> <span class="tbl">i</span>,
+      <span class="cls">lv_avg</span>   <span class="kw">TYPE</span> <span class="tbl">p</span> <span class="kw">LENGTH</span> <span class="num">8</span> <span class="kw">DECIMALS</span> <span class="num">2</span>.
+
+<span class="kw">SELECT COUNT(*)</span> <span class="kw">FROM</span> <span class="tbl">sflight</span> <span class="kw">INTO</span> <span class="cls">lv_count</span>.
+<span class="kw">SELECT AVG( seatsocc )</span> <span class="kw">FROM</span> <span class="tbl">sflight</span> <span class="kw">INTO</span> <span class="cls">lv_avg</span>.
+<span class="kw">SELECT MAX( seatsmax )</span> <span class="kw">FROM</span> <span class="tbl">sflight</span> <span class="kw">INTO</span> <span class="cls">lv_count</span>.</code></pre>
+
+    <div class="note"><strong>Performance Rule #1:</strong> Use <code>SELECT ... INTO TABLE</code> (single round-trip) instead of <code>SELECT ... INTO</code> in a <code>LOOP/ENDSELECT</code> (many round-trips). Only avoid bundling for very large result sets.</div>
+
+    <h3>INSERT (Add Data)</h3>
+<pre><code><span class="kw">DATA</span>: <span class="cls">ls_spfli</span> <span class="kw">TYPE</span> <span class="tbl">spfli</span>.
+
+<span class="cls">ls_spfli</span>-carrid    = <span class="str">'XY'</span>.
+<span class="cls">ls_spfli</span>-connid    = <span class="str">'0001'</span>.
+<span class="cls">ls_spfli</span>-cityfrom  = <span class="str">'NEW YORK'</span>.
+<span class="cls">ls_spfli</span>-cityto    = <span class="str">'LOS ANGELES'</span>.
+
+<span class="kw">INSERT INTO</span> <span class="tbl">spfli</span> <span class="kw">VALUES</span> <span class="cls">ls_spfli</span>.
+<span class="kw">IF</span> sy-subrc = <span class="num">0</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Record inserted successfully'</span>.
+<span class="kw">ELSE</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Insert failed - duplicate key?'</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <h3>UPDATE (Change Existing Data)</h3>
+<pre><code><span class="kw">UPDATE</span> <span class="tbl">spfli</span> <span class="kw">SET</span> cityfrom = <span class="str">'CHICAGO'</span>
+  <span class="kw">WHERE</span> carrid = <span class="str">'XY'</span> <span class="kw">AND</span> connid = <span class="str">'0001'</span>.
+
+<span class="kw">IF</span> sy-subrc = <span class="num">0</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Record updated successfully'</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <h3>MODIFY (Insert or Update)</h3>
+<pre><code><span class="kw">MODIFY</span> <span class="tbl">spfli</span> <span class="kw">FROM</span> <span class="cls">ls_spfli</span>.
+<span class="com">" Inserts if key does not exist; updates if it exists (one statement)</span></code></pre>
+
+    <h3>DELETE (Remove Data)</h3>
+<pre><code><span class="kw">DELETE FROM</span> <span class="tbl">spfli</span> <span class="kw">WHERE</span> carrid = <span class="str">'XY'</span> <span class="kw">AND</span> connid = <span class="str">'0001'</span>.
+<span class="kw">IF</span> sy-subrc = <span class="num">0</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Record deleted successfully'</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <h3>Transaction Control</h3>
+<pre><code><span class="kw">COMMIT WORK</span>.    <span class="com">" Permanently saves DB changes</span>
+<span class="kw">ROLLBACK WORK</span>.  <span class="com">" Undoes all changes since last COMMIT</span></code></pre>
+
+    <h3>FOR ALL ENTRIES (Join Alternative)</h3>
+<pre><code><span class="com">* --- Get a list of airline codes ---</span>
+<span class="kw">DATA</span>: <span class="cls">lt_carrids</span> <span class="kw">TYPE STANDARD TABLE OF</span> <span class="tbl">s_carr_id</span>.
+<span class="kw">APPEND</span> <span class="str">'LH'</span> <span class="kw">TO</span> <span class="cls">lt_carrids</span>.
+<span class="kw">APPEND</span> <span class="str">'UA'</span> <span class="kw">TO</span> <span class="cls">lt_carrids</span>.
+
+<span class="kw">IF</span> <span class="cls">lt_carrids</span> <span class="kw">IS NOT INITIAL</span>.
+  <span class="kw">SELECT</span> carrid connid fldate
+    <span class="kw">INTO TABLE</span> <span class="cls">lt_sflights</span>
+    <span class="kw">FROM</span> <span class="tbl">sflight</span>
+    <span class="kw">FOR ALL ENTRIES IN</span> <span class="cls">lt_carrids</span>
+    <span class="kw">WHERE</span> carrid = <span class="cls">lt_carrids</span>-table_line.
+  <span class="com">" IMPORTANT: clear source table before LOOP, or it may return duplicates</span>
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <div class="warning"><strong>Gotcha:</strong> With <code>FOR ALL ENTRIES</code>, always check the source table is not empty, and mind that records with fully-empty keys are ignored (the DB may return duplicates).</div>
+  </section>
+
+  <!-- ========== 8. SELECTION SCREENS ========== -->
+  <section id="selection-screens">
+    <h2>8. Selection Screens</h2>
+
+    <p>Selection screens let users enter parameters before running a report. They are automatically generated from <code>PARAMETERS</code> and <code>SELECT-OPTIONS</code> declarations.</p>
+
+    <h3>Basic Selection Screen</h3>
+<pre><code><span class="kw">REPORT</span> zselection_screen.
+
+<span class="com">* --- Parameters (single value inputs) ---</span>
+<span class="kw">PARAMETERS</span>: p_carrid <span class="kw">TYPE</span> <span class="tbl">s_carr_id</span> <span class="kw">OBLIGATORY</span>,        <span class="com">" Mandatory field</span>
+            p_connid <span class="kw">TYPE</span> <span class="tbl">s_conn_id</span>,
+            p_date   <span class="kw">TYPE</span> <span class="tbl">s_date</span> <span class="kw">DEFAULT</span> sy-datum,   <span class="com">" Default value</span>
+            p_show   <span class="kw">TYPE</span> <span class="tbl">abap_bool</span> <span class="kw">AS CHECKBOX</span> <span class="kw">DEFAULT</span> <span class="str">'X'</span>.
+
+<span class="com">* --- Select-options (range inputs) ---</span>
+<span class="kw">SELECT-OPTIONS</span>: s_fldate <span class="kw">FOR</span> sflight-fldate,
+                s_city   <span class="kw">FOR</span> sflight-cityfrom.
+
+<span class="com">* --- Event: set defaults at program start ---</span>
+<span class="kw">INITIALIZATION</span>.
+  p_carrid = <span class="str">'LH'</span>.
+
+<span class="com">* --- Event: validate input ---</span>
+<span class="kw">AT SELECTION-SCREEN</span>.
+  <span class="kw">IF</span> p_carrid <span class="kw">IS INITIAL</span>.
+    <span class="kw">MESSAGE</span> <span class="str">'Please enter a carrier ID'</span> <span class="kw">TYPE</span> <span class="str">'E'</span>.  <span class="com">" Error stops execution</span>
+  <span class="kw">ENDIF</span>.
+
+<span class="com">* --- Product output ---</span>
+<span class="kw">START-OF-SELECTION</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'Carrier:'</span>, p_carrid.
+  <span class="kw">WRITE</span>: / <span class="str">'Connection:'</span>, p_connid.
+  <span class="kw">WRITE</span>: / <span class="str">'Date:'</span>, p_date.
+  <span class="kw">IF</span> p_show = <span class="str">'X'</span>.
+    <span class="kw">WRITE</span>: / <span class="str">'Show details enabled'</span>.
+  <span class="kw">ENDIF</span>.</code></pre>
+
+    <h3>Message Types</h3>
+    <table>
+      <thead><tr><th>Type</th><th>Meaning</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>I</code></td><td>Information</td><td>Shows popup, continues</td></tr>
+        <tr><td><code>W</code></td><td>Warning</td><td>Requires user confirm</td></tr>
+        <tr><td><code>E</code></td><td>Error</td><td>Halts processing</td></tr>
+        <tr><td><code>A</code></td><td>Abort</td><td>Terminates program</td></tr>
+        <tr><td><code>X</code></td><td>Exit</td><td>Terminates with dump</td></tr>
+        <tr><td><code>S</code></td><td>Success</td><td>Green status bar</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Blocked Sections &amp; Radio Buttons</h3>
+<pre><code><span class="kw">SELECTION-SCREEN BEGIN OF BLOCK</span> b1 <span class="kw">WITH FRAME TITLE</span> text-001.
+  <span class="kw">PARAMETERS</span>: p_direct <span class="kw">TYPE</span> <span class="tbl">abap_bool</span> <span class="kw">AS RADIOBUTTON GROUP</span> r1,
+              p_conctd <span class="kw">TYPE</span> <span class="tbl">abap_bool</span> <span class="kw">AS RADIOBUTTON GROUP</span> r1.
+<span class="kw">SELECTION-SCREEN END OF BLOCK</span> b1.
+
+<span class="kw">SELECTION-SCREEN BEGIN OF BLOCK</span> b2 <span class="kw">WITH FRAME TITLE</span> text-002.
+  <span class="kw">PARAMETERS</span>: p_all    <span class="kw">TYPE</span> <span class="tbl">abap_bool</span> <span class="kw">AS CHECKBOX</span>,
+              p_active <span class="kw">TYPE</span> <span class="tbl">abap_bool</span> <span class="kw">AS CHECKBOX</span>.
+<span class="kw">SELECTION-SCREEN END OF BLOCK</span> b2.
+
+<span class="com">* Text elements (SE38 menu: Goto &gt; Text Elements):</span>
+<span class="com">* text-001 = 'Flight Type'</span>
+<span class="com">* text-002 = 'Status'</span></code></pre>
+
+    <h3>Listbox and Value Help</h3>
+<pre><code><span class="kw">PARAMETERS</span>: p_stat <span class="kw">AS LISTBOX VISIBLE LENGTH</span> <span class="num">20</span> <span class="kw">USER-COMMAND</span> u1.
+
+<span class="kw">INITIALIZATION</span>.
+  <span class="kw">DATA</span>: <span class="cls">lt_values</span> <span class="kw">TYPE</span> <span class="tbl">vrm_values</span>,
+        <span class="cls">ls_value</span>  <span class="kw">TYPE</span> <span class="tbl">vrm_value</span>.
+
+  ls_value-key = <span class="str">'O'</span>.   ls_value-text = <span class="str">'Open'</span>.
+  <span class="kw">APPEND</span> ls_value <span class="kw">TO</span> <span class="cls">lt_values</span>.
+  ls_value-key = <span class="str">'C'</span>.   ls_value-text = <span class="str">'Closed'</span>.
+  <span class="kw">APPEND</span> ls_value <span class="kw">TO</span> <span class="cls">lt_values</span>.
+  ls_value-key = <span class="str">'X'</span>.   ls_value-text = <span class="str">'Cancelled'</span>.
+  <span class="kw">APPEND</span> ls_value <span class="kw">TO</span> <span class="cls">lt_values</span>.
+
+  <span class="kw">CALL FUNCTION</span> <span class="str">'VRM_SET_VALUES'</span>
+    <span class="kw">EXPORTING</span>
+      id     = <span class="str">'P_STAT'</span>
+      values = <span class="cls">lt_values</span>.</code></pre>
+
+    <div class="note"><strong>Tip:</strong> <code>SELECT-OPTIONS</code> creates an internal table with fields <code>sign</code>, <code>option</code>, <code>low</code>, <code>high</code>. You can use it directly in <code>IN</code> in your WHERE clause.</div>
+  </section>
+
+  <!-- ========== 9. ALV REPORTS ========== -->
+  <section id="alv-reports">
+    <h2>9. ALV Reports</h2>
+
+    <p><strong>ALV</strong> (ABAP List Viewer) is SAP&#39;s standard grid/table output control. It provides interactive features like sorting, filtering, totals, and export out-of-the-box.</p>
+
+    <h3>Simple ALV Report (CL_SALV_TABLE)</h3>
+<pre><code><span class="kw">REPORT</span> zsimple_alv.
+
+<span class="kw">TYPES</span>: <span class="kw">BEGIN OF</span> <span class="cls">ty_sflight</span>,
+         carrid   <span class="kw">TYPE</span> <span class="tbl">s_carr_id</span>,
+         connid   <span class="kw">TYPE</span> <span class="tbl">s_conn_id</span>,
+         fldate   <span class="kw">TYPE</span> <span class="tbl">s_date</span>,
+         price    <span class="kw">TYPE</span> <span class="tbl">s_price</span>,
+         currency <span class="kw">TYPE</span> <span class="tbl">s_currcode</span>,
+         seatsmax <span class="kw">TYPE</span> <span class="tbl">s_seatsmax</span>,
+         seatsocc <span class="kw">TYPE</span> <span class="tbl">s_seatsocc</span>,
+       <span class="kw">END OF</span> <span class="cls">ty_sflight</span>.
+
+<span class="kw">DATA</span>: <span class="cls">lt_sflight</span> <span class="kw">TYPE STANDARD TABLE OF</span> <span class="cls">ty_sflight</span>,
+      <span class="cls">lo_alv</span>    <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_table</span>,
+      <span class="cls">lx_msg</span>    <span class="kw">TYPE REF TO</span> <span class="cls">cx_salv_msg</span>.
+
+<span class="kw">SELECT</span> carrid connid fldate price currency seatsmax seatsocc
+  <span class="kw">INTO TABLE</span> <span class="cls">lt_sflight</span>
+  <span class="kw">FROM</span> <span class="tbl">sflight</span>.
+
+<span class="kw">TRY</span>.
+    <span class="cls">cl_salv_table</span><span class="kw">=&gt;</span>factory(
+      <span class="kw">IMPORTING</span> r_salv_table = <span class="cls">lo_alv</span>
+      <span class="kw">CHANGING</span>  t_table      = <span class="cls">lt_sflight</span> ).
+
+    <span class="cls">lo_alv</span><span class="kw">-&gt;</span>display( ).
+
+  <span class="kw">CATCH</span> <span class="cls">cx_salv_msg</span> <span class="kw">INTO</span> <span class="cls">lx_msg</span>.
+    <span class="kw">WRITE</span>: / <span class="str">'Error:'</span>, <span class="cls">lx_msg</span><span class="kw">-&gt;</span>get_text( ).
+<span class="kw">ENDTRY</span>.</code></pre>
+
+    <h3>ALV with Layout, Colors &amp; Totals</h3>
+<pre><code><span class="kw">TRY</span>.
+    <span class="cls">cl_salv_table</span><span class="kw">=&gt;</span>factory(
+      <span class="kw">IMPORTING</span> r_salv_table = <span class="cls">lo_alv</span>
+      <span class="kw">CHANGING</span>  t_table      = <span class="cls">lt_flights</span> ).
+
+    <span class="com">* --- Display settings ---</span>
+    <span class="kw">DATA</span>: <span class="cls">lo_display</span> <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_display_settings</span>.
+    <span class="cls">lo_display</span> = <span class="cls">lo_alv</span><span class="kw">-&gt;</span>get_display_settings( ).
+    <span class="cls">lo_display</span><span class="kw">-&gt;</span>set_striped_pattern( <span class="kw">abap_true</span> ).
+    <span class="cls">lo_display</span><span class="kw">-&gt;</span>set_list_header( <span class="str">'Flight List'</span> ).
+    <span class="cls">lo_display</span><span class="kw">-&gt;</span>set_horizontal_lines( <span class="kw">abap_true</span> ).
+
+    <span class="com">* --- Activate all standard functions (export, layouts, etc.) ---</span>
+    <span class="kw">DATA</span>: <span class="cls">lo_funcs</span> <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_functions_list</span>.
+    <span class="cls">lo_funcs</span> = <span class="cls">lo_alv</span><span class="kw">-&gt;</span>get_functions( ).
+    <span class="cls">lo_funcs</span><span class="kw">-&gt;</span>set_all( <span class="kw">abap_true</span> ).
+
+    <span class="com">* --- Column handling ---</span>
+    <span class="kw">DATA</span>: <span class="cls">lo_columns</span> <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_columns_table</span>,
+          <span class="cls">lo_column</span>  <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_column</span>.
+    <span class="cls">lo_columns</span> = <span class="cls">lo_alv</span><span class="kw">-&gt;</span>get_columns( ).
+    <span class="cls">lo_columns</span><span class="kw">-&gt;</span>set_optimize( <span class="kw">abap_true</span> ).
+
+    <span class="kw">TRY</span>.
+        <span class="cls">lo_column</span> = <span class="cls">lo_columns</span><span class="kw">-&gt;</span>get_column( <span class="str">'CURRENCY'</span> ).
+        <span class="cls">lo_column</span><span class="kw">-&gt;</span>set_visible( <span class="kw">abap_false</span> ).        <span class="com">" Hide column</span>
+
+        <span class="cls">lo_column</span> = <span class="cls">lo_columns</span><span class="kw">-&gt;</span>get_column( <span class="str">'CARRID'</span> ).
+        <span class="cls">lo_column</span><span class="kw">-&gt;</span>set_long_text( <span class="str">'Airline'</span> ).
+        <span class="cls">lo_column</span><span class="kw">-&gt;</span>set_medium_text( <span class="str">'Airline Code'</span> ).
+      <span class="kw">CATCH</span> <span class="cls">cx_salv_not_found</span>.
+    <span class="kw">ENDTRY</span>.
+
+    <span class="com">* --- Aggregations (totals) ---</span>
+    <span class="cls">lo_alv</span><span class="kw">-&gt;</span>get_aggregations( )<span class="kw">-&gt;</span>add_aggregation(
+      columnname  = <span class="str">'PRICE'</span>
+      aggregation = if_salv_c_aggregation=&gt;total ).
+
+    <span class="com">* --- Sorting ---</span>
+    <span class="cls">lo_alv</span><span class="kw">-&gt;</span>get_sorts( )<span class="kw">-&gt;</span>add_sort( <span class="str">'CARRID'</span> ).
+
+    <span class="cls">lo_alv</span><span class="kw">-&gt;</span>display( ).
+
+  <span class="kw">CATCH</span> <span class="cls">cx_salv_msg</span> <span class="kw">INTO</span> <span class="cls">lx_msg</span>.
+    <span class="kw">WRITE</span>: / <span class="str">'Error:'</span>, <span class="cls">lx_msg</span><span class="kw">-&gt;</span>get_text( ).
+<span class="kw">ENDTRY</span>.</code></pre>
+
+    <h3>ALV Events (Double-click)</h3>
+<pre><code><span class="kw">CLASS</span> <span class="cls">lcl_alv_handler</span> <span class="kw">DEFINITION</span>.
+  <span class="kw">PUBLIC SECTION</span>.
+    <span class="kw">CLASS-METHODS</span>: on_double_click
+      <span class="kw">FOR EVENT</span> double_click <span class="kw">OF</span> <span class="cls">cl_salv_events_table</span>
+      <span class="kw">IMPORTING</span> row column.
+<span class="kw">ENDCLASS</span>.
+
+<span class="kw">CLASS</span> <span class="cls">lcl_alv_handler</span> <span class="kw">IMPLEMENTATION</span>.
+  <span class="kw">METHOD</span> on_double_click.
+    <span class="kw">DATA</span>: <span class="cls">ls_flight</span> <span class="kw">TYPE</span> <span class="cls">ty_flight</span>.
+    <span class="kw">READ TABLE</span> <span class="cls">lt_flights</span> <span class="kw">INTO</span> <span class="cls">ls_flight</span> <span class="kw">INDEX</span> row.
+    <span class="kw">IF</span> sy-subrc = <span class="num">0</span>.
+      <span class="kw">WRITE</span>: / <span class="str">'Clicked row:'</span>, row,
+               <span class="str">'Flight:'</span>,  <span class="cls">ls_flight</span>-carrid, <span class="cls">ls_flight</span>-connid.
+    <span class="kw">ENDIF</span>.
+  <span class="kw">ENDMETHOD</span>.
+<span class="kw">ENDCLASS</span>.
+
+<span class="com">* --- Register the handler ---</span>
+<span class="kw">DATA</span>: <span class="cls">lo_events</span> <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_events_table</span>.
+<span class="cls">lo_events</span> = <span class="cls">lo_alv</span><span class="kw">-&gt;</span>get_event( ).
+<span class="kw">SET HANDLER</span> <span class="cls">lcl_alv_handler</span><span class="kw">=&gt;</span>on_double_click <span class="kw">FOR</span> <span class="cls">lo_events</span>.
+<span class="cls">lo_alv</span><span class="kw">-&gt;</span>display( ).</code></pre>
+
+    <div class="note"><strong>Two ALV families:</strong> The modern <code>cl_salv_table</code> (OO) and the older <code>REUSE_ALV_GRID_DISPLAY</code> (FM-based) with <code>i_callback_program</code>/<code>i_callback_user_command</code>. Prefer the OO family for new development.</div>
+  </section>
+
+  <!-- ========== 10. CUSTOM REPORT ========== -->
+  <section id="custom-report">
+    <h2>10. Custom Report Development</h2>
+
+    <p>This is a complete "real-world" order report. It puts everything together: selection screen, database reads, business logic, and ALV output.</p>
+
+<pre><code><span class="kw">REPORT</span> zcustom_report <span class="kw">MESSAGE-ID</span> zmsg.
+
+<span class="com">* ==================================================</span>
+<span class="com">* Type definitions</span>
+<span class="com">* ==================================================</span>
+<span class="kw">TYPES</span>: <span class="kw">BEGIN OF</span> <span class="cls">ty_order</span>,
+         order_id      <span class="kw">TYPE</span> <span class="tbl">c</span> <span class="kw">LENGTH</span> <span class="num">10</span>,
+         customer_id   <span class="kw">TYPE</span> <span class="tbl">c</span> <span class="kw">LENGTH</span> <span class="num">10</span>,
+         customer_name <span class="kw">TYPE</span> <span class="tbl">string</span>,
+         order_date    <span class="kw">TYPE</span> <span class="tbl">d</span>,
+         amount        <span class="kw">TYPE</span> <span class="tbl">p</span> <span class="kw">LENGTH</span> <span class="num">10</span> <span class="kw">DECIMALS</span> <span class="num">2</span>,
+         status        <span class="kw">TYPE</span> <span class="tbl">c</span> <span class="kw">LENGTH</span> <span class="num">1</span>,
+       <span class="kw">END OF</span> <span class="cls">ty_order</span>.
+
+<span class="com">* ==================================================</span>
+<span class="com">* Global data</span>
+<span class="com">* ==================================================</span>
+<span class="kw">DATA</span>: <span class="cls">gt_orders</span> <span class="kw">TYPE STANDARD TABLE OF</span> <span class="cls">ty_order</span>,
+      <span class="cls">gs_order</span>  <span class="kw">TYPE</span> <span class="cls">ty_order</span>,
+      <span class="cls">go_alv</span>    <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_table</span>,
+      <span class="cls">gx_msg</span>    <span class="kw">TYPE REF TO</span> <span class="cls">cx_salv_msg</span>.
+
+<span class="com">* ==================================================</span>
+<span class="com">* Selection screen</span>
+<span class="com">* ==================================================</span>
+<span class="kw">SELECTION-SCREEN BEGIN OF BLOCK</span> b1 <span class="kw">WITH FRAME TITLE</span> text-001.
+  <span class="kw">SELECT-OPTIONS</span>: s_coid <span class="kw">FOR</span> <span class="cls">gs_order</span>-order_id,
+                  s_cust <span class="kw">FOR</span> <span class="cls">gs_order</span>-customer_id,
+                  s_date <span class="kw">FOR</span> <span class="cls">gs_order</span>-order_date.
+  <span class="kw">PARAMETERS</span>:     p_stat <span class="kw">AS LISTBOX VISIBLE LENGTH</span> <span class="num">20</span>
+                        <span class="kw">USER-COMMAND</span> u1.
+<span class="kw">SELECTION-SCREEN END OF BLOCK</span> b1.
+
+<span class="com">* ==================================================</span>
+<span class="com">* Initialization</span>
+<span class="com">* ==================================================</span>
+<span class="kw">INITIALIZATION</span>.
+  <span class="com">" Default date range: last 30 days</span>
+  s_date-low  = sy-datum - <span class="num">30</span>.
+  s_date-high = sy-datum.
+  <span class="kw">APPEND</span> s_date.
+
+  <span class="com">" Fill the status Listbox</span>
+  <span class="kw">DATA</span>: <span class="cls">lt_values</span> <span class="kw">TYPE</span> <span class="tbl">vrm_values</span>,
+        <span class="cls">ls_value</span>  <span class="kw">TYPE</span> <span class="tbl">vrm_value</span>.
+  ls_value-key = <span class="str">'O'</span>.  ls_value-text = <span class="str">'Open'</span>.
+  <span class="kw">APPEND</span> ls_value <span class="kw">TO</span> <span class="cls">lt_values</span>.
+  ls_value-key = <span class="str">'C'</span>.  ls_value-text = <span class="str">'Closed'</span>.
+  <span class="kw">APPEND</span> ls_value <span class="kw">TO</span> <span class="cls">lt_values</span>.
+  ls_value-key = <span class="str">'X'</span>.  ls_value-text = <span class="str">'Cancelled'</span>.
+  <span class="kw">APPEND</span> ls_value <span class="kw">TO</span> <span class="cls">lt_values</span>.
+
+  <span class="kw">CALL FUNCTION</span> <span class="str">'VRM_SET_VALUES'</span>
+    <span class="kw">EXPORTING</span> id     = <span class="str">'P_STAT'</span>
+               values = <span class="cls">lt_values</span>.
+
+<span class="com">* ==================================================</span>
+<span class="com">* Validation</span>
+<span class="com">* ==================================================</span>
+<span class="kw">AT SELECTION-SCREEN</span>.
+  <span class="kw">IF</span> s_coid[] <span class="kw">IS INITIAL</span> <span class="kw">AND</span> s_cust[] <span class="kw">IS INITIAL</span>.
+    <span class="kw">MESSAGE</span> e001 <span class="kw">WITH</span> <span class="str">'Enter Order ID or Customer ID'</span>.
+  <span class="kw">ENDIF</span>.
+
+<span class="com">* ==================================================</span>
+<span class="com">* Main flow</span>
+<span class="com">* ==================================================</span>
+<span class="kw">START-OF-SELECTION</span>.
+  <span class="kw">PERFORM</span> fetch_data.
+  <span class="kw">PERFORM</span> process_data.
+  <span class="kw">PERFORM</span> display_alv.
+
+<span class="com">* --------------------------------------------------</span>
+<span class="com">* Fetch data</span>
+<span class="com">* --------------------------------------------------</span>
+<span class="kw">FORM</span> fetch_data.
+  <span class="kw">SELECT</span> order_id customer_id customer_name order_date amount status
+    <span class="kw">INTO TABLE</span> <span class="cls">gt_orders</span>
+    <span class="kw">FROM</span> <span class="tbl">zorders</span>
+    <span class="kw">WHERE</span> order_id    <span class="kw">IN</span> s_coid
+      <span class="kw">AND</span> customer_id <span class="kw">IN</span> s_cust
+      <span class="kw">AND</span> order_date  <span class="kw">IN</span> s_date
+      <span class="kw">AND</span> status      =  p_stat.
+
+  <span class="kw">IF</span> <span class="cls">gt_orders</span> <span class="kw">IS INITIAL</span>.
+    <span class="kw">MESSAGE</span> i002 <span class="kw">WITH</span> <span class="str">'No data for selection'</span> <span class="kw">TYPE</span> <span class="str">'I'</span>.
+    <span class="kw">LEAVE LIST-PROCESSING</span>.     <span class="com">" Returns to selection screen</span>
+  <span class="kw">ENDIF</span>.
+<span class="kw">ENDFORM</span>.
+
+<span class="com">* --------------------------------------------------</span>
+<span class="com">* Business logic</span>
+<span class="com">* --------------------------------------------------</span>
+<span class="kw">FORM</span> process_data.
+  <span class="kw">DATA</span>: <span class="cls">ls_order</span> <span class="kw">TYPE</span> <span class="cls">ty_order</span>.
+
+  <span class="kw">LOOP AT</span> <span class="cls">gt_orders</span> <span class="kw">INTO</span> <span class="cls">ls_order</span>.
+    <span class="kw">CASE</span> ls_order-status.
+      <span class="kw">WHEN</span> <span class="str">'C'</span>.                     <span class="com">" Closed orders: 5% discount</span>
+        ls_order-amount = ls_order-amount * <span class="num">0.95</span>.
+      <span class="kw">WHEN</span> <span class="str">'X'</span>.                     <span class="com">" Cancelled: amount zeroed</span>
+        ls_order-amount = <span class="num">0</span>.
+    <span class="kw">ENDCASE</span>.
+
+    <span class="kw">MODIFY</span> <span class="cls">gt_orders</span> <span class="kw">FROM</span> <span class="cls">ls_order</span>.
+  <span class="kw">ENDLOOP</span>.
+
+  <span class="kw">SORT</span> <span class="cls">gt_orders</span> <span class="kw">BY</span> order_date <span class="kw">DESCENDING</span>.
+<span class="kw">ENDFORM</span>.
+
+<span class="com">* --------------------------------------------------</span>
+<span class="com">* Display ALV</span>
+<span class="com">* --------------------------------------------------</span>
+<span class="kw">FORM</span> display_alv.
+  <span class="kw">TRY</span>.
+      <span class="cls">cl_salv_table</span><span class="kw">=&gt;</span>factory(
+        <span class="kw">IMPORTING</span> r_salv_table = <span class="cls">go_alv</span>
+        <span class="kw">CHANGING</span>  t_table      = <span class="cls">gt_orders</span> ).
+
+      <span class="kw">PERFORM</span> configure_alv.
+      <span class="cls">go_alv</span><span class="kw">-&gt;</span>display( ).
+
+    <span class="kw">CATCH</span> <span class="cls">cx_salv_msg</span> <span class="kw">INTO</span> <span class="cls">gx_msg</span>.
+      <span class="kw">MESSAGE</span> gx_msg<span class="kw">-&gt;</span>get_text( ) <span class="kw">TYPE</span> <span class="str">'E'</span>.
+  <span class="kw">ENDTRY</span>.
+<span class="kw">ENDFORM</span>.
+
+<span class="com">* --------------------------------------------------</span>
+<span class="com">* Configure ALV settings</span>
+<span class="com">* --------------------------------------------------</span>
+<span class="kw">FORM</span> configure_alv.
+  <span class="kw">DATA</span>: <span class="cls">lo_display</span> <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_display_settings</span>,
+        <span class="cls">lo_columns</span> <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_columns_table</span>,
+        <span class="cls">lo_column</span>  <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_column</span>,
+        <span class="cls">lo_funcs</span>   <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_functions_list</span>,
+        <span class="cls">lo_agg</span>     <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_aggregations</span>,
+        <span class="cls">lo_sorts</span>   <span class="kw">TYPE REF TO</span> <span class="cls">cl_salv_sorts_table</span>.
+
+  <span class="kw">lo_display</span> = <span class="cls">go_alv</span><span class="kw">-&gt;</span>get_display_settings( ).
+  <span class="cls">lo_display</span><span class="kw">-&gt;</span>set_striped_pattern( <span class="kw">abap_true</span> ).
+  <span class="cls">lo_display</span><span class="kw">-&gt;</span>set_list_header( <span class="str">'Custom Order Report'</span> ).
+  <span class="cls">lo_display</span><span class="kw">-&gt;</span>set_horizontal_lines( <span class="kw">abap_true</span> ).
+
+  <span class="cls">lo_funcs</span> = <span class="cls">go_alv</span><span class="kw">-&gt;</span>get_functions( ).
+  <span class="cls">lo_funcs</span><span class="kw">-&gt;</span>set_all( <span class="kw">abap_true</span> ).
+
+  <span class="cls">lo_columns</span> = <span class="cls">go_alv</span><span class="kw">-&gt;</span>get_columns( ).
+  <span class="cls">lo_columns</span><span class="kw">-&gt;</span>set_optimize( <span class="kw">abap_true</span> ).
+
+  <span class="kw">TRY</span>.
+      <span class="cls">lo_column</span> = <span class="cls">lo_columns</span><span class="kw">-&gt;</span>get_column( <span class="str">'ORDER_ID'</span> ).
+      <span class="cls">lo_column</span><span class="kw">-&gt;</span>set_long_text( <span class="str">'Order Number'</span> ).
+
+      <span class="cls">lo_column</span> = <span class="cls">lo_columns</span><span class="kw">-&gt;</span>get_column( <span class="str">'AMOUNT'</span> ).
+      <span class="cls">lo_column</span><span class="kw">-&gt;</span>set_long_text( <span class="str">'Order Amount'</span> ).
+    <span class="kw">CATCH</span> <span class="cls">cx_salv_not_found</span>.
+  <span class="kw">ENDTRY</span>.
+
+  <span class="kw">TRY</span>.
+      <span class="cls">lo_agg</span> = <span class="cls">go_alv</span><span class="kw">-&gt;</span>get_aggregations( ).
+      <span class="cls">lo_agg</span><span class="kw">-&gt;</span>add_aggregation(
+        columnname  = <span class="str">'AMOUNT'</span>
+        aggregation = if_salv_c_aggregation=&gt;total ).
+    <span class="kw">CATCH</span> <span class="cls">cx_salv_data_error</span> <span class="cls">cx_salv_not_found</span> <span class="cls">cx_salv_existing</span>.
+  <span class="kw">ENDTRY</span>.
+
+  <span class="kw">TRY</span>.
+      <span class="cls">lo_sorts</span> = <span class="cls">go_alv</span><span class="kw">-&gt;</span>get_sorts( ).
+      <span class="cls">lo_sorts</span><span class="kw">-&gt;</span>add_sort( <span class="str">'ORDER_DATE'</span> ).
+    <span class="kw">CATCH</span> <span class="cls">cx_salv_not_found</span> <span class="cls">cx_salv_existing</span> <span class="cls">cx_salv_data_error</span>.
+  <span class="kw">ENDTRY</span>.
+<span class="kw">ENDFORM</span>.</code></pre>
+
+    <div class="note"><strong>How to try it for real:</strong> Replace table <code>zorders</code> with a table that exists in your system (e.g. <code>vbak</code> = sales orders) and map the fields accordingly.</div>
+  </section>
+
+  <!-- ========== 11. CASE STUDIES ========== -->
+  <section id="case-studies">
+    <h2>11. Real-Life Case Studies</h2>
+
+    <p>These scenarios are based on issues ABAP developers face every day in production. Each case shows the <strong>problem</strong>, <strong>root cause analysis</strong>, and a working <strong>solution</strong>.</p>
+
+    <!-- ---------- Case 1 ---------- -->
+    <h3 id="case-report-perf">Case Study 1: Report Is Extremely Slow</h3>
+
+    <p><strong>Problem:</strong> A daily sales report that used to take 1 minute now takes 35 minutes. Users are complaining, and the job regularly runs over its scheduled window.</p>
+
+    <p><strong>Root Cause Analysis:</strong> The most common culprit in ABAP is selecting inside a loop. When you fetch parent records and then run a new DB read for <em>every single row</em>, the database receives thousands of round-trips.</p>
+
+    <div class="warning"><strong>Anti-pattern &mdash; N+1 query problem:</strong></div>
+<pre><code><span class="kw">SELECT</span> vbak vbeln kunnr erdat
+  <span class="kw">INTO TABLE</span> <span class="cls">lt_vbak</span>
+  <span class="kw">FROM</span> <span class="tbl">vbak</span>.
+
+<span class="kw">LOOP AT</span> <span class="cls">lt_vbak</span> <span class="kw">INTO</span> <span class="cls">ls_vbak</span>.
+  <span class="kw">SELECT SINGLE</span> kunnr name1
+    <span class="kw">INTO</span> (<span class="cls">lv_kunnr</span>, <span class="cls">lv_name1</span>)
+    <span class="kw">FROM</span> <span class="tbl">kna1</span>
+    <span class="kw">WHERE</span> kunnr = <span class="cls">ls_vbak</span>-kunnr.   <span class="com">" DB hit per row!</span>
+  ls_vbak-kname = <span class="cls">lv_name1</span>.
+  <span class="kw">MODIFY</span> <span class="cls">lt_vbak</span> <span class="kw">FROM</span> <span class="cls">ls_vbak</span>.
+<span class="kw">ENDLOOP</span>.</code></pre>
+
+    <p><strong>Solution &mdash; Single query with join / secondary read:</strong></p>
+<pre><code><span class="com">* Option A: JOIN removes the loop entirely</span>
+<span class="kw">SELECT</span> a~vbeln a~kunnr a~erdat b~name1
+  <span class="kw">INTO TABLE</span> <span class="cls">lt_result</span>
+  <span class="kw">FROM</span> <span class="tbl">vbak</span> <span class="kw">AS</span> a
+  <span class="kw">INNER JOIN</span> <span class="tbl">kna1</span> <span class="kw">AS</span> b <span class="kw">ON</span> b~kunnr = a~kunnr.
+
+<span class="com">* Option B: one extra SELECT with FOR ALL ENTRIES</span>
+<span class="kw">IF</span> <span class="cls">lt_vbak</span> <span class="kw">IS NOT INITIAL</span>.
+  <span class="kw">SELECT</span> kunnr name1
+    <span class="kw">INTO TABLE</span> <span class="cls">lt_kna1</span>
+    <span class="kw">FROM</span> <span class="tbl">kna1</span>
+    <span class="kw">FOR ALL ENTRIES IN</span> <span class="cls">lt_vbak</span>
+    <span class="kw">WHERE</span> kunnr = <span class="cls">lt_vbak</span>-kunnr.
+
+  <span class="kw">LOOP AT</span> <span class="cls">lt_vbak</span> <span class="kw">ASSIGNING</span> &lt;fs&gt;.
+    <span class="kw">READ TABLE</span> <span class="cls">lt_kna1</span> <span class="kw">INTO</span> <span class="cls">ls_kna1</span>
+      <span class="kw">WITH KEY</span> kunnr = &lt;fs&gt;-kunnr.
+    <span class="kw">IF</span> sy-subrc = <span class="num">0</span>.
+      &lt;fs&gt;-kname = ls_kna1-name1.
+    <span class="kw">ENDIF</span>.
+  <span class="kw">ENDLOOP</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <table>
+      <thead><tr><th>Before</th><th>After</th></tr></thead>
+      <tbody>
+        <tr><td>1 parent + 10,000 child DB calls = 10,001 round-trips</td><td>2 DB calls total (JOIN / secondary read in memory)</td></tr>
+        <tr><td>~35 minutes wall-clock</td><td>~8 seconds</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note"><strong>Key lesson:</strong> Every DB statement behind a loop is a suspect. First rule of ABAP performance: <em>badge of honor</em> is to never write DB access inside a loop.</div>
+
+    <!-- ---------- Case 2 ---------- -->
+    <h3 id="case-alv-symbol">Case Study 2: ALV Grid Shows Blanks / Wrong Values for Certain Rows</h3>
+
+    <p><strong>Problem:</strong> In an ALV report for material movements, some rows display empty cells even though the data exists. Values get overwritten between rows.</p>
+
+    <p><strong>Root Cause Analysis:</strong> The program reuses one work area in a <code>LOOP ... INTO</code> and appends it. ABAP work areas are <em>not cleared automatically</em>, so leftover values from the previous iteration leak into the next row &mdash; and <code>APPEND</code> copies the work area by value, making the "wrong" state appear to persist.</p>
+
+    <div class="warning"><strong>Classic bug:</strong></div>
+<pre><code><span class="kw">DATA</span>: <span class="cls">ls_mkpf</span> <span class="kw">LIKE LINE OF</span> <span class="cls">lt_mkpf</span>.
+
+<span class="kw">SELECT</span> mblnr mjahr bwart btart
+  <span class="kw">INTO</span> <span class="cls">ls_mkpf</span>                    <span class="com">" Work area reused, not cleared!</span>
+  <span class="kw">FROM</span> <span class="tbl">mkpf</span> <span class="kw">UP TO</span> <span class="num">100</span> <span class="kw">ROWS</span>.
+  <span class="kw">APPEND</span> <span class="cls">ls_mkpf</span> <span class="kw">TO</span> <span class="cls">lt_mkpf</span>.
+<span class="kw">ENDSELECT</span>.</code></pre>
+
+    <p><strong>Solution &mdash; always bundle INTO TABLE, and clear work areas between uses:</strong></p>
+<pre><code><span class="kw">SELECT</span> mblnr mjahr bwart btart
+  <span class="kw">INTO TABLE</span> <span class="cls">lt_mkpf</span>          <span class="com">" Structure memory managed for you</span>
+  <span class="kw">FROM</span> <span class="tbl">mkpf</span>.
+
+<span class="kw">LOOP AT</span> <span class="cls">lt_mkpf</span> <span class="kw">INTO</span> <span class="cls">ls_mkpf</span>.
+  <span class="kw">CLEAR</span> <span class="cls">ls_msku</span>.               <span class="com">" Clear BEFORE filling partial fields</span>
+  <span class="kw">SELECT SINGLE</span> matnr <span class="kw">INTO</span> <span class="cls">ls_msku</span>-matnr <span class="kw">FROM</span> <span class="tbl">msku</span> <span class="kw">WHERE</span> mblnr = <span class="cls">ls_mkpf</span>-mblnr.
+  <span class="kw">APPEND</span> <span class="cls">ls_msku</span> <span class="kw">TO</span> <span class="cls">lt_msku</span>.
+<span class="kw">ENDLOOP</span>.</code></pre>
+
+    <div class="note"><strong>Key lesson:</strong> <code>SELECT ... INTO TABLE</code> removes the whole class of "dirty work area" bugs. When you must append in a loop, <code>CLEAR</code> first.</div>
+
+    <!-- ---------- Case 3 ---------- -->
+    <h3 id="case-selection">Case Study 3: Selection Screen Validation Rejects Valid Dates</h3>
+
+    <p><strong>Problem:</strong> End users enter a date range like <code>01.01.2025 to 31.12.2025</code> single values per field, but one field is a <code>SELECT-OPTION</code> with an empty high value. The custom check <code>low &gt; high</code> fires and blocks legitimate entries.</p>
+
+    <p><strong>Root Cause Analysis:</strong> Inside <code>AT SELECTION-SCREEN</code>, <code>SELECT-OPTIONS</code> fields behave differently: with a single value, <code>high</code> is blank and <code>option</code> is <code>EQ</code>. The validator compared the blank HIGH against LOW and thought it was an inverted range.</p>
+
+    <div class="warning"><strong>Flawed validation:</strong></div>
+<pre><code><span class="kw">AT SELECTION-SCREEN</span>.
+  <span class="kw">IF</span> s_date-low &gt; s_date-high.          <span class="com">" FAILS for single-value entries!</span>
+    <span class="kw">MESSAGE</span> <span class="str">'Start date must be before end date'</span> <span class="kw">TYPE</span> <span class="str">'E'</span>.
+  <span class="kw">ENDIF</span>.</code></pre>
+
+    <p><strong>Solution &mdash; loop the range lines correctly:</strong></p>
+<pre><code><span class="kw">AT SELECTION-SCREEN</span>.
+  <span class="kw">DATA</span>: <span class="cls">ls_range</span> <span class="kw">LIKE LINE OF</span> s_date.
+
+  <span class="kw">LOOP AT</span> s_date <span class="kw">INTO</span> <span class="cls">ls_range</span>.
+    <span class="kw">CASE</span> ls_range-option.
+      <span class="kw">WHEN</span> <span class="str">'BT'</span> <span class="kw">OR</span> <span class="str">'NB'</span>.          <span class="com">" Range: both low &amp; high expected</span>
+        <span class="kw">IF</span> ls_range-high &lt; ls_range-low.
+          <span class="kw">MESSAGE</span> e000 <span class="kw">WITH</span> <span class="str">'Inverted date range'</span>.
+        <span class="kw">ENDIF</span>.
+      <span class="kw">WHEN</span> <span class="str">'EQ'</span>.                    <span class="com">" Single value: ignore high</span>
+        <span class="com">" fine</span>
+    <span class="kw">ENDCASE</span>.
+  <span class="kw">ENDLOOP</span>.</code></pre>
+
+    <div class="note"><strong>Key lesson:</strong> Selection-option lines are structures with SIGN/OPTION/LOW/HIGH. Validate per option type, not on raw fields.</div>
+
+    <!-- ---------- Case 4 ---------- -->
+    <h3 id="case-db-issue">Case Study 4: Update "Works" But Data Never Appears in the Table</h3>
+
+    <p><strong>Problem:</strong> A background job updates a custom table (<code>zorders</code>), the job finishes green, but users never see the changed rows. Re-running shows the old values again.</p>
+
+    <p><strong>Root Cause Analysis:</strong> The update was executed, but the job <em>rolled back</em> at the end &mdash; usually because a later statement failed and the program ended with <code>MESSAGE TYPE 'A'</code> or an unhandled exception. In ABAP, DB changes are buffered until <code>COMMIT WORK</code>; an implicit rollback discards them. Another classic cause: a <code>SELECT</code> with a wrong key found a stale <code>saplzms</code> row, or the program used <code>UPDATE ... FROM ls</code> where <code>ls</code> had an empty key field.</p>
+
+    <div class="warning"><strong>Likely failure:</strong></div>
+<pre><code><span class="kw">UPDATE</span> <span class="tbl">zorders</span> <span class="kw">FROM</span> <span class="cls">ls_order</span>.   <span class="com">" ls_order-key field EMPTY</span>
+<span class="kw">IF</span> sy-subrc &lt;&gt; <span class="num">0</span>.
+  <span class="kw">MESSAGE</span> <span class="str">'Nothing updated'</span> <span class="kw">TYPE</span> <span class="str">'E'</span>.  <span class="com">" Message E stops or rolls back</span>
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <p><strong>Solution &mdash; fill the key, use WHERE, check return code, commit explicitly:</strong></p>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_upd</span> <span class="kw">TYPE</span> <span class="tbl">i</span>.
+
+<span class="kw">UPDATE</span> <span class="tbl">zorders</span> <span class="kw">SET</span> status = <span class="str">'C'</span>
+  <span class="kw">WHERE</span> order_id = <span class="cls">ls_order</span>-order_id.
+
+lv_upd = sy-dbcnt.                      <span class="com">" Rows actually changed</span>
+<span class="kw">IF</span> lv_upd = <span class="num">0</span>.
+  <span class="kw">WRITE</span>: / <span class="str">'No matching row found'</span>.
+<span class="kw">ELSE</span>.
+  <span class="kw">COMMIT WORK</span>.                        <span class="com">" Make it permanent</span>
+  <span class="kw">WRITE</span>: / lv_upd, <span class="str">'row(s) updated'</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <div class="note"><strong>Key lesson:</strong> Check <code>sy-subrc</code>, check <code>sy-dbcnt</code>, then <code>COMMIT WORK</code>. Never assume success from a green job log.</div>
+
+    <!-- ---------- Case 5 ---------- -->
+    <h3 id="case-conversion">Case Study 5: Numbers and Dates Display Wrong (Packed Overflow / Date Format)</h3>
+
+    <p><strong>Problem:</strong> A report shows negative amounts as <code>*-*</code> or abbreviations like <code>1,000E+4</code>, and dates appear as <code>20250101</code> instead of <code>01.01.2025</code>.</p>
+
+    <p><strong>Root Cause Analysis:</strong> The output column was declared as <code>TYPE i</code> (4-byte integer) for a value that exceeds ~2 billion, or the packed field had too few decimals. Dates are plain 8-character fields; without an output profile they render in raw format.</p>
+
+    <div class="warning"><strong>Broken declarations &amp; output:</strong></div>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_total</span> <span class="kw">TYPE</span> <span class="tbl">i</span>.          <span class="com">" Integer overflow risk</span>
+lv_total = <span class="num">5000000000</span>.               <span class="com">" > 2^31-1 → dump / *-*</span>
+
+<span class="kw">WRITE</span>: / <span class="cls">lv_total</span>, lv_date.        <span class="com">" Renders raw</span></code></pre>
+
+    <p><strong>Solution &mdash; proper types and formatting options:</strong></p>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lv_total</span> <span class="kw">TYPE</span> <span class="tbl">p</span> <span class="kw">LENGTH</span> <span class="num">15</span> <span class="kw">DECIMALS</span> <span class="num">2</span>,  <span class="com">" big &amp; precise</span>
+      <span class="cls">lv_date</span>  <span class="kw">TYPE</span> <span class="tbl">d</span> <span class="kw">VALUE</span> <span class="str">'20250101'</span>.
+
+lv_total = <span class="num">5000000000</span>.
+
+<span class="kw">WRITE</span>: / lv_total <span class="kw">CURRENCY</span> <span class="str">'USD'</span>.   <span class="com">" Amount with currency formatting</span>
+<span class="kw">WRITE</span>: / lv_date <span class="kw">DD/MM/YYYY</span>.         <span class="com">" Date output mask</span>
+<span class="kw">WRITE</span>: / lv_total <span class="kw">USING EDIT MASK</span> <span class="str">'___.___.__0,00'</span>.</code></pre>
+
+    <table>
+      <thead><tr><th>Write Option</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td><code>CURRENCY 'USD'</code></td><td>Adds currency symbol &amp; ISO placement</td></tr>
+        <tr><td><code>DD/MM/YYYY</code></td><td>Date in European format</td></tr>
+        <tr><td><code>USING EDIT MASK</code></td><td>Custom picture string</td></tr>
+        <tr><td><code>NO-ZERO</code></td><td>Suppresses leading zeros</td></tr>
+        <tr><td><code>EXPONENT 4</code></td><td>Controls scientific notation</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note"><strong>Key lesson:</strong> Size your types to the domain (money → packed, never integer). Formatting belongs in the output statement, not in the data.</div>
+
+    <!-- ---------- Case 6 ---------- -->
+    <h3 id="case-file">Case Study 6: Excel Upload Reads Only the First Column</h3>
+
+    <p><strong>Problem:</strong> A user uploads an Excel file with 10 columns but only column A comes through. Everything looks correct in the code.</p>
+
+    <p><strong>Root Cause Analysis:</strong> The most common cause is using <code>GUI_UPLOAD</code> with a wrong file type (e.g., trying to read a real <code>.xlsx</code> as a tab-delimited text, or the file being blocked locally). Second: the structure's field order doesn't match the Excel column order. Third: the file is a binary OLE2 file but you passed <code>filetype = 'ASC'</code>.</p>
+
+    <p><strong>Solution — use the ALSM upload for real Excel files, with a structure check:</strong></p>
+<pre><code><span class="kw">DATA</span>: <span class="cls">lt_data</span> <span class="kw">TYPE TABLE OF</span> <span class="cls">alsmex_tabline</span>.  <span class="com">" Generic line: col1...col40</span>
+
+<span class="kw">CALL FUNCTION</span> <span class="str">'ALSM_EXCEL_TO_INTERNAL_TABLE'</span>
+  <span class="kw">EXPORTING</span>
+    filename                = p_file
+    i_begin_col             = <span class="num">1</span>
+    i_begin_row             = <span class="num">2</span>        <span class="com">" Skip header row</span>
+    i_end_col               = <span class="num">10</span>
+    i_end_row               = <span class="num">10000</span>
+  <span class="kw">TABLES</span>
+    intern                  = <span class="cls">lt_data</span>
+  <span class="kw">EXCEPTIONS</span>
+    inconsistent_parameters = <span class="num">1</span>
+    upload_ole              = <span class="num">2</span>
+    <span class="kw">OTHERS</span>                 = <span class="num">3</span>.
+
+<span class="kw">IF</span> sy-subrc &lt;&gt; <span class="num">0</span>.
+  <span class="kw">MESSAGE</span> <span class="str">'Upload failed'</span> <span class="kw">TYPE</span> <span class="str">'E'</span>.
+<span class="kw">ENDIF</span>.
+
+<span class="com">* Map columns by POSITION and validate</span>
+<span class="kw">LOOP AT</span> <span class="cls">lt_data</span> <span class="kw">INTO</span> <span class="cls">ls_data</span>.
+  <span class="kw">CASE</span> ls_data-col.
+    <span class="kw">WHEN</span> <span class="num">1</span>.  <span class="cls">ls_mapping</span>-order_id = ls_data-value.
+    <span class="kw">WHEN</span> <span class="num">2</span>.  <span class="cls">ls_mapping</span>-amount   = ls_data-value.
+  <span class="kw">ENDCASE</span>.
+<span class="kw">ENDLOOP</span>.</code></pre>
+
+    <p><strong>Alternative — validate before processing:</strong> check the file format, verify the first row is the expected header, and count the number of columns; reject the file with a clear message when they don&#39;t match.</p>
+
+    <div class="note"><strong>Key lesson:</strong> Match the upload function to the real file format. <code>ALSM_EXCEL_TO_INTERNAL_TABLE</code> handles true Excel (OLE/XML), <code>GUI_UPLOAD</code> is for delimited text.</div>
+
+    <!-- ---------- Case 7 ---------- -->
+    <h3 id="case-history">Case Study 7: "Something Changed Last Week" — Track Down a Production Dump</h3>
+
+    <p><strong>Problem:</strong> On Monday morning the finance team reports an ABAP dump (transaction code shown in the error). It only happens "sometimes," and no one knows what changed.</p>
+
+    <p><strong>Root Cause Analysis — a structured debugging workflow:</strong></p>
+    <ol>
+      <li><strong>Read the statistical information</strong> at the end of the dump: program name, include, line number, and <em>call stack</em> — it tells you exactly where the error occurred.</li>
+      <li><strong>Check recent transport entries</strong> (SE03 / SE09): 9 out of 10 times the bug was introduced by a transport last week.</li>
+      <li><strong>Reproduce with the same SELECTION parameters</strong> the user used. Intermittent dumps are often data-dependent (a missing customer master, an empty range, a division by zero on a blank quantity).</li>
+      <li><strong>Run the code checker</strong> (SLIN) and the extended program check — they flag most divide-by-zero and range issues statically.</li>
+      <li><strong>Add defensive code</strong> at the failing point and retest with the original data.</li>
+    </ol>
+
+    <div class="warning"><strong>Common dump you will meet — division by zero:</strong></div>
+<pre><code><span class="kw">IF</span> <span class="cls">ls_data</span>-quantity = <span class="num">0</span>.           <span class="com">" Guard first!</span>
+  <span class="kw">WRITE</span>: / <span class="str">'Skip zero quantity'</span>.
+<span class="kw">ELSE</span>.
+  <span class="cls">lv_price_per_unit</span> = <span class="cls">ls_data</span>-amount / <span class="cls">ls_data</span>-quantity.
+  <span class="kw">IF</span> <span class="cls">lv_price_per_unit</span> <span class="kw">IS INITIAL</span>.  <span class="com">" Overflow check</span>
+    <span class="kw">WRITE</span>: / <span class="str">'Overflow detected'</span>.
+  <span class="kw">ENDIF</span>.
+<span class="kw">ENDIF</span>.</code></pre>
+
+    <div class="note"><strong>Key lesson:</strong> Dumps carry a call stack — the dump is a map, not a mystery. Track transport history to find "what changed."</div>
+
+    <!-- ---------- Case 8 ---------- -->
+    <h3 id="case-oop-refactor">Case Study 8: Spaghetti Report Becomes a Maintainable Object-Oriented Program</h3>
+
+    <p><strong>Problem:</strong> A 2,000-line legacy report mixes database access, business rules, and screen logic in one long <code>START-OF-SELECTION</code>. Any change breaks something else.</p>
+
+    <p><strong>Solution — refactor into three layers:</strong></p>
+<pre><code><span class="kw">CLASS</span> <span class="cls">lcl_order_service</span> <span class="kw">DEFINITION</span>.        <span class="com">" Data layer</span>
+  <span class="kw">PUBLIC SECTION</span>.
+    <span class="kw">METHODS</span>: get_orders
+      <span class="kw">IMPORTING</span> it_seldate <span class="kw">TYPE</span> range_tab_seldate
+                iv_status   <span class="kw">TYPE</span> <span class="tbl">c</span>
+      <span class="kw">RETURNING VALUE</span>(rt_orders) <span class="kw">TYPE</span> tab_orders.
+<span class="kw">ENDCLASS</span>.
+
+<span class="kw">CLASS</span> <span class="cls">lcl_order_processor</span> <span class="kw">DEFINITION</span>.      <span class="com">" Business layer</span>
+  <span class="kw">PUBLIC SECTION</span>.
+    <span class="kw">METHODS</span>: process <span class="kw">CHANGING</span> ct_orders <span class="kw">TYPE</span> tab_orders.
+<span class="kw">ENDCLASS</span>.
+
+<span class="kw">CLASS</span> <span class="cls">lcl_order_report</span> <span class="kw">DEFINITION</span>.       <span class="com">" Presentation layer</span>
+  <span class="kw">PUBLIC SECTION</span>.
+    <span class="kw">METHODS</span>: display <span class="kw">IMPORTING</span> it_orders <span class="kw">TYPE</span> tab_orders.
+<span class="kw">ENDCLASS</span>.
+
+<span class="com">* --- Wiring in START-OF-SELECTION stays tiny ---</span>
+<span class="kw">DATA</span>: <span class="cls">lo_svc</span>  <span class="kw">TYPE REF TO</span> <span class="cls">lcl_order_service</span>,
+      <span class="cls">lo_bus</span>  <span class="kw">TYPE REF TO</span> <span class="cls">lcl_order_processor</span>,
+      <span class="cls">lo_alv</span>  <span class="kw">TYPE REF TO</span> <span class="cls">lcl_order_report</span>,
+      <span class="cls">lt_orders</span> <span class="kw">TYPE</span> <span class="cls">tab_orders</span>.
+
+<span class="kw">CREATE OBJECT</span>: <span class="cls">lo_svc</span>, <span class="cls">lo_bus</span>, <span class="cls">lo_alv</span>.
+
+lt_orders = <span class="cls">lo_svc</span><span class="kw">-&gt;</span>get_orders( it_seldate = s_date[] iv_status = p_stat ).
+<span class="cls">lo_bus</span><span class="kw">-&gt;</span>process( <span class="kw">CHANGING</span> ct_orders = lt_orders ).
+<span class="cls">lo_alv</span><span class="kw">-&gt;</span>display( lt_orders ).</code></pre>
+
+    <div class="note"><strong>Key lesson:</strong> Splitting data / business / presentation lets you test each piece independently and change one without breaking the other two.</div>
+  </section>
+
+  <!-- ========== 12. TROUBLESHOOTING ========== -->
+  <section id="troubleshooting">
+    <h2>12. Issue-Solving Guide (Troubleshooting)</h2>
+
+    <h3>Everyday Problems &amp; Fixes</h3>
+    <table>
+      <thead><tr><th>Issue</th><th>Likely Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Program has no output</td><td><code>START-OF-SELECTION</code> missing or empty; event executed before <code>WRITE</code></td><td>Put logic in <code>START-OF-SELECTION</code>, verify selection returns data</td></tr>
+        <tr><td>Syntax error: "field unknown"</td><td>Typo or field not in the dictionary type</td><td>Check field against the structure via F2/F5</td></tr>
+        <tr><td>Short dump: <code>CX_SY_ARITHMETIC_OVERFLOW</code></td><td>Number too large or division overflow</td><td>Enlarge the type (<code>p</code> length), guard division</td></tr>
+        <tr><td>Short dump: <code>CX_SY_ZERODIVIDE</code></td><td>Dividing by a zero value</td><td><code>IF x &lt;&gt; 0</code> before dividing</td></tr>
+        <tr><td>Short dump on <code>REUSE_ALV</code> callback</td><td>Callbacks not passed as parameters</td><td>Pass <code>i_callback_program</code> &amp; <code>i_callback_user_command</code>; handler in classic report</td></tr>
+        <tr><td>ALV totals wrong</td><td>Packed field length too small / decimals mismatch</td><td>Define amount fields with <code>DECIMALS 2</code> and adequate length</td></tr>
+        <tr><td>Selection input ignored</td><td>Forgot <code>IN</code> in WHERE, or used <code>OPTIONAL</code> and blank range</td><td>Add <code>WHERE ... IN s_range</code>; use <code>OBLIGATORY</code> for mandatory</td></tr>
+        <tr><td>Job runs but data unchanged (see Case 4)</td><td>Rollback on error / empty key</td><td>Check <code>sy-subrc</code>, fill key, <code>COMMIT WORK</code></td></tr>
+        <tr><td>Slow report (see Case 1)</td><td>DB access inside loop</td><td>JOIN / <code>FOR ALL ENTRIES</code> outside the loop</td></tr>
+        <tr><td>Wrong values in table rows (see Case 2)</td><td>Reused work area without CLEAR</td><td>Prefer <code>INTO TABLE</code>, or <code>CLEAR</code> before fill</td></tr>
+        <tr><td>Program activated but still old behavior</td><td>Wrong client / transport not active</td><td>Check client, check transport (<code>SE09</code>), clear buffer</td></tr>
+        <tr><td>MESSAGE not displayed</td><td>Message class wrong or <code>TYPE 'E'</code> after output already written</td><td>Create SE91 message, check type vs. list output</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Debugger Quick Hacks</h3>
+    <ul>
+      <li><strong>Breakpoints</strong> — <code>/H</code> in the transaction code field activates the debugger on the next line of code executed.</li>
+      <li><strong>Dynamic breakpoints</strong> — set inside the editor: double-click the line number, or use toolbar button.</li>
+      <li><strong>Watchpoints</strong> — stop when a specific variable <em>changes value</em> (right-click variable in debugger → Create Watchpoint).</li>
+      <li><strong>Sneaky print</strong> — temporary <code>WRITE</code> or <code>BREAK-POINT</code> statements where you suspect the bug.</li>
+      <li><strong>Trace SQL</strong> — run <code>ST05</code> with SQL trace on, execute the report, view the generated statements and their row counts.</li>
+    </ul>
+
+    <h3>Handy Analysis Transactions</h3>
+    <table>
+      <thead><tr><th>T-Code</th><th>What it tells you</th></tr></thead>
+      <tbody>
+        <tr><td><code>ST22</code></td><td>ABAP dump analysis (all recent short dumps with full details)</td></tr>
+        <tr><td><code>ST05</code></td><td>SQL / RFC trace — find slow or repeated statements</td></tr>
+        <tr><td><code>STAD</code></td><td>Single transaction analysis — see where time was spent</td></tr>
+        <tr><td><code>SE03</code></td><td>Transport organizer overview — what changed and when</td></tr>
+        <tr><td><code>SE09 / SE10</code></td><td>Transport requests — view contents of a change</td></tr>
+        <tr><td><code>SLIN</code></td><td>Static code analysis — catches many bugs before activation</td></tr>
+        <tr><td><code>SAT</code></td><td>Runtime analysis — profile which statements cost the most</td></tr>
+        <tr><td><code>SCU3</code></td><td>Table history / content for your custom table</td></tr>
+      </tbody>
+    </table>
+
+    <div class="warning"><strong>Golden rule for incidents:</strong> Never fix blind. Reproduce → read the dump/stack → find the transport that changed behavior → fix at the root → verify with the same data.</div>
+  </section>
+
+  <!-- ========== QUICK REFERENCE ========== -->
+  <section id="quick-reference">
+    <h2>Quick Reference</h2>
+
+    <h3>Essential Transaction Codes</h3>
+    <table>
+      <thead><tr><th>T-Code</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>SE38</code></td><td>ABAP Editor (write programs)</td></tr>
+        <tr><td><code>SE80</code></td><td>Object Navigator (browse everything)</td></tr>
+        <tr><td><code>SE11</code></td><td>ABAP Dictionary (tables, types, domains)</td></tr>
+        <tr><td><code>SE24</code></td><td>Class Builder (global classes)</td></tr>
+        <tr><td><code>SE37</code></td><td>Function Builder (function modules)</td></tr>
+        <tr><td><code>SE91</code></td><td>Message Maintenance (create message classes)</td></tr>
+        <tr><td><code>SE51</code></td><td>Screen Painter (dynpros)</td></tr>
+        <tr><td><code>SE41</code></td><td>Menu Painter</td></tr>
+        <tr><td><code>SM37</code></td><td>Job Monitoring</td></tr>
+        <tr><td><code>SA38</code></td><td>Execute ABAP program</td></tr>
+        <tr><td><code>ST05</code></td><td>SQL Trace (performance analysis)</td></tr>
+        <tr><td><code>SLIN</code></td><td>ABAP Extended Check (syntax + warnings)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Commonly Used Function Modules</h3>
+    <table>
+      <thead><tr><th>Function Module</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>CONVERT_TO_LOCAL_CURRENCY</code></td><td>Currency conversion using SAP rates</td></tr>
+        <tr><td><code>REUSE_ALV_GRID_DISPLAY</code></td><td>Display ALV grid report (classic FM)</td></tr>
+        <tr><td><code>VRM_SET_VALUES</code></td><td>Populate values for selection-screen Listbox</td></tr>
+        <tr><td><code>POPUP_TO_CONFIRM</code></td><td>Show Yes/No confirmation dialog</td></tr>
+        <tr><td><code>GUI_UPLOAD</code></td><td>Upload file from presentation server</td></tr>
+        <tr><td><code>GUI_DOWNLOAD</code></td><td>Download file to presentation server</td></tr>
+        <tr><td><code>ALSM_EXCEL_TO_INTERNAL_TABLE</code></td><td>Read Excel file into internal table</td></tr>
+      </tbody>
+    </table>
+
+    <h3>ABAP Statements Cheat Sheet</h3>
+    <table>
+      <thead><tr><th>Statement</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>DATA</code> / <code>CONSTANTS</code> / <code>STATICS</code></td><td>Declarations</td></tr>
+        <tr><td><code>TYPES</code></td><td>Define custom data types</td></tr>
+        <tr><td><code>PARAMETERS</code> / <code>SELECT-OPTIONS</code></td><td>Selection screen input</td></tr>
+        <tr><td><code>SELECT / INSERT / UPDATE / MODIFY / DELETE</code></td><td>Open SQL data access</td></tr>
+        <tr><td><code>COMMIT</code> / <code>ROLLBACK WORK</code></td><td>Transaction control</td></tr>
+        <tr><td><code>APPEND / INSERT / READ / LOOP / MODIFY / DELETE / SORT</code></td><td>Internal table operations</td></tr>
+        <tr><td><code>IF / CASE / DO / WHILE / LOOP</code></td><td>Control flow</td></tr>
+        <tr><td><code>PERFORM</code> / <code>FORM</code></td><td>Subroutine call / definition</td></tr>
+        <tr><td><code>CALL FUNCTION</code></td><td>Function module invocation</td></tr>
+        <tr><td><code>CREATE OBJECT</code> / <code>-&gt;method()</code></td><td>OO instantiation / method call</td></tr>
+        <tr><td><code>FIELD-SYMBOLS</code></td><td>Pointer-based table access</td></tr>
+        <tr><td><code>MESSAGE</code></td><td>Display user messages</td></tr>
+        <tr><td><code>WRITE</code></td><td>Classic list output</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ========== TIPS ========== -->
+  <section id="tips">
+    <h2>Tips for Beginners</h2>
+
+    <ul>
+      <li><strong>Follow naming conventions</strong> — <code>lv_</code> for local variables, <code>lt_</code> for local tables, <code>gs_</code> for global structures, <code>c_</code> for constants.</li>
+      <li><strong>Check <code>sy-subrc</code></strong> after every database and table operation. Ignoring it leads to phantom bugs.</li>
+      <li><strong>Prefer <code>SELECT ... INTO TABLE</code></strong>&nbsp;over selecting in loops — huge performance win.</li>
+      <li><strong>Use field symbols (<code>ASSIGNING</code>)</strong> instead of work areas for large tables.</li>
+      <li><strong>Use ALV instead of <code>WRITE</code></strong> for reports — users get export, sorting, and filters for free.</li>
+      <li><strong>Comment your code</strong> — <code>*</code> for full-line comments, <code>"</code> for inline comments. Future-you will thank yourself.</li>
+      <li><strong>Create message classes</strong> in <code>SE91</code> instead of hard-coding message text.</li>
+      <li><strong>Test with edge cases</strong> — empty tables, single records, large volumes, special characters.</li>
+      <li><strong>Use code checking</strong> — run transaction <code>SLIN</code> or use the check button inside SE38 before activating.</li>
+      <li><strong>Work in a development client</strong> — never test creating/deleting data directly on production.</li>
+    </ul>
+  </section>
+
+  <!-- ========== NEXT STEPS ========== -->
+  <section id="next-steps">
+    <h2>Next Steps</h2>
+
+    <p>You now have the fundamentals. The natural progression for an ABAP developer:</p>
+
+    <ol>
+      <li><strong>ABAP Dictionary</strong> — create your own tables, structures, data elements, and domains.</li>
+      <li><strong>Module Pool Programming</strong> — build transaction-based apps with dynpro screens.</li>
+      <li><strong>BAPI / BADI / User Exits</strong> — extend and integrate standard SAP behavior.</li>
+      <li><strong>Web Dynpro ABAP</strong> — web-based UI development.</li>
+      <li><strong>SAP Fiori / SAPUI5</strong> — modern UX on top of OData (GATEWAY_HUB).</li>
+      <li><strong>CDS Views + OData</strong> — model and expose data for HANA and Fiori.</li>
+      <li><strong>AMDP</strong> — ABAP Managed Database Procedures for HANA performance.</li>
+      <li><strong>ABAP Unit</strong> — write automated unit tests for your classes.</li>
+    </ol>
+
+    <div class="note"><strong>Final tip:</strong> Practice is key. Take the flight tables (<code>SCARR</code>, <code>SPFLI</code>, <code>SFLIGHT</code>, <code>SFORCE</code>, <code>SBOOK</code>) already present in your system and build reports on them — they're the classic training data for every ABAP developer.</div>
+  </section>
+
+  <footer>
+    &#128640; SAP ABAP Developer Tutorial &mdash; Happy Coding!
+  </footer>
+
+</main>
+
+</body>
+</html>

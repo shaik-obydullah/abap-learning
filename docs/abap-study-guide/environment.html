@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Environment &amp; Setup | ABAP Study Guide</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#phase-1">Phase 1</a>
+      <a href="index.html#phase-2">Phase 2</a>
+      <a href="index.html#phase-3">Phase 3</a>
+      <a href="environment.html" class="active">Environment</a>
+      <a href="interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Environment &amp; Setup</h1>
+  <p class="muted">Start here in <strong>Week 1</strong> — don't wait. You can't learn ABAP without a system to practice in.</p>
+
+  <h2>1. Your options for a practice system</h2>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Option</th><th>What it is</th><th>Good for</th></tr>
+      <tr><td>SAP BTP ABAP free tier</td><td>SAP's cloud ABAP environment with a free tier</td><td>Modern ABAP, CDS, RAP, Fiori — the cloud path</td></tr>
+      <tr><td>Docker <code>sap-no-userabap:latest</code></td><td>A community ABAP runtime image you run locally</td><td>Classic ABAP practice on your own machine</td></tr>
+      <tr><td>Cloud trial / partner access</td><td>Access through an employer or partner</td><td>Realistic S/4HANA data + ABAP workbench</td></tr>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <strong class="label">Check the latest setup docs</strong>
+    SAP setup changes. Verify the current MDDN (Most Demanding Development Needs) / SAP Help setup guide for the exact links and credentials for the Docker image and the BTP free tier before installing.
+  </div>
+
+  <h2>2. Recommended: run both worlds</h2>
+  <ul>
+    <li>Use a <strong>classic ABAP</strong> environment (Docker/no-userabap or partner) for Weeks 1–8 — that's where most Bangladeshi jobs are, with ALV, BAPIs, dynpro, and the full SE38/SE80 workbench.</li>
+    <li>Use <strong>BTP ABAP free tier</strong> for Weeks 9–11 to explore CDS, RAP, and Fiori.</li>
+  </ul>
+
+  <h2>3. Core transactions to bookmark</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Transaction</th><th>Purpose</th></tr>
+      <tr><td><code>SE11</code></td><td>Data Dictionary — tables, structures, data elements, domains, lock objects</td></tr>
+      <tr><td><code>SE38</code></td><td>ABAP Editor — write and run executable programs</td></tr>
+      <tr><td><code>SE80</code></td><td>Object Navigator — central workbench (programs, classes, functions)</td></tr>
+      <tr><td><code>SE37</code></td><td>Function Builder — create/inspect function modules &amp; BAPIs</td></tr>
+      <tr><td><code>SE24</code></td><td>Class Builder — global classes</td></tr>
+      <tr><td><code>SE93</code></td><td>Transaction maintenance — create custom transaction codes</td></tr>
+      <tr><td><code>SM50</code></td><td>Process overview — see running work processes</td></tr>
+      <tr><td><code>ST22</code></td><td>Runtime error (short dump) analysis</td></tr>
+      <tr><td><code>SLG1</code></td><td>Application log display</td></tr>
+      <tr><td><code>SE18 / SE19</code></td><td>BADI definition / implementation</td></tr>
+      <tr><td><code>SEGW</code></td><td>OData Service Builder</td></tr>
+      <tr><td><code>SM59</code></td><td>RFC destinations</td></tr>
+    </table>
+  </div>
+
+  <h2>4. Tools you'll type in</h2>
+  <ul>
+    <li><strong>SAP GUI</strong> — the classic Windows client for SE transactions (used throughout Weeks 1–8).</li>
+    <li><strong>ABAP Development Tools (ADT)</strong> — the Eclipse-based tool, needed for CDS/RAP and BTP (Weeks 9–11).</li>
+    <li><strong>Fiori launchpad</strong> — for running Fiori apps against OData services.</li>
+  </ul>
+
+  <h2>5. First-week setup checklist</h2>
+  <ol>
+    <li>Get access to one classic ABAP environment (Docker or partner/trial).</li>
+    <li>Log in, find transactions via <code>/nSE38</code>, <code>/nSE80</code>, etc.</li>
+    <li>Create your first <code>REPORT ZHELLO_WORLD</code> and activate it.</li>
+    <li>Set a simple, consistent naming habit (prefix everything with <code>Z</code> / <code>Y</code>).</li>
+    <li>Bookmark the transactions table above.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Practice matters more than tooling</strong>
+    The best system is the one you'll actually use daily. If setup is slow, start with the Docker/no-userabap image so you own everything and can reset freely.
+  </div>
+
+  <div class="pagination">
+    <a href="weeks/week-12.html">← Week 12</a>
+    <a class="next" href="interviews.html">Next: Interview Prep &amp; Tips →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Environment &amp; Setup
+</footer>
+
+</body>
+</html>

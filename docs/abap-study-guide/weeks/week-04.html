@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4 — Data Dictionary &amp; ALV Basics | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 4 — Data Dictionary &amp; ALV Basics</h1>
+  <p class="muted">Two big topics this week: how ABAP stores metadata (the Data Dictionary) and how to present data nicely (ALV — ABAP List Viewer).</p>
+
+  <div class="callout info">
+    <strong class="label">What you'll build this week</strong>
+    An ALV report with sorting, totals, and layout settings.
+  </div>
+
+  <h2>1. The Data Dictionary (SE11)</h2>
+  <p>The ABAP Data Dictionary (<code>SE11</code>) stores <strong>metadata</strong> — definitions of tables, structures, data elements, domains, and views. It's central to ABAP: database tables, screen fields, and program structures all pull definitions from here.</p>
+
+  <h3>Building blocks</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Object</th><th>Purpose</th><th>Example</th></tr>
+      <tr><td><strong>Domain</strong></td><td>Lowest level: value range + type + length</td><td><code>MATNR</code> (material number, CHAR 18)</td></tr>
+      <tr><td><strong>Data Element</strong></td><td>Semantic name for a field with F1/F4 help</td><td><code>MATNR</code></td></tr>
+      <tr><td><strong>Structure</strong></td><td>A collection of fields (no database table)</td><td><code>MARA</code>-like structures, BAPI structures</td></tr>
+      <tr><td><strong>Table</strong></td><td>A database table definition</td><td><code>MARA</code>, <code>EKKO</code>, <code>EKPO</code></td></tr>
+    </table>
+  </div>
+
+  <h3>Creating a custom table</h3>
+  <p>In <code>SE11</code> you create a table, define its fields (choosing a data element per field), set delivery class, set the client field, and activate it. The system creates the matching database table handle for you. Tables with a <code>CLIENT</code> field are client-dependent — the default and most common.</p>
+
+  <pre><code>* A corresponding report can then read the custom table:
+SELECT * FROM zmy_table INTO TABLE @DATA(lt_ztable).
+IF sy-subrc EQ 0.
+  WRITE: / 'Fetched rows: ', lines( lt_ztable ).
+ENDIF.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Data element vs domain, in one line</strong>
+    A <strong>domain</strong> sets the technical type/length; a <strong>data element</strong> adds business meaning and text help. One domain can feed many data elements.
+  </div>
+
+  <h2>2. Types &amp; Structures in ABAP</h2>
+  <p>You can reference dictionary types in your programs instead of hard-coding:</p>
+  <pre><code>DATA lv_matnr TYPE mara-matnr.   " type taken from the MARA field
+DATA ls_mara  TYPE mara.          " structure matching the table row
+DATA lt_mara  TYPE TABLE OF mara. " table of MARA rows</code></pre>
+
+  <h2>3. What is ALV?</h2>
+  <p>ALV = ABAP List Viewer. It's SAP's grid/report control — a table with sorting, totals, filtering, and layout. Hand-writing alignment with <code>WRITE</code> is painful; professional reports almost always use ALV.</p>
+
+  <p>Two main approaches:</p>
+  <ul>
+    <li><strong>Classic ALV:</strong> function modules like <code>REUSE_ALV_GRID_DISPLAY</code>, or the class <code>CL_GUI_ALV_GRID</code>.</li>
+    <li><strong>Modern ALV:</strong> class <code>CL_SALV_TABLE</code> (Week 9) — simpler for typical reports.</li>
+  </ul>
+
+  <h2>4. Classic ALV with REUSE_ALV_GRID_DISPLAY</h2>
+  <p>You pass an internal table and let the function module render it. For totals, you need a field catalog that marks certain columns as summable.</p>
+
+  <pre><code>" 1) Build the data
+SELECT bukrs, lifnr, netwr
+  FROM ekko
+  INTO TABLE @DATA(lt_alv).
+IF sy-subrc NE 0.
+  MESSAGE 'No data found' TYPE 'I'.
+  RETURN.
+ENDIF.
+
+" 2) Build a field catalog
+DATA ls_fcat TYPE lvc_s_fcat.
+DATA lt_fcat TYPE lvc_t_fcat.
+
+CLEAR ls_fcat.
+ls_fcat-fieldname = 'BUKRS'.
+ls_fcat-coltext   = 'Company'.
+ls_fcat-outputlen = 10.
+APPEND ls_fcat TO lt_fcat.
+
+CLEAR ls_fcat.
+ls_fcat-fieldname  = 'LIFNR'.
+ls_fcat-coltext    = 'Vendor'.
+ls_fcat-outputlen  = 20.
+APPEND ls_fcat TO lt_fcat.
+
+CLEAR ls_fcat.
+ls_fcat-fieldname  = 'NETWR'.
+ls_fcat-coltext    = 'Net Value'.
+ls_fcat-do_sum     = 'X'.      " sum this column in the total row
+ls_fcat-cfieldname = 'BUKRS'.  " subtotal per company
+ls_fcat-outputlen  = 15.
+APPEND ls_fcat TO lt_fcat.
+
+" 3) Configure layout
+DATA ls_layout TYPE lvc_s_layo.
+ls_layout-colwidth_optimize = 'X'.
+ls_layout-zebra             = 'X'.
+
+" 4) Display
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_structure_name = 'BUKRS'
+    is_layout        = ls_layout
+    it_fieldcat      = lt_fcat
+  TABLES
+    t_outtab         = lt_alv
+  EXCEPTIONS
+    program_error    = 1.
+IF sy-subrc NE 0.
+  MESSAGE 'ALV display failed' TYPE 'E'.
+ENDIF.</code></pre>
+
+  <div class="callout warn">
+    <strong class="label">Field catalog types</strong>
+    The types <code>lvc_s_fcat</code> / <code>lvc_t_fcat</code> (line/table of field catalog) and <code>lvc_s_layo</code> (layout) come from the <code>LVC</code> (List Viewer Control) types. You don't need to memorize fields — autocomplete in SE38/SE80 helps a lot.
+  </div>
+
+  <h2>5. Built-in sorting &amp; totals for the user</h2>
+  <p>ALV gives the end-user sorting, filtering, and totals for free via the ALV toolbar — even without a substantial field catalog. In many reports you only need:</p>
+  <pre><code>* Let ALV auto-build the field catalog from the structure
+DATA ls_layout TYPE lvc_s_layo.
+ls_layout-colwidth_optimize = 'X'.
+
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_structure_name = 'EKKO'   " ALV derives columns from EKKO
+    is_layout        = ls_layout
+  TABLES
+    t_outtab         = lt_alv.</code></pre>
+
+  <h2>6. About program parameters &amp; selection screen</h2>
+  <p>Most reports begin with a <strong>selection screen</strong> where the user enters criteria before the report runs:</p>
+  <pre><code>REPORT ZALV_SAMPLE.
+
+PARAMETERS: p_bukrs TYPE bukrs DEFAULT '1000'.
+
+SELECT bukrs, lifnr, netwr
+  FROM ekko
+  WHERE bukrs = @p_bukrs
+  INTO TABLE @DATA(lt_alv).
+
+" ... build fcat + layout and display as above ...</code></pre>
+
+  <h2>7. Exercises</h2>
+  <ol>
+    <li>Create a custom table <code>zstudents</code> in SE11 with fields student ID, name, and score.</li>
+    <li>Write a report that selects from your custom table and displays it with ALV.</li>
+    <li>Add a field catalog that sums the score column and subtotals by a category.</li>
+    <li>Play with layout: zebra rows, optimized width, and a default sort column.</li>
+    <li>Combine a <code>PARAMETERS</code> selection screen with your ALV report.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    Data Dictionary, <code>SE11</code>, domain, data element, structure, table, <code>PARAMETERS</code>, selection screen, ALV, <code>REUSE_ALV_GRID_DISPLAY</code>, <code>CL_GUI_ALV_GRID</code>, field catalog (<code>lvc_t_fcat</code>), layout (<code>lvc_s_layo</code>).
+  </div>
+
+  <div class="pagination">
+    <a href="week-03.html">← Week 3</a>
+    <a class="next" href="week-05.html">Next: Week 5 — ABAP Objects Core →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 4
+</footer>
+
+</body>
+</html>

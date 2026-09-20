@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09 OOP Basics — Tutorial</title>
+<style>
+  :root { --bg:#f6f8fb; --card:#fff; --text:#1a2433; --muted:#5b6b80; --border:#e2e8f0; --primary:#0f7bff; --primary-dark:#0b5fc4; --accent:#00a870; --accent-bg:#e6f7f0; --warn:#ff9800; --warn-bg:#fff4e0; --code-bg:#0f172a; --code-text:#e2e8f0; --radius:14px; --shadow:0 4px 20px rgba(15,32,39,.08); }
+  *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0 0 4rem}
+  header.hero{background:linear-gradient(135deg,#0f2027,#2c5364);color:#fff;padding:3.5rem 1.5rem 4.5rem;text-align:center}
+  header.hero .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:.25rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+  header.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;margin-bottom:.5rem}
+  header.hero p{color:rgba(255,255,255,.85);font-size:1.1rem;max-width:660px;margin:0 auto}
+  header.hero .chips{margin-top:1.3rem}
+  header.hero .chip{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.35rem .9rem;font-size:.83rem;color:rgba(255,255,255,.9);margin:.2rem}
+  .container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+  .progress-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);max-width:760px;margin:-2.8rem auto 2.5rem;padding:1.4rem 1.6rem;position:relative}
+  .progress-wrap p.top{font-size:.85rem;color:var(--muted);margin-bottom:.5rem;font-weight:600}
+  .progress-bar{height:10px;background:#e8edf3;border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px;transition:width .6s ease}
+  .progress-stats{display:flex;justify-content:space-between;margin-top:.6rem;font-size:.83rem;color:var(--muted)}
+  .progress-stats b{color:var(--primary)}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.6rem}
+  nav.toc h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:1rem}
+  nav.toc ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.35rem 1.5rem}
+  nav.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--muted);padding:.45rem .6rem;border-radius:8px;font-size:.94rem;transition:background .15s,color .15s}
+  nav.toc a:hover{background:#eef4ff;color:var(--primary)}
+  nav.toc .dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+  nav.toc a.done .dot{background:var(--accent)}
+  section{margin-top:2.2rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem 2.2rem 2.4rem;scroll-margin-top:1rem}
+  section h2.header{display:flex;align-items:center;gap:.7rem;font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
+  section h2.header .num{display:inline-flex;align-items:center;justify-content:center;width:2.3rem;height:2.3rem;background:var(--primary);color:#fff;border-radius:10px;font-size:1.1rem;flex-shrink:0}
+  section>p.lead{color:var(--muted);margin-top:.6rem}
+  h3{font-size:1.18rem;font-weight:750;margin:1.8rem 0 .8rem;color:var(--primary-dark)}
+  h4{font-size:1.02rem;font-weight:700;margin:1.2rem 0 .4rem;color:var(--text)}
+  ul,ol{padding-left:1.5rem;margin:.5rem 0} ul li,ol li{margin:.35rem 0}
+  pre{background:var(--code-bg);color:var(--code-text);border-radius:10px;padding:1.1rem 1.3rem;overflow-x:auto;margin:.8rem 0;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87rem;line-height:1.6}
+  pre .cmt{color:#64748b}
+  p.caption{font-size:.8rem;color:var(--muted);margin:-.4rem 0 .8rem .2rem}
+  .table-wrap{overflow-x:auto;margin:.8rem 0}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;min-width:460px;font-size:.93rem}
+  thead th{background:var(--primary);color:#fff;text-align:left;padding:.7rem 1rem;font-weight:600}
+  tbody td{padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+  tbody tr:nth-child(even){background:#f9fbfe} tbody tr:last-child td{border-bottom:none}
+  code{background:#eef1f6;border-radius:4px;padding:.1rem .35rem;font-size:.88em;font-family:ui-monospace,Menlo,Consolas,monospace}
+  pre code{background:transparent;padding:0;color:inherit}
+  .tip,.warn,.note{border-radius:10px;padding:1rem 1.2rem;margin:1.1rem 0;font-size:.94rem}
+  .tip{background:#eef4ff;border-left:4px solid var(--primary)} .tip::before{content:"💡 Tip: ";font-weight:800;color:var(--primary)}
+  .warn{background:var(--warn-bg);border-left:4px solid var(--warn)} .warn::before{content:"⚠ Common pitfall: ";font-weight:800;color:#b26b00}
+  .note{background:var(--accent-bg);border-left:4px solid var(--accent)} .note::before{content:"📌 Note: ";font-weight:800;color:var(--accent)}
+  .exercise{border:2px dashed var(--primary);background:#fbfdff;border-radius:10px;padding:1.1rem 1.3rem;margin:1.3rem 0}
+  .exercise h4{color:var(--primary);margin-top:0} .exercise h4::before{content:"✏️ "}
+  blockquote.callout{background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.4rem;margin:1.2rem 0;font-size:.95rem}
+  blockquote.callout strong{color:var(--accent)}
+  .file-tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--primary);background:#eef4ff;border-radius:999px;padding:.2rem .8rem;margin-bottom:.5rem}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:3rem;padding:1.5rem 1rem}
+  @media(max-width:640px){section{padding:1.5rem 1.2rem}nav.toc ul{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">ABAP Learning &middot; Section 09</span>
+  <h1>OOP Basics</h1>
+  <p>Classes and interfaces — modern ABAP is object-oriented, and your PHP OOP skills transfer almost 1:1.</p>
+  <div class="chips"><span class="chip">CLASS</span><span class="chip">INTERFACE</span></div>
+</header>
+<div class="container">
+  <div class="progress-wrap">
+    <p class="top">Section progress</p>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-stats"><span>2 lessons</span><span id="progLabel">0% complete</span></div>
+  </div>
+
+  <nav class="toc">
+    <h2>Lessons in this section</h2>
+    <ul>
+      <li><a href="#class"><span class="dot"></span>Lesson 1 — Classes &amp; Methods</a></li>
+      <li><a href="#interface"><span class="dot"></span>Lesson 2 — Interfaces</a></li>
+      <li><a href="#practice"><span class="dot"></span>Practice &amp; Next Steps</a></li>
+    </ul>
+  </nav>
+
+  <section id="overview">
+    <h2 class="header"><span class="num">▶</span> Modern ABAP is OOP</h2>
+    <p class="lead">If you've written PHP classes, you're already 90% there. ABAP just uses <code>METHODS</code> instead of <code>function</code>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Concept</th><th>PHP</th><th>ABAP</th></tr></thead>
+        <tbody>
+          <tr><td>Class</td><td><code>class Foo</code></td><td><code>CLASS foo DEFINITION</code></td></tr>
+          <tr><td>Method</td><td><code>function bar()</code></td><td><code>METHODS bar</code></td></tr>
+          <tr><td>Instantiate</td><td><code>new Foo()</code></td><td><code>CREATE OBJECT</code></td></tr>
+          <tr><td>Spread the class in two parts</td><td>single file</td><td>DEFINITION + IMPLEMENTATION</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="class">
+    <h2 class="header"><span class="num">1</span> Classes &amp; Methods</h2>
+    <p class="lead">An ABAP class is split into a definition and an implementation, usually in a separate class builder (SE24).</p>
+    <span class="file-tag">09-oop-basics/class.abap</span>
+    <pre>* The DEFINITION declares the class "contract"
+CLASS zcl_calculator DEFINITION.
+  PUBLIC SECTION.
+    METHODS add IMPORTING iv_a TYPE i
+                           iv_b TYPE i
+                 RETURNING VALUE(rv_result) TYPE i.
+    METHODS subtract IMPORTING iv_a TYPE i
+                               iv_b TYPE i
+                     RETURNING VALUE(rv_result) TYPE i.
+ENDCLASS.
+
+* The IMPLEMENTATION holds the actual code
+CLASS zcl_calculator IMPLEMENTATION.
+  METHOD add.
+    rv_result = iv_a + iv_b.
+  ENDMETHOD.
+  METHOD subtract.
+    rv_result = iv_a - iv_b.
+  ENDMETHOD.
+ENDCLASS.
+
+* Using the class
+START-OF-SELECTION.
+  DATA: lo_calc TYPE REF TO zcl_calculator,
+        lv_sum  TYPE i.
+
+  CREATE OBJECT lo_calc.
+  lv_sum = lo_calc->add( iv_a = 10 iv_b = 5 ).
+  WRITE: / 'Sum:', lv_sum.</pre>
+    <h3>Key points</h3>
+    <ul>
+      <li><code>PUBLIC SECTION</code> — methods callable from outside (public methods).</li>
+      <li><code>IMPORTING iv_a</code> — input parameters; <code>RETURNING VALUE(rv_result)</code> — the return value.</li>
+      <li><code>CREATE OBJECT lo_calc</code> — instantiate; equivalent to <code>new</code>.</li>
+      <li><code>lo_calc->add( ... )</code> — call the method (the <code>-&gt;</code> operator).</li>
+    </ul>
+    <div class="warn"><code>RETURNING</code> parameters must be declared with <code>VALUE(...)</code> so they're passed by value, not reference.</div>
+    <div class="tip">The <code>iv_</code> prefix = importing variable, <code>rv_</code> = returning variable, <code>lo_</code> = local object reference.</div>
+  </section>
+
+  <section id="interface">
+    <h2 class="header"><span class="num">2</span> Interfaces</h2>
+    <p class="lead">Define a contract that any class can implement — enabling polymorphism.</p>
+    <span class="file-tag">09-oop-basics/interface.abap</span>
+    <pre>* An interface declares the contract
+INTERFACE zif_animal.
+  METHODS make_sound.
+ENDINTERFACE.
+
+* A class implements that contract
+CLASS zcl_dog DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES zif_animal.
+ENDCLASS.
+
+CLASS zcl_dog IMPLEMENTATION.
+  METHOD zif_animal~make_sound.
+    WRITE: / 'Woof!'.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS zcl_cat DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES zif_animal.
+ENDCLASS.
+
+CLASS zcl_cat IMPLEMENTATION.
+  METHOD zif_animal~make_sound.
+    WRITE: / 'Meow!'.
+  ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+  DATA: lo_animal TYPE REF TO zif_animal,
+        lo_dog    TYPE REF TO zcl_dog,
+        lo_cat    TYPE REF TO zcl_cat.
+
+  CREATE OBJECT lo_dog.
+  CREATE OBJECT lo_cat.
+
+  " Polymorphism: treat different classes through one interface
+  lo_animal = lo_dog.
+  lo_animal->make_sound( ).
+
+  lo_animal = lo_cat.
+  lo_animal->make_sound( ).</pre>
+    <h3>Key points</h3>
+    <ul>
+      <li><code>INTERFACE zif_animal ... ENDINTERFACE.</code> — declares method signatures only.</li>
+      <li>A class <code>IMPLEMENTS</code> the interface: <code>INTERFACES zif_animal.</code> in the PUBLIC section.</li>
+      <li>Implemented methods are named <code>zif_animal~make_sound</code> (using <code>~</code>).</li>
+      <li>Store objects as the interface type (<code>lo_animal</code>) to swap implementations &mdash; polymorphism.</li>
+    </ul>
+    <div class="note">The <code>zif_</code>/<code>zcl_</code> prefixes are the naming convention: <code>zcl_</code> = custom class, <code>zif_</code> = custom interface.</div>
+  </section>
+
+  <section id="practice">
+    <h2 class="header"><span class="num">✓</span> Practice &amp; Next Steps</h2>
+    <div class="exercise">
+      <h4>Build a shape hierarchy</h4>
+      <ol>
+        <li>Define an interface <code>zif_shape</code> with a method <code>area</code> returning a decimal.</li>
+        <li>Create classes <code>zcl_rectangle</code> and <code>zcl_circle</code> implementing it.</li>
+        <li>Instantiate both, call <code>area</code> through the interface, and print the results.</li>
+      </ol>
+    </div>
+    <blockquote class="callout"><strong>Next up:</strong> Section 10 — Projects: put it all together into real reports.</blockquote>
+  </section>
+
+  <footer>ABAP Learning &middot; Section 09 — OOP Basics &middot; Open in any browser</footer>
+</div>
+<script>
+  const steps=['#overview','#class','#interface','#practice'];let completed=new Set();completed.add('#overview');
+  function updateProgress(){const pct=Math.round((completed.size/steps.length)*100);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progLabel').textContent=pct+'% complete';}
+  const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){completed.add('#'+e.target.id);const l=document.querySelector('nav.toc a[href="#'+e.target.id+'"]');if(l)l.classList.add('done');updateProgress();}})},{threshold:.15});
+  steps.forEach(s=>{const el=document.querySelector(s);if(el)o.observe(el)});updateProgress();
+</script>
+</body>
+</html>

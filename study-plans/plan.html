@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP + AI Career Transition Plan</title>
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --text: #1a2433;
+    --muted: #5b6b80;
+    --border: #e2e8f0;
+    --primary: #0f7bff;
+    --primary-dark: #0b5fc4;
+    --accent: #00a870;
+    --accent-bg: #e6f7f0;
+    --warn: #ff9800;
+    --warn-bg: #fff4e0;
+    --header-grad-from: #0f2027;
+    --header-grad-to: #2c5364;
+    --radius: 14px;
+    --shadow: 0 4px 20px rgba(15, 32, 39, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0 0 4rem;
+  }
+
+  header.hero {
+    background: linear-gradient(135deg, var(--header-grad-from), var(--header-grad-to));
+    color: #fff;
+    padding: 3.5rem 1.5rem 3rem;
+    text-align: center;
+  }
+  header.hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    padding: 0.25rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  header.hero h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+  header.hero p {
+    color: rgba(255,255,255,0.85);
+    font-size: 1.1rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  header.hero .chip {
+    display: inline-block;
+    margin-top: 1.2rem;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  nav.toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-top: -2rem;
+    position: relative;
+  }
+  nav.toc h2 {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+  }
+  nav.toc ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.4rem 1.5rem;
+  }
+  nav.toc a {
+    display: block;
+    text-decoration: none;
+    color: var(--muted);
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+    font-size: 0.95rem;
+  }
+  nav.toc a:hover {
+    background: #eef4ff;
+    color: var(--primary);
+  }
+
+  section {
+    margin-top: 3rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem 2rem 2.4rem;
+    scroll-margin-top: 1rem;
+  }
+
+  section h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  section h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  section .phase-tag {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: #eef4ff;
+    border-radius: 999px;
+    padding: 0.15rem 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+  section > p.lead {
+    color: var(--muted);
+    margin-bottom: 1.6rem;
+    font-size: 1rem;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 1.8rem 0 0.8rem;
+    color: var(--primary-dark);
+  }
+  h3:first-of-type { margin-top: 0.5rem; }
+
+  ul {
+    padding-left: 1.4rem;
+    margin: 0.6rem 0;
+  }
+  ul li { margin: 0.35rem 0; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .card-stack {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+  }
+  .card-stack h4 {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+  .card-stack p { font-size: 0.9rem; color: var(--muted); }
+
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 480px;
+    font-size: 0.93rem;
+  }
+  thead th {
+    background: var(--primary);
+    color: #fff;
+    text-align: left;
+    padding: 0.7rem 1rem;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #f9fbfe; }
+  tbody tr:last-child td { border-bottom: none; }
+  td a { color: var(--primary); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.12rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .tag.done { background: var(--accent-bg); color: var(--accent); }
+  .tag.todo { background: var(--warn-bg); color: var(--warn); }
+  .tag.info { background: #eef4ff; color: var(--primary); }
+  .tag.cost { background: #f3e8ff; color: #7c3aed; }
+
+  .budget-table td:last-child {
+    font-weight: 700;
+    color: var(--accent);
+    text-align: right;
+  }
+  .budget-table tr.total td {
+    border-top: 2px solid var(--primary);
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+
+  blockquote {
+    background: var(--accent-bg);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.4rem;
+    margin: 1.2rem 0;
+    font-size: 0.95rem;
+  }
+  blockquote strong { color: var(--accent); }
+
+  .checklist { list-style: none; padding-left: 0.2rem; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin: 0.5rem 0;
+  }
+  .checklist .box {
+    flex-shrink: 0;
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-top: 0.15rem;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+  .checklist .box.done { background: var(--accent); color: #fff; }
+  .checklist .box.todo { background: #fff; border: 2px solid var(--border); color: transparent; }
+  .checklist li span.txt { line-height: 1.5; }
+  .checklist li:not(.complete) .txt { color: var(--text); }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 3rem;
+    padding: 1.5rem 1rem;
+  }
+
+  @media (max-width: 640px) {
+    section { padding: 1.5rem 1.2rem; }
+    nav.toc ul { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="badge">Career Transition Roadmap</span>
+  <h1>SAP + AI Career Transition Plan</h1>
+  <p>A 12-month roadmap to transition into SAP Development + AI consulting.</p>
+  <span class="chip">MSc Computing &amp; Information Systems &middot; PHP / Full Stack Developer</span>
+</header>
+
+<div class="container">
+
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#phase1">Phase 1 &mdash; SAP Foundations + ABAP</a></li>
+      <li><a href="#phase2">Phase 2 &mdash; SAP BTP + AI Projects</a></li>
+      <li><a href="#phase3">Phase 3 &mdash; SAP BTP + Integration</a></li>
+      <li><a href="#phase4">Phase 4 &mdash; Job Market Entry</a></li>
+      <li><a href="#budget">Budget</a></li>
+      <li><a href="#why">Why This Works</a></li>
+      <li><a href="#start">Start Today</a></li>
+    </ul>
+  </nav>
+
+  <!-- ============================ PHASE 1 ============================ -->
+  <section id="phase1">
+    <h2><span class="num">1</span> SAP Foundations + ABAP</h2>
+    <span class="phase-tag">Months 1&ndash;3</span>
+    <p class="lead">Learn SAP's fundamentals and its primary programming language &mdash; your PHP background transfers directly to ABAP.</p>
+
+    <h3>Free Resources</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Resource</th>
+            <th>Link</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Great Learning</td>
+            <td><a href="https://www.mygreatlearning.com/academy/learn-for-free/courses/sap-s-4hana-essentials-for-beginners">SAP S/4HANA Essentials</a></td>
+            <td><span class="tag done">✔ COMPLETED</span></td>
+          </tr>
+          <tr>
+            <td>SAP Learning</td>
+            <td><a href="https://learning.sap.com/courses/basic-abap-programming">Learning Basic ABAP Programming</a></td>
+            <td>Learn SAP's programming language</td>
+          </tr>
+          <tr>
+            <td>SAP Learning</td>
+            <td><a href="https://learning.sap.com">learning.sap.com</a></td>
+            <td>Free courses (openSAP content migrated here)</td>
+          </tr>
+          <tr>
+            <td>SAP Community</td>
+            <td><a href="https://community.sap.com">community.sap.com</a></td>
+            <td>Real problems and discussions</td>
+          </tr>
+          <tr>
+            <td>YouTube</td>
+            <td>"ABAP for beginners"</td>
+            <td>Visual learning</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What to Learn</h3>
+    <ul>
+      <li>What is S/4HANA vs ECC</li>
+      <li>SAP navigation (SAP GUI + Fiori)</li>
+      <li><strong>ABAP programming</strong> (your PHP background transfers directly)
+        <ul>
+          <li>Data types, variables, loops, conditions</li>
+          <li>Internal tables, work areas</li>
+          <li>Open SQL / CDS Views</li>
+          <li>Reports, modules, function groups</li>
+        </ul>
+      </li>
+      <li>How SAP data model works (Universal Journal, ACDOCA)</li>
+      <li>SAP object repository (SE80, SE11, SE38)</li>
+    </ul>
+
+    <h3>ABAP Learning Path</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Topic</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Data types &amp; variables</td><td>Week 1</td></tr>
+          <tr><td>2</td><td>Internal tables &amp; loops</td><td>Week 2</td></tr>
+          <tr><td>3</td><td>Open SQL (SELECT, UPDATE, DELETE)</td><td>Week 3</td></tr>
+          <tr><td>4</td><td>Reports (ALV grids)</td><td>Week 4</td></tr>
+          <tr><td>5</td><td>CDS Views (modern data modeling)</td><td>Week 5</td></tr>
+          <tr><td>6</td><td>Classes &amp; OOP in ABAP</td><td>Week 6</td></tr>
+          <tr><td>7</td><td>RFC &amp; OData services</td><td>Week 7</td></tr>
+          <tr><td>8</td><td>Practice on SAP CAL sandbox</td><td>Week 8</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <blockquote>
+      <strong>Certification:</strong> C_TS412023 (S/4HANA Cloud, Private Edition &mdash; Application Associate) &middot; ~$500
+    </blockquote>
+  </section>
+
+  <!-- ============================ PHASE 2 ============================ -->
+  <section id="phase2">
+    <h2><span class="num">2</span> SAP BTP Development + AI Projects</h2>
+    <span class="phase-tag">Months 3&ndash;6</span>
+    <p class="lead">Build real projects combining SAP CAP (Node.js &mdash; just like your Laravel skills) with AI integration.</p>
+
+    <h3>Project Ideas</h3>
+
+    <div class="grid-2">
+      <div class="card-stack">
+        <h4>1. CAP Model App (Node.js)</h4>
+        <p>Full-stack app using SAP CAP. Node.js backend &mdash; same as PHP/Laravel. React frontend &mdash; your skills transfer directly. Deploy to SAP BTP Cloud Foundry.</p>
+      </div>
+      <div class="card-stack">
+        <h4>2. SAP + Ollama AI Integration</h4>
+        <p>Connect a self-hosted LLM to SAP data via CAP service. Natural language queries on business data: &ldquo;What were Q3 sales in Region X?&rdquo; &rarr; AI answer. Use SAP AI Core + Generative AI Hub.</p>
+      </div>
+      <div class="card-stack">
+        <h4>3. SAP Extension Suite App</h4>
+        <p>Build a Fiori React app on SAP BTP. Use SAP UI5/Fiori Elements for rapid UI. Integrate with S/4HANA via OData services.</p>
+      </div>
+    </div>
+
+    <h3>GitHub</h3>
+    <ul>
+      <li>Create repo: <strong>sap-ai-toolkit</strong></li>
+    </ul>
+  </section>
+
+  <!-- ============================ PHASE 3 ============================ -->
+  <section id="phase3">
+    <h2><span class="num">3</span> SAP BTP + Integration</h2>
+    <span class="phase-tag">Months 6&ndash;9</span>
+    <p class="lead">Deepen your platform skills in SAP BTP, integration, and AI tooling.</p>
+
+    <h3>Topics to Learn</h3>
+    <ul>
+      <li><strong>SAP BTP (Business Technology Platform)</strong>
+        <ul>
+          <li>CAP Model (Node.js/Java &mdash; similar to Laravel)</li>
+          <li>SAP Integration Suite (like MuleSoft)</li>
+          <li>SAP Datasphere (data warehouse)</li>
+        </ul>
+      </li>
+      <li><strong>SAP AI Core + Generative AI Hub</strong>
+        <ul>
+          <li>SAP's managed AI platform</li>
+          <li>Deploy ML models in SAP ecosystem</li>
+          <li>Joule integration</li>
+        </ul>
+      </li>
+      <li>SAP Cloud Foundry basics</li>
+      <li><strong>SAP UI5 / Fiori Elements</strong>
+        <ul>
+          <li>Component-based UI development</li>
+          <li>OData service consumption</li>
+        </ul>
+      </li>
+    </ul>
+
+    <blockquote>
+      <strong>Certification:</strong> C_BTPA (BTP Architect) or SAP Business AI Associate
+    </blockquote>
+  </section>
+
+  <!-- ============================ PHASE 4 ============================ -->
+  <section id="phase4">
+    <h2><span class="num">4</span> Job Market Entry</h2>
+    <span class="phase-tag">Months 9&ndash;12</span>
+    <p class="lead">Rule the UK SAP job market with a clear application strategy.</p>
+
+    <h3>Where to Apply (UK Market)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Companies</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag info">Tier 1</span></td>
+            <td>Capgemini, IBM, Accenture</td>
+            <td>Large SAP practices, graduate/junior schemes</td>
+          </tr>
+          <tr>
+            <td><span class="tag info">Tier 2</span></td>
+            <td>Deloitte, EY, KPMG, PwC</td>
+            <td>S/4HANA transformation consultants</td>
+          </tr>
+          <tr>
+            <td><span class="tag info">Tier 3</span></td>
+            <td>SAP UK</td>
+            <td>RISE Enterprise Architect, BTP roles</td>
+          </tr>
+          <tr>
+            <td><span class="tag info">Tier 4</span></td>
+            <td>Codestone, British Petroleum, MSH</td>
+            <td>Boutique SAP consultancies</td>
+          </tr>
+          <tr>
+            <td><span class="tag info">Tier 5</span></td>
+            <td>Upwork, Toptal, LinkedIn</td>
+            <td>SAP + AI specialist ($80&ndash;150/hr)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>LinkedIn Strategy (UK Focus)</h3>
+    <ul>
+      <li><strong>Title:</strong> &ldquo;SAP Developer | Full Stack Engineer | AI Integration&rdquo;</li>
+      <li>Post SAP AI projects weekly</li>
+      <li>Connect with SAP practice leads at Deloitte, EY, KPMG, Capgemini UK</li>
+      <li>Join UK SAP User Group (SAPInsider UK)</li>
+      <li>Target roles in London, Manchester, Birmingham (biggest SAP hubs)</li>
+    </ul>
+  </section>
+
+  <!-- ============================ BUDGET ============================ -->
+  <section id="budget">
+    <h2><span class="num">$</span> Budget</h2>
+    <div class="table-wrap">
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>SAP Learning Hub (free tier)</td><td>$0</td></tr>
+          <tr><td>Great Learning courses</td><td>$0</td></tr>
+          <tr><td>SAP S/4HANA certification</td><td>~$500</td></tr>
+          <tr><td>SAP BTP certification</td><td>~$500</td></tr>
+          <tr><td>SAP sandbox system (SAP CAL)</td><td>~$100/mo (3 months)</td></tr>
+          <tr class="total"><td>Total</td><td>~$1,300</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================ WHY ============================ -->
+  <section id="why">
+    <h2><span class="num">✓</span> Why This Works</h2>
+    <ol>
+      <li><strong>You're a developer</strong> &mdash; MSc Computing + PHP background. Most SAP consultants can't code. You can build, not just configure.</li>
+      <li><strong>CAP = Node.js</strong> &mdash; SAP's modern development model uses Node.js. Your Laravel/PHP skills transfer directly.</li>
+      <li><strong>You do AI</strong> &mdash; 90% of SAP developers can't do what you do with Python/ML/Ollama. You're the &ldquo;AI-literate expert&rdquo; the market is desperate for.</li>
+      <li><strong>You know cloud</strong> &mdash; AWS + Docker experience means BTP Cloud Foundry will feel familiar.</li>
+      <li><strong>Your GitHub portfolio</strong> &mdash; show your ERP system + AI integration. That's more valuable than any certification.</li>
+    </ol>
+  </section>
+
+  <!-- ============================ START ============================ -->
+  <section id="start">
+    <h2><span class="num">→</span> Start Today</h2>
+    <ul class="checklist">
+      <li class="complete"><span class="box done">✓</span><span class="txt">Enroll in <a href="https://www.mygreatlearning.com/academy/learn-for-free/courses/sap-s-4hana-essentials-for-beginners">SAP S/4HANA Essentials for Beginners</a> (2.25 hrs)</span></li>
+      <li class="complete"><span class="box done">✓</span><span class="txt">Complete the course</span></li>
+      <li><span class="box todo">·</span><span class="txt">Start <a href="https://learning.sap.com/courses/basic-abap-programming">Learning Basic ABAP Programming</a> &mdash; FREE on SAP Learning</span></li>
+      <li><span class="box todo">·</span><span class="txt">Set up SAP CAL sandbox for hands-on ABAP practice</span></li>
+      <li><span class="box todo">·</span><span class="txt">Complete ABAP exercises: data types, loops, internal tables, Open SQL, CDS Views</span></li>
+    </ul>
+  </section>
+
+  <footer>Prepared as an HTML version of the SAP + AI Career Transition Plan &middot; Open in any browser</footer>
+
+</div>
+
+</body>
+</html>

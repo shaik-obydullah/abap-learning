@@ -2,56 +2,60 @@
 
 A hands-on project for learning ABAP programming from basics to advanced topics.
 
-## Documentation
+## Folder Structure
 
-Each section has detailed explanations in the `doc/` folder:
-- [01-basics.md](doc/01-basics.md) - Hello World, Data Types, Operators
-- [02-selection-screen.md](doc/02-selection-screen.md) - Parameters, Select-Options, Events
+```
+SAP/
+├── code/          # Runnable ABAP examples, grouped by topic (01-10)
+├── lessons/       # HTML/Markdown lesson walkthroughs (one per topic + extra lessons)
+├── docs/          # Topic explanations, 12-week study guide, certification material
+└── study-plans/   # Overall learning plans and tutorials
+```
 
 ## Learning Path
 
-### 01-basics/
+### code/01-basics/
 - hello_world.abap
 - data_types.abap
 - operators.abap
 
-### 02-selection-screen/
+### code/02-selection-screen/
 - parameters.abap
 - select-options.abap
 - events.abap
 
-### 03-internal-tables/
+### code/03-internal-tables/
 - declare.abap
 - read.abap
 - modify.abap
 
-### 04-database/
+### code/04-database/
 - select_single.abap
 - select_loop.abap
 - joins.abap
 
-### 05-alv-reports/
+### code/05-alv-reports/
 - basic_alv.abap
 - fieldcatalog.abap
 - events_alv.abap
 
-### 06-interactive-reports/
+### code/06-interactive-reports/
 - hotspot.abap
 - double_click.abap
 
-### 07-error-handling/
+### code/07-error-handling/
 - try_catch.abap
 - messages.abap
 
-### 08-file-handling/
+### code/08-file-handling/
 - upload.abap
 - download.abap
 
-### 09-oop-basics/
+### code/09-oop-basics/
 - class.abap
 - interface.abap
 
-### 10-projects/
+### code/10-projects/
 - employee_report.abap
 - sales_analysis.abap
 
@@ -65,7 +69,7 @@ Each section has detailed explanations in the `doc/` folder:
 
 ## How to Use
 
-1. **Learn:** Read `doc/` folder for explanations
+1. **Learn:** Read `lessons/` and `docs/` for explanations
 2. **Practice:** Copy code to ABAP Dojo (https://abapdojo.com)
 3. **Test:** Run and see output
 4. **Build:** Create your own variations

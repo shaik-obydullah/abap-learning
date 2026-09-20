@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP ABAP Developer Certification Study Plan</title>
+<style>
+  :root {
+    --primary: #0f62fe;
+    --primary-dark: #0043ce;
+    --green: #0e8a3e;
+    --amber: #f5a623;
+    --red: #d93025;
+    --sidebar-width: 280px;
+    --border: #e0e0e0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: #333;
+    display: flex;
+  }
+
+  /* ---------- Sidebar ---------- */
+  nav {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    overflow-y: auto;
+    background: #1a1f36;
+    color: #fff;
+    padding: 20px 0;
+  }
+
+  nav h1 {
+    font-size: 16px;
+    padding: 0 20px 15px;
+    border-bottom: 1px solid #3a4160;
+  }
+
+  nav ul { list-style: none; margin-top: 10px; }
+  nav ul li a {
+    display: block; color: #c5cbdd; text-decoration: none;
+    padding: 7px 20px; font-size: 13px;
+    border-left: 3px solid transparent; transition: all 0.2s;
+  }
+  nav ul li a:hover, nav ul li a.active {
+    background: #262c4a; color: #fff; border-left-color: var(--primary);
+  }
+  nav ul li ul { padding-left: 15px; }
+  nav ul li ul li a { font-size: 12px; padding: 5px 15px; }
+  nav::-webkit-scrollbar { width: 6px; }
+  nav::-webkit-scrollbar-thumb { background: #4a5170; border-radius: 3px; }
+
+  /* ---------- Main ---------- */
+  main { margin-left: var(--sidebar-width); padding: 40px 50px; max-width: 1100px; width: 100%; }
+
+  section { margin-bottom: 50px; padding-top: 20px; border-top: 1px solid var(--border); }
+  section:first-of-type { border-top: none; padding-top: 0; }
+
+  h1 { font-size: 30px; color: var(--primary-dark); margin-bottom: 15px; }
+  h2 { font-size: 24px; color: var(--primary-dark); margin: 35px 0 15px; }
+  h3 { font-size: 18px; margin: 20px 0 10px; color: #0f1b2d; }
+
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 0 0 15px 25px; }
+  li { margin-bottom: 5px; }
+  code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-size: 13px; color: #c7254e;
+         font-family: 'Consolas', 'Courier New', monospace; }
+
+  /* ---------- Progress bar ---------- */
+  .progress-track { text-align: center; margin: 20px 0 40px; }
+  .progress-track .step-ring {
+    display: inline-block; width: 110px; text-align: center; vertical-align: top; margin: 0 10px;
+  }
+  .progress-track .ring {
+    width: 80px; height: 80px; line-height: 80px; margin: 0 auto 8px;
+    border-radius: 50%; font-size: 26px; font-weight: 700;
+    background: #eef2ff; color: var(--primary); border: 3px solid var(--primary);
+  }
+  .progress-track .ring.done { background: var(--green); color: #fff; border-color: var(--green); }
+  .progress-track .ring.now { background: var(--primary); color: #fff; }
+  .progress-track .step-label { font-size: 12px; font-weight: 600; color: #555; }
+  .progress-track .arrow { font-size: 22px; color: #bbb; position: relative; top: -30px; }
+
+  /* ---------- Calls ---------- */
+  .note { background: #e7f3ff; border-left: 4px solid var(--primary); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 15px 0 20px; }
+  .note strong { color: var(--primary-dark); }
+  .warn { background: #fff4e5; border-left: 4px solid var(--amber); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 15px 0 20px; }
+  .warn strong { color: #b26a00; }
+  .success { background: #e6f4ea; border-left: 4px solid var(--green); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 15px 0 20px; }
+  .success strong { color: var(--green); }
+
+  /* ---------- Phase cards ---------- */
+  .phase {
+    border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 18px;
+    background: #fdfdfd;
+  }
+  .phase h3 { margin-top: 0; }
+  .phase .meta { font-size: 13px; color: #666; margin-bottom: 10px; }
+  .phase .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
+    color: #fff; margin-right: 6px;
+  }
+  .badge.wk { background: var(--primary); }
+  .badge.done { background: var(--green); }
+  .badge.kick { background: var(--amber); color: #333; }
+
+  /* ---------- Checkboxes ---------- */
+  .checklist { list-style: none; margin-left: 0; }
+  .checklist li { padding-left: 28px; position: relative; margin-bottom: 6px; }
+  .checklist li::before {
+    content: ""; position: absolute; left: 0; top: 4px;
+    width: 16px; height: 16px; border: 2px solid #bbb; border-radius: 3px; background: #fff;
+  }
+  .checklist li.done::before { background: var(--green); border-color: var(--green); }
+  .checklist li.done::after {
+    content: "\2713"; position: absolute; left: 2px; top: 1px; color: #fff; font-size: 12px; font-weight: 700;
+  }
+
+  /* ---------- Tables ---------- */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
+  th { background: var(--primary); color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tr:nth-child(even) { background: #f9fafb; }
+  tr:hover td { background: #eef4ff; }
+
+  /* ---------- Exam Q cards ---------- */
+  .q { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; background: #fafbff; }
+  .q .question { font-weight: 600; margin-bottom: 6px; }
+  .q .opts { margin-left: 15px; margin-bottom: 6px; color: #444; }
+  .q details { margin-top: 6px; }
+  .q summary { cursor: pointer; color: var(--primary); font-weight: 600; font-size: 14px; }
+  .q .answer { background: #e6f4ea; padding: 8px 12px; border-radius: 6px; font-size: 14px; margin-top: 6px; }
+
+  @media (max-width: 900px) {
+    body { flex-direction: column; }
+    nav { position: static; width: 100%; height: auto; max-height: 300px; }
+    main { margin-left: 0; padding: 25px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<nav>
+  <h1>&#127891; SAP ABAP Developer<br>Certification Study Plan</h1>
+  <ul>
+    <li><a href="#overview">1. Overview &amp; Exam Info</a></li>
+    <li><a href="#roadmap">2. The Roadmap</a></li>
+    <li><a href="#syllabus">3. Syllabus Checklist</a>
+      <ul>
+        <li><a href="#topic-abap">ABAP Fundamentals</a></li>
+        <li><a href="#topic-db">Data &amp; DB Access</a></li>
+        <li><a href="#topic-oo">OO ABAP</a></li>
+        <li><a href="#topic-cds">CDS &amp; RAP</a></li>
+        <li><a href="#topic-cloud">ABAP Cloud</a></li>
+      </ul>
+    </li>
+    <li><a href="#practice">4. Practice Program List</a></li>
+    <li><a href="#questions">5. Sample Exam Questions</a></li>
+    <li><a href="#resources">6. Recommended Resources</a></li>
+    <li><a href="#exam-day">7. Exam-Day Strategy</a></li>
+    <li><a href="#tracker">8. Progress Tracker</a></li>
+  </ul>
+</nav>
+
+<!-- ===================== MAIN ===================== -->
+<main>
+
+  <!-- ========== 1. OVERVIEW ========== -->
+  <section id="overview">
+    <h1>1. SAP ABAP Developer Certification &mdash; Study Plan</h1>
+
+    <p><strong>Target exam:</strong> SAP Certified Associate &mdash; Back-End Developer &mdash; ABAP Cloud
+      (Exam code: <code>C_ABAPD_2024</code>, supersedes <code>C_ABAPD_2309</code>).</p>
+
+    <table>
+      <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Exam name</strong></td><td>Back-End Developer &mdash; ABAP Cloud</td></tr>
+        <tr><td><strong>Exam code(s)</strong></td><td>C_ABAPD_2024 (currently active), C_ABAPD_2309 (older)</td></tr>
+        <tr><td><strong>Number of questions</strong></td><td>80</td></tr>
+        <tr><td><strong>Duration</strong></td><td>180 minutes</td></tr>
+        <tr><td><strong>Passing score</strong></td><td>_/_ (cut score is confidential, typically ~62% in recent versions)</td></tr>
+        <tr><td><strong>Format</strong></td><td>Multiple-choice (single &amp; multi-select), no code writing</td></tr>
+        <tr><td><strong>Delivery</strong></td><td>Pearson VUE test center or online proctored</td></tr>
+        <tr><td><strong>Cost</strong></td><td>~$200&ndash;350 depending on region (check SAP Training Shop)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>Important:</strong> SAP regularly retires exam versions. Always verify the <em>current</em> exam code on the
+      <a href="https://training.sap.com/certification" style="color:var(--primary);">SAP Training site</a> before booking.
+      Since exams evolve, confirm you are preparing for the latest version.
+    </div>
+
+    <h3>What the exam covers (official syllabus areas)</h3>
+    <table>
+      <thead><tr><th>Area</th><th>Approx. Weight</th><th>Where it lives in your tutorial</th></tr></thead>
+      <tbody>
+        <tr><td>ABAP Workbench / ABAP Core (incl. ABAP Cloud) &amp; Eclipse IDE</td><td>8&ndash;11%</td><td>Intro, next-steps</td></tr>
+        <tr><td>ABAP Data Types, Data Objects, Inheritance, Data Dictionary</td><td>8&ndash;11%</td><td>Sections 3, 5</td></tr>
+        <tr><td>ABAP Database Access &amp; Locking</td><td>17&ndash;20%</td><td>Section 7, Case 1</td></tr>
+        <tr><td>Processing Internal Data (Lists, Internal Tables, Exception Handling)</td><td>15&ndash;17%</td><td>Sections 4, 5</td></tr>
+        <tr><td>ABAP Object-Oriented Programming (incl. Interfaces &amp; Unit Testing)</td><td>10&ndash;13%</td><td>Section 6, Case 8</td></tr>
+        <tr><td>ABAP Language Extensions (Functional Calls, New Syntax, ABAP SQL)</td><td>17&ndash;20%</td><td>Sections 3, 7</td></tr>
+        <tr><td>Developing Applications with ABAP RESTful Application Programming Model (RAP) &amp; Core Data Services (CDS)</td><td>17&ndash;20%</td><td>&#10055; <strong>NOT yet covered</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="warn"><strong>Biggest gap in the current tutorial:</strong> CDS views, behavior definitions, and the RAP model together are ~17&ndash;20% of the exam. They are the #1 reason the tutorial alone is not enough. This plan closes that gap.</div>
+  </section>
+
+  <!-- ========== 2. ROADMAP ========== -->
+  <section id="roadmap">
+    <h2>2. The Roadmap (12-Week Plan)</h2>
+
+    <div class="progress-track">
+      <div class="step-ring">
+        <div class="ring">1</div>
+        <div class="step-label">Fundamentals<br>Weeks 1&ndash;2</div>
+      </div>
+      <span class="arrow">&#8594;</span>
+      <div class="step-ring">
+        <div class="ring">2</div>
+        <div class="step-label">Data &amp; DB<br>Weeks 3&ndash;4</div>
+      </div>
+      <span class="arrow">&#8594;</span>
+      <div class="step-ring">
+        <div class="ring">3</div>
+        <div class="step-label">OO + ALV<br>Weeks 5&ndash;6</div>
+      </div>
+      <span class="arrow">&#8594;</span>
+      <div class="step-ring">
+        <div class="ring">4</div>
+        <div class="step-label">ABAP Cloud<br>Weeks 7&ndash;9</div>
+      </div>
+      <span class="arrow">&#8594;</span>
+      <div class="step-ring">
+        <div class="ring">5</div>
+        <div class="step-label">RAP / CDS<br>Weeks 10&ndash;11</div>
+      </div>
+      <span class="arrow">&#8594;</span>
+      <div class="step-ring">
+        <div class="ring">6</div>
+        <div class="step-label">Exam Prep<br>Week 12</div>
+      </div>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="phase">
+      <span class="badge wk">Weeks 1&ndash;2</span>
+      <span class="badge kick">Learning Phase 1</span>
+      <h3>Phase A &mdash; ABAP Fundamentals &amp; Tooling</h3>
+      <div class="meta">Goal: re-write every example from the tutorial by hand in SE38.</div>
+      <ul class="checklist">
+        <li class="done">Data types, variables, constants, system fields (tutorial &sect;3)</li>
+        <li class="done">Control flow, loops, string processing (tutorial &sect;4)</li>
+        <li class="done">Internal tables: READ / LOOP / SORT / MODIFY / DELETE (tutorial &sect;5)</li>
+        <li>Install ABAP Development Tools (ADT) in Eclipse &mdash; required for ABAP Cloud work</li>
+        <li>Log on to an ABAP environment with a <strong>developer user</strong></li>
+        <li>Create your first ECC-classic report AND your first ADT-based package/program</li>
+      </ul>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase">
+      <span class="badge wk">Weeks 3&ndash;4</span>
+      <span class="badge kick">Learning Phase 2</span>
+      <h3>Phase B &mdash; Data &amp; Database Access</h3>
+      <div class="meta">Goal: understand ABAP Dictionary + Open SQL deeply; this is 17&ndash;20% of the exam.</div>
+      <ul class="checklist">
+        <li>Data Dictionary: create a <strong>domain</strong>, <strong>data element</strong>, <strong>table</strong>, append structure</li>
+        <li>Understand table types: transparent, cluster, pooled</li>
+        <li>Open SQL: SELECT variants, joins, unions, aggregates, <code>FOR ALL ENTRIES</code> &amp; its pitfalls</li>
+        <li>Authorization checks (<code>authority-check</code>) &amp; client handling</li>
+        <li>Database locks using <code>enqueue</code> / <code>dequeue</code> function modules</li>
+        <li>Study flyover: how to read the SAP Note for <code>SELECT</code> buffering</li>
+      </ul>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase">
+      <span class="badge wk">Weeks 5&ndash;6</span>
+      <span class="badge kick">Learning Phase 3</span>
+      <h3>Phase C &mdash; OO ABAP &amp; Reporting</h3>
+      <div class="meta">Goal: produce real working reports using classes only (no legacy FORM style).</div>
+      <ul class="checklist">
+        <li>Classes, visibility, constructors, static vs. instance, friend class</li>
+        <li>Interfaces, inheritance, exception classes (<code>cx_static_check</code>)</li>
+        <li>ABAP Unit basics: <code>cl_abap_unit_assert</code> and test classes</li>
+        <li>ALV with <code>cl_salv_table</code> (your tutorial &sect;9) &mdash; add summary rows, colors, events</li>
+        <li>Newer syntax: inline declarations (<code>DATA(...)</code>), table expressions (<code>itab[1]</code>), <code>FOR</code>/<code>REDUCE</code>/<code>VALUE</code></li>
+        <li>Build the complete custom report from tutorial &sect;10 as an OO program</li>
+      </ul>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase">
+      <span class="badge wk">Weeks 7&ndash;9</span>
+      <span class="badge kick">Learning Phase 4</span>
+      <h3>Phase D &mdash; ABAP Cloud &amp; Modern Development</h3>
+      <div class="meta">Goal: bridge classic ABAP knowledge to the cloud-ready world the exam targets.</div>
+      <ul class="checklist">
+        <li>ABAP Cloud development model: cloud-ready vs. cloud-incompatible APIs</li>
+        <li>The three "service layers": SAP Fiori&rarr;OData&rarr;RAP&rarr;DB</li>
+        <li>Clean Core principles &amp; released/reusable components</li>
+        <li>RESTful ABAP Programming Model (RAP) object types</li>
+        <li>abapGit: version your example code</li>
+        <li>Work through one SAP "learn" tutorial hands-on</li>
+      </ul>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase">
+      <span class="badge wk">Weeks 10&ndash;11</span>
+      <span class="badge kick">Learning Phase 5</span>
+      <h3>Phase E &mdash; CDS Views &amp; RAP Deep-Dive (the missing 20%)</h3>
+      <div class="meta">Goal: become productive at modeling + exposing data.</div>
+      <ul class="checklist">
+        <li>CDS entity views: annotations, associations, parameters, aggregates</li>
+        <li>Expose a CDS view as an OData service (service definition + binding)</li>
+        <li>Behavior definition: create / update / delete operations</li>
+        <li>Build a tiny Fiori-style app on RAP (read it end-to-end)</li>
+        <li>ABAP for HANA basics &amp; AMDP</li>
+      </ul>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="phase">
+      <span class="badge wk">Week 12</span>
+      <span class="badge kick">Exam Phase</span>
+      <h3>Phase F &mdash; Intensive Prep &amp; Mock Exams</h3>
+      <div class="meta">Goal: calibrate time for 80 questions in 180 minutes (2.25 min/question).</div>
+      <ul class="checklist">
+        <li>Resit every sample question in this plan and the tutorial unlocks</li>
+        <li>Do 2&ndash;3 full mock exams (SAP Certified Hub, ExamTopics reviews, or paid mocks)</li>
+        <li>Review every wrong answer into a "mistake log"</li>
+        <li>Speed reads: official syllabus wording &mdash; match exam phrasing</li>
+        <li>Book the exam &amp; final-run the checklist in &sect;7</li>
+      </ul>
+    </div>
+
+    <div class="success"><strong>Minimum daily routine (yes/no simple):</strong> 1 hour coding practice + 30 min reading. Saturday = practice program from &sect;4. Sunday = 1 exam-area review + 10 sample questions.</div>
+  </section>
+
+  <!-- ========== 3. SYLLABUS ========== -->
+  <section id="syllabus">
+    <h2>3. Syllabus Master Checklist</h2>
+    <p>Tick off each item in your editor copy. Confirm you can <em>explain</em> it aloud &mdash; that is the real proof of readiness.</p>
+
+    <h3 id="topic-abap">ABAP Fundamentals</h3>
+    <ul class="checklist">
+      <li>ABAP program types and execution events</li>
+      <li>Data declarations, visible lengths, references</li>
+      <li>String operations: substring, length, case conversion, regex basics</li>
+      <li>Date/time/number formatting and conversions</li>
+      <li>Message classes (&lt;class&gt;-NNN) and exception messages</li>
+    </ul>
+
+    <h3 id="topic-db">Data &amp; Database Access</h3>
+    <ul class="checklist">
+      <li>ABAP Dictionary: domains, data elements, structures, tables, views</li>
+      <li>Table categories, buffering types (full/generic)</li>
+      <li>Open SQL: SELECT options, joins, aggregates, SQL expressions &amp; functions</li>
+      <li>Handling <code>sy-subrc</code> and <code>sy-dbcnt</code></li>
+      <li>Lock mechanism: enqueue/dequeue, lock object in SM12</li>
+      <li>SELECT authorization &amp; <code>authority-check</code> fields</li>
+    </ul>
+
+    <h3 id="topic-oo">Object-Oriented ABAP</h3>
+    <ul class="checklist">
+      <li>Class components, encapsulation, visibility sections</li>
+      <li>Constructors, static methods, class attributes</li>
+      <li>Inheritance, interfaces, <code>FINAL</code> classes, <code>ABSTRACT</code> methods</li>
+      <li>Exceptions: <code>cx_static_check</code> / <code>cx_dynamic_check</code>, <code>TRY/CATCH/RETRY</code></li>
+      <li>ABAP Unit: test classes, test methods, <code>cl_abap_unit_assert</code></li>
+    </ul>
+
+    <h3 id="topic-cds">CDS &amp; RAP</h3>
+    <ul class="checklist">
+      <li>CDS entity syntax: <code>@AbapCatalog</code>, <code>@AccessControl</code>, <code>@UI</code> annotations</li>
+      <li>Associations, cardinality, path expressions</li>
+      <li>Parameters &amp; aggregates in CDS</li>
+      <li>Service definition &amp; service binding</li>
+      <li>Behavior definition / implementation (CRUD operations)</li>
+      <li>OData protocol basics (entity set, property, key)</li>
+    </ul>
+
+    <h3 id="topic-cloud">ABAP Cloud</h3>
+    <ul class="checklist">
+      <li>Clean Core, released vs. not-released APIs</li>
+      <li>The ABAP Cloud development model &amp; allowed object types</li>
+      <li>Software components, packages, transport via abapGit</li>
+      <li>Developer best-practices: ADT (Eclipse) workflow</li>
+    </ul>
+  </section>
+
+  <!-- ========== 4. PRACTICE LIST ========== -->
+  <section id="practice">
+    <h2>4. Practice Program List (Build These by Hand)</h2>
+    <p>Hands-on work beats reading. Build each one, then improve it. Numbers refer to learning phases.</p>
+    <table>
+      <thead><tr><th>#</th><th>Program / Object</th><th>What it proves</th><th>Phase</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Z_HELLO + list formatting demo</td><td>WRITE, SKIP, ULINE, FORMAT</td><td>A</td></tr>
+        <tr><td>2</td><td>Z_TABLE_CRUD</td><td>All internal table ops + field symbols</td><td>A</td></tr>
+        <tr><td>3</td><td>Z_SELECT_ALL_VARIANTS</td><td>SELECT, joins, aggregates, FOR ALL ENTRIES</td><td>B</td></tr>
+        <tr><td>4</td><td>Z_DDIC_NEW_TABLE</td><td>Domain + data element + custom Z table</td><td>B</td></tr>
+        <tr><td>5</td><td>Z_LOCK_DEMO</td><td>enqueue/dequeue, lock object</td><td>B</td></tr>
+        <tr><td>6</td><td>Z_OOP_REPORT</td><td>Class-based report (data/business/presentation)</td><td>C</td></tr>
+        <tr><td>7</td><td>Z_ALV_ADVANCED</td><td>colors, totals, events, hot-spot links</td><td>C</td></tr>
+        <tr><td>8</td><td>Z_EXCEPTION_DEMO</td><td>custom exception class + TRY/RETRY</td><td>C</td></tr>
+        <tr><td>9</td><td>Z_CDS_BASIC</td><td>DDL view with annotations &amp; associations</td><td>E</td></tr>
+        <tr><td>10</td><td>Z_ODATA_PUBLISH</td><td>service definition + binding on your CDS</td><td>E</td></tr>
+        <tr><td>11</td><td>Z_RAP_BEHAVIOR</td><td>behavior definition + implementation (unmanaged)</td><td>E</td></tr>
+        <tr><td>12</td><td>Z_ABAP_UNIT</td><td>unit test class on an order service</td><td>C</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note"><strong>Free learning environment ideas:</strong> SAP Learning Hub free content, the <em>ABAP for Beginners</em> playlists on SAP Community, and the trial instances offered by SAP (e.g. BTP ABAP trial) for hands-on CDS/RAP practice.</div>
+  </section>
+
+  <!-- ========== 5. SAMPLE QUESTIONS ========== -->
+  <section id="questions">
+    <h2>5. Sample Exam-Style Questions</h2>
+    <p>Try these before revealing answers. They mirror the traps the real exam likes.</p>
+
+    <div class="q">
+      <div class="question">Q1. Which statement (or statements) correctly add a line to a standard internal table? (multi-select)</div>
+      <div class="opts">a) APPEND &lt;work area&gt; TO &lt;itab&gt;<br>b) INSERT &lt;work area&gt; INTO TABLE &lt;itab&gt;<br>c) MODIFY &lt;itab&gt; FROM &lt;work area&gt;<br>d) ADD &lt;work area&gt; TO &lt;itab&gt;</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>a, b.</strong> APPEND appends; INSERT positions a new line. MODIFY changes an existing line. ADD is for arithmetic, not table rows.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q2. After SELECT ... you check sy-subrc. What does sy-subrc = 0 indicate?</div>
+      <div class="opts">a) At least one row was returned<br>b) The statement ran without system error<br>c) The SELECT compiled without warnings<br>d) The result set fills the work area exactly</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>a.</strong> In Open SQL, sy-subrc=0 for SELECT means at least one row was found. (For UPDATE/DELETE it signals success/found; semantics differ.)</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q3. Which is a valid reason <code>FOR ALL ENTRIES</code> can return unexpected (duplicate) rows?</div>
+      <div class="opts">a) The source table was empty at runtime<br>b) The WHERE condition uses a non-key field<br>c) You forgot to SORT the result internally<br>d) SELECT list contains aggregate functions</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>a.</strong> If the source itab is empty, FOR ALL ENTRIES reads ALL rows of the DB table. Also, rows where every comparison field is initial are ignored &mdash; both classic exam traps.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q4. What is the effect of <code>WRITE: / lv_num NO-ZERO.</code></div>
+      <div class="opts">a) Suppresses leading zeros<br>b) Removes trailing decimals<br>c) Forces two-digit display<br>d) Adds thousands separators</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>a.</strong> NO-ZERO hides leading zeros on output (e.g. 0064 displays as "64").</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q5. Which object type is <em>NOT</em> allowed in a fully clean-core, cloud-compliant ABAP system?</div>
+      <div class="opts">a) CDS view<br>b) Behavior definition<br>c) Function group (with RFC-enabled fm)<br>d) Released class</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>c.</strong> Classic function groups are among the "not released in ABAP Cloud" objects; you use RAP, CDS, released classes and (where needed) released RFC-enabled function modules.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q6. A CDS view uses <code>@AccessControl.authorizationCheck: #CHECK</code>. What does the query actually do at runtime?</div>
+      <div class="opts">a) Narrows results to rows the user may read<br>b) Checks only that the user exists<br>c) Always returns nothing outside authorization<br>d) Requires an explicit authority-check call in ABAP</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>a.</strong> With #CHECK the access-control list (DCL) filters automatically at runtime. #NOT_REQUIRED disables it.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q7. What best describes the function of a <em>behavior definition</em> in RAP?</div>
+      <div class="opts">a) It defines the DB table structure<br>b) It defines which operations (read/create/update/delete) are exposed<br>c) It generates the OData metadata XML<br>d) It maps UI fields to backend data</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>b.</strong> The behavior definition describes the business object treatment: which operations, validations, actions, and (un)managed semantics exist.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q8. Which keyword declarations a real list of a type <code>STANDARD TABLE OF ...</code> that grows in an app? (single)</div>
+      <div class="opts">a) TYPES<br>b) DATA<br>c) PARAMETERS<br>d) CONSTANTS</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>b.</strong> DATA declares an instance that can change at runtime. TYPES defines a type, PARAMETERS is selection input, CONSTANTS is fixed.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q9. When filling an internal table in a loop with <code>APPEND</code>, why do we CLEAR the work area beforehand?</div>
+      <div class="opts">a) To release memory<br>b) To avoid leftover values leaking into the next row<br>c) To keep the table sorted<br>d) CLEAR is optional and has no effect on APPEND</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>b.</strong> APPEND copies the work area by value; stale field values from a previous iteration persist if not cleared (mirrors the tutorial Case Study 2).</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q10. In ADT/Eclipse, you create a new Cloud-compliant ABAP class. What transport mechanism is standard for ABAP Cloud projects?</div>
+      <div class="opts">a) CTS request in SE10/SE03<br>b) abapGit / software components + release channels<br>c) File copy to the server<br>d) Function-module export with SHDB</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>b.</strong> ABAP Cloud uses git-based development and software components (or abapGit) rather than classic transport requests.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q11. What happens when the ABAP runtime executes <code>DATA(rate) = 10 / 0</code> unsafely?</div>
+      <div class="opts">a) rate stays 0 and a warning expands<br>b) A CX_SY_ZERODIVIDE exception is raised<br>c) The system inserts NULL<br>d) Only an internal table overflow message appears</div>
+      <details><summary>Show answer</summary><div class="answer"><strong>b.</strong> A division by zero in ABAP raises a non-handled exception (short dump) unless you guard the divisor.</div></details>
+    </div>
+
+    <div class="q">
+      <div class="question">Q12. Which syntax correctly dereferences a row of internal table <code>lt_orders</code> by line 1?</div>
+      <div class="opts">a) <code>lt_orders→1</code><br>b) <code>lt_orders[1]</code><br>c) <code>lt_orders(1)</code><br>d) <code>&lt;lt_orders&gt;[1]</code></div>
+      <details><summary>Show answer</summary><div class="answer"><strong>b.</strong> The table expression index syntax is <code>itab[ index ]</code> &mdash; part of the modern ABAP core that replaced READ TABLE for simple reads.</div></details>
+    </div>
+
+    <div class="success"><strong>Score guide:</strong> 10+ correct = strong. 7&ndash;9 = okay but review CDS/RAP &amp; cloud topics. Below 7 = re-read the syllabus and practice more before the real exam.</div>
+  </section>
+
+  <!-- ========== 6. RESOURCES ========== -->
+  <section id="resources">
+    <h2>6. Recommended Resources</h2>
+    <ul>
+      <li><strong>SAP Learning Hub</strong> &mdash; the definitive course <code>SAP04N</code> (ABAP Development) &amp; <code>S4DEV</code> (ABAP Cloud).</li>
+      <li><strong>SAP Community</strong> &mdash; search "ABAP Cloud" &amp; "RAP" tutorials; the exercises are step-by-step.</li>
+      <li><strong>SAP PRESS / friends of ABAP</strong> books &mdash; "Complete ABAP" (Kirchner/Pyrlik) for the breadth; RAP books for the depth.</li>
+      <li><strong>openSAP / SAP Learning Journey</strong> &mdash; free recorded courses (search current year releases on learning.sap.com).</li>
+      <li><strong>Practice environment</strong> &mdash; ASAP trial, BTP ABAP trial, or your company dev system. Hands-on is non-negotiable.</li>
+      <li><strong>Mock questions</strong> &mdash; the official SAP "Certified" plus training-portal practice sets that mirror wording.</li>
+    </ul>
+
+    <div class="note"><strong>How to practice CDS/RAP without owning a system:</strong> SAP provides a free instance with the BTP ABAP Cloud Trial &mdash; sign up, publish your first OData service, and complete the guided tutorials on SAP Community. This covers the biggest exam gap at zero cost.</div>
+  </section>
+
+  <!-- ========== 7. EXAM DAY ========== -->
+  <section id="exam-day">
+    <h2>7. Exam-Day Strategy</h2>
+
+    <h3>48 hours before</h3>
+    <ul class="checklist">
+      <li>Confirm exam time, location, and ID requirements (Pearson VUE)</li>
+      <li>Book a mock exam with a timer (180 min) exactly once</li>
+      <li>Review mistake log &amp; the "traps" list (below)</li>
+      <li>Sleep well &mdash; the exam rewards endurance over cramming</li>
+    </ul>
+
+    <h3>Throughout the exam</h3>
+    <ul>
+      <li><strong>Pace:</strong> 2&ndash;2.5 min per question; keep 15 minutes for review.</li>
+      <li><strong>Multi-select:</strong> count exact number of correct answers asked; no negative marking, don't leave blanks.</li>
+      <li><strong>Flag &amp; move:</strong> mark hard questions, revisit at the end.</li>
+      <li><strong>Non-technical wording:</strong> exam phrases are precise &mdash; match keywords like "INTO TABLE", "sy-subrc", "released API".</li>
+    </ul>
+
+    <h3>Traps the exam loves (memorize these)</h3>
+    <table>
+      <thead><tr><th>Trap</th><th>Correct thinking</th></tr></thead>
+      <tbody>
+        <tr><td>"READ TABLE ... INTO ... WITH KEY"</td><td>Check sy-subrc after; 0 = found</td></tr>
+        <tr><td>"SELECT ... INTO wa" vs "INTO TABLE"</td><td>Loop-free reads use INTO TABLE (bulk)</td></tr>
+        <tr><td>FOR ALL ENTRIES</td><td>Empty source = full table read; initial comparison values are ignored</td></tr>
+        <tr><td>Division by zero guard</td><td>Always guard; else short dump CX_SY_ZERODIVIDE</td></tr>
+        <tr><td>UPDATE vs MODIFY</td><td>UPDATE changes existing rows only; MODIFY upserts</td></tr>
+        <tr><td>DATA vs TYPES vs CONSTANTS</td><td>Instance vs blueprint vs fixed value</td></tr>
+        <tr><td>String vs fixed char</td><td>String = variable length, c(N) = fixed; conversion matters</td></tr>
+        <tr><td>Visibility</td><td>PUBLIC/PROTECTED/PRIVATE for class components</td></tr>
+        <tr><td>RAP</td><td>Behavior def = operations; service def = exposure; binding = OData</td></tr>
+        <tr><td>ABAP Cloud</td><td>Released APIs only; no classic function groups</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ========== 8. TRACKER ========== -->
+  <section id="tracker">
+    <h2>8. Progress Tracker</h2>
+    <p>Copy the table into your own notes and update it weekly. Keep the numbers honest &mdash; readiness is a series of small daily wins.</p>
+    <table>
+      <thead><tr><th>Week</th><th>Focus</th><th>Hours (target)</th><th>Hours done</th><th>Practice status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>1&ndash;2</td><td>Fundamentals + tooling</td><td>10</td><td></td><td>Programs 1&ndash;2</td><td></td></tr>
+        <tr><td>3&ndash;4</td><td>Dictionary + Open SQL + locks</td><td>10</td><td></td><td>Programs 3&ndash;5</td><td></td></tr>
+        <tr><td>5&ndash;6</td><td>OO + ALV + unit</td><td>10</td><td></td><td>Programs 6&ndash;8, 12</td><td></td></tr>
+        <tr><td>7&ndash;9</td><td>ABAP Cloud + RAP intro</td><td>12</td><td></td><td>Trial env setup</td><td></td></tr>
+        <tr><td>10&ndash;11</td><td>CDS + OData + behavior</td><td>12</td><td></td><td>Programs 9&ndash;11</td><td></td></tr>
+        <tr><td>12</td><td>Mocks + review + book exam</td><td>6</td><td></td><td>2 mocks + 30 Qs</td><td></td></tr>
+      </tbody>
+    </table>
+
+    <div class="success"><strong>Milestones to celebrate:</strong> (1) first program compiled in ADT, (2) first custom Z table created, (3) first ALV grid with totals, (4) first OData service returning data, (5) mock score &ge; 80%, (6) certificate in hand.</div>
+
+    <div class="note"><strong>Saved for reference:</strong> this plan pairs with your existing <code>SAP_ABAP_Developer_Tutorial.html</code> (sections 3&ndash;10 are your Phase A&ndash;C foundation). Keep both open while you learn.</div>
+  </section>
+
+</main>
+</body>
+</html>

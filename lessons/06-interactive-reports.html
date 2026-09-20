@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06 Interactive Reports — Tutorial</title>
+<style>
+  :root { --bg:#f6f8fb; --card:#fff; --text:#1a2433; --muted:#5b6b80; --border:#e2e8f0; --primary:#0f7bff; --primary-dark:#0b5fc4; --accent:#00a870; --accent-bg:#e6f7f0; --warn:#ff9800; --warn-bg:#fff4e0; --code-bg:#0f172a; --code-text:#e2e8f0; --radius:14px; --shadow:0 4px 20px rgba(15,32,39,.08); }
+  *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0 0 4rem}
+  header.hero{background:linear-gradient(135deg,#0f2027,#2c5364);color:#fff;padding:3.5rem 1.5rem 4.5rem;text-align:center}
+  header.hero .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:.25rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+  header.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;margin-bottom:.5rem}
+  header.hero p{color:rgba(255,255,255,.85);font-size:1.1rem;max-width:660px;margin:0 auto}
+  header.hero .chips{margin-top:1.3rem}
+  header.hero .chip{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.35rem .9rem;font-size:.83rem;color:rgba(255,255,255,.9);margin:.2rem}
+  .container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+  .progress-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);max-width:760px;margin:-2.8rem auto 2.5rem;padding:1.4rem 1.6rem;position:relative}
+  .progress-wrap p.top{font-size:.85rem;color:var(--muted);margin-bottom:.5rem;font-weight:600}
+  .progress-bar{height:10px;background:#e8edf3;border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px;transition:width .6s ease}
+  .progress-stats{display:flex;justify-content:space-between;margin-top:.6rem;font-size:.83rem;color:var(--muted)}
+  .progress-stats b{color:var(--primary)}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.6rem}
+  nav.toc h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:1rem}
+  nav.toc ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.35rem 1.5rem}
+  nav.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--muted);padding:.45rem .6rem;border-radius:8px;font-size:.94rem;transition:background .15s,color .15s}
+  nav.toc a:hover{background:#eef4ff;color:var(--primary)}
+  nav.toc .dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+  nav.toc a.done .dot{background:var(--accent)}
+  section{margin-top:2.2rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem 2.2rem 2.4rem;scroll-margin-top:1rem}
+  section h2.header{display:flex;align-items:center;gap:.7rem;font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
+  section h2.header .num{display:inline-flex;align-items:center;justify-content:center;width:2.3rem;height:2.3rem;background:var(--primary);color:#fff;border-radius:10px;font-size:1.1rem;flex-shrink:0}
+  section>p.lead{color:var(--muted);margin-top:.6rem}
+  h3{font-size:1.18rem;font-weight:750;margin:1.8rem 0 .8rem;color:var(--primary-dark)}
+  h4{font-size:1.02rem;font-weight:700;margin:1.2rem 0 .4rem;color:var(--text)}
+  ul,ol{padding-left:1.5rem;margin:.5rem 0} ul li,ol li{margin:.35rem 0}
+  pre{background:var(--code-bg);color:var(--code-text);border-radius:10px;padding:1.1rem 1.3rem;overflow-x:auto;margin:.8rem 0;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87rem;line-height:1.6}
+  pre .cmt{color:#64748b}
+  p.caption{font-size:.8rem;color:var(--muted);margin:-.4rem 0 .8rem .2rem}
+  .table-wrap{overflow-x:auto;margin:.8rem 0}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;min-width:460px;font-size:.93rem}
+  thead th{background:var(--primary);color:#fff;text-align:left;padding:.7rem 1rem;font-weight:600}
+  tbody td{padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+  tbody tr:nth-child(even){background:#f9fbfe} tbody tr:last-child td{border-bottom:none}
+  code{background:#eef1f6;border-radius:4px;padding:.1rem .35rem;font-size:.88em;font-family:ui-monospace,Menlo,Consolas,monospace}
+  pre code{background:transparent;padding:0;color:inherit}
+  .tip,.warn,.note{border-radius:10px;padding:1rem 1.2rem;margin:1.1rem 0;font-size:.94rem}
+  .tip{background:#eef4ff;border-left:4px solid var(--primary)} .tip::before{content:"💡 Tip: ";font-weight:800;color:var(--primary)}
+  .warn{background:var(--warn-bg);border-left:4px solid var(--warn)} .warn::before{content:"⚠ Common pitfall: ";font-weight:800;color:#b26b00}
+  .note{background:var(--accent-bg);border-left:4px solid var(--accent)} .note::before{content:"📌 Note: ";font-weight:800;color:var(--accent)}
+  .exercise{border:2px dashed var(--primary);background:#fbfdff;border-radius:10px;padding:1.1rem 1.3rem;margin:1.3rem 0}
+  .exercise h4{color:var(--primary);margin-top:0} .exercise h4::before{content:"✏️ "}
+  blockquote.callout{background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.4rem;margin:1.2rem 0;font-size:.95rem}
+  blockquote.callout strong{color:var(--accent)}
+  .file-tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--primary);background:#eef4ff;border-radius:999px;padding:.2rem .8rem;margin-bottom:.5rem}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:3rem;padding:1.5rem 1rem}
+  @media(max-width:640px){section{padding:1.5rem 1.2rem}nav.toc ul{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">ABAP Learning &middot; Section 06</span>
+  <h1>Interactive Reports</h1>
+  <p>Let users click your output — hotspots and double-clicks that drill down into detail.</p>
+  <div class="chips"><span class="chip">Hotspots</span><span class="chip">Double-click</span></div>
+</header>
+<div class="container">
+  <div class="progress-wrap">
+    <p class="top">Section progress</p>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-stats"><span>2 lessons</span><span id="progLabel">0% complete</span></div>
+  </div>
+
+  <nav class="toc">
+    <h2>Lessons in this section</h2>
+    <ul>
+      <li><a href="#hotspot"><span class="dot"></span>Lesson 1 — Hotspots</a></li>
+      <li><a href="#doubleclick"><span class="dot"></span>Lesson 2 — Double-Click Drill-Down</a></li>
+      <li><a href="#practice"><span class="dot"></span>Practice &amp; Next Steps</a></li>
+    </ul>
+  </nav>
+
+  <section id="overview">
+    <h2 class="header"><span class="num">▶</span> Lists Users Can Click</h2>
+    <p class="lead">Basic reports just print. Interactive reports respond to clicks — that's how drill-downs in SAP work.</p>
+    <ul>
+      <li><strong>Hotspot</strong> — a field rendered as a clickable link.</li>
+      <li><strong>Double-click</strong> — an event that fires anywhere on a line.</li>
+      <li>You handle the event in an <code>AT LINE-SELECTION</code> block and show more detail.</li>
+    </ul>
+  </section>
+
+  <section id="hotspot">
+    <h2 class="header"><span class="num">1</span> Hotspots</h2>
+    <p class="lead">Mark a field with <code>HOTSPOT</code> so it becomes a clickable link.</p>
+    <span class="file-tag">06-interactive-reports/hotspot.abap</span>
+    <pre>REPORT z_hotspot.
+
+DATA: lv_carrid TYPE sflight-carrid.
+
+START-OF-SELECTION.
+  SELECT carrid FROM sflight UP TO 5 ROWS
+    INTO lv_carrid.
+    FORMAT HOTSPOT ON.
+    WRITE: / lv_carrid.
+    FORMAT HOTSPOT OFF.
+  ENDSELECT.
+
+AT LINE-SELECTION.
+  WRITE: / 'You clicked on a hotspot!'.</pre>
+    <h3>Key points</h3>
+    <ul>
+      <li><code>FORMAT HOTSPOT ON</code> ... <code>OFF</code> — makes the following output clickable (blue, underlined link).</li>
+      <li>Clicking the link triggers <code>AT LINE-SELECTION</code>.</li>
+      <li>You can later read which line was clicked via <code>sy-lisel</code> or cursor position.</li>
+    </ul>
+    <div class="tip">In ALV reports you'd instead use <code>hotspot_field</code> in the field catalog — but in classic lists, <code>FORMAT HOTSPOT</code> is the way.</div>
+  </section>
+
+  <section id="doubleclick">
+    <h2 class="header"><span class="num">2</span> Double-Click Drill-Down</h2>
+    <p class="lead">Any line can respond to a double-click — the classic master/detail pattern.</p>
+    <span class="file-tag">06-interactive-reports/double_click.abap</span>
+    <pre>REPORT z_double_click.
+
+TABLES: sflight.
+
+SELECTION-SCREEN BEGIN OF LINE.
+PARAMETERS: p_carrid TYPE sflight-carrid DEFAULT 'LH'.
+SELECTION-SCREEN END OF LINE.
+
+START-OF-SELECTION.
+  SELECT carrid connid fldate seatsocc
+    FROM sflight
+    INTO CORRESPONDING FIELDS OF TABLE lt_flights
+    WHERE carrid = p_carrid
+    UP TO 20 ROWS.
+
+  LOOP AT lt_flights INTO ls_flight.
+    WRITE: / ls_flight-connid,
+             ls_flight-fldate,
+             ls_flight-seatsocc.
+  ENDLOOP.
+
+* Fired when the user double-clicks any line
+AT LINE-SELECTION.
+  READ CURRENT LINE INTO DATA(lv_line).
+  WRITE: / 'Detail for line:', lv_line.
+
+* (In a full example you'd re-query detail and show it here.)</pre>
+    <h3>Key points</h3>
+    <ul>
+      <li><code>AT LINE-SELECTION</code> — fires on click or double-click of a line.</li>
+      <li><code>READ CURRENT LINE</code> — captures the exact line the user clicked.</li>
+      <li>You'd then use the clicked key to <code>SELECT</code> more detail on a second list.</li>
+    </ul>
+    <div class="warn">Declare the internal tables (<code>lt_flights</code>) and structures (<code>ls_flight</code>) with <code>DATA</code> before use — the example above assumes they're declared. Interactive reporting produces a second, stacked list screen.</div>
+  </section>
+
+  <section id="practice">
+    <h2 class="header"><span class="num">✓</span> Practice &amp; Next Steps</h2>
+    <div class="exercise">
+      <h4>Build a drill-down report</h4>
+      <ol>
+        <li>Show a list of airlines (hotspots on the airline code).</li>
+        <li>When an airline is clicked, display its flights.</li>
+        <li>Use <code>AT LINE-SELECTION</code> and a saved selection to re-query.</li>
+      </ol>
+    </div>
+    <blockquote class="callout"><strong>Next up:</strong> Section 07 — Error Handling with TRY/CATCH and MESSAGE types.</blockquote>
+  </section>
+
+  <footer>ABAP Learning &middot; Section 06 — Interactive Reports &middot; Open in any browser</footer>
+</div>
+<script>
+  const steps=['#overview','#hotspot','#doubleclick','#practice'];let completed=new Set();completed.add('#overview');
+  function updateProgress(){const pct=Math.round((completed.size/steps.length)*100);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progLabel').textContent=pct+'% complete';}
+  const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){completed.add('#'+e.target.id);const l=document.querySelector('nav.toc a[href="#'+e.target.id+'"]');if(l)l.classList.add('done');updateProgress();}})},{threshold:.15});
+  steps.forEach(s=>{const el=document.querySelector(s);if(el)o.observe(el)});updateProgress();
+</script>
+</body>
+</html>

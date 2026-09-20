@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 6 — OO in Practice | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 6 — OO in Practice</h1>
+  <p class="muted">Everything you learned in Week 5, applied the way professional ABAP devs use it day-to-day in SE80/SE38. Every OOP concept maps 1:1 to PHP — only the syntax differs.</p>
+
+  <div class="callout info">
+    <strong class="label">Goal this week</strong>
+    Build reusable, well-structured classes: utility classes, abstract/final classes, singletons, and layered data access.
+  </div>
+
+  <h2>1. Global Classes (SE24)</h2>
+  <p>Local classes live inside one program. <strong>Global classes</strong> are reusable across the whole system, created in transaction <code>SE24</code>. Their names typically start with <code>ZCL_</code>.</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Scope</th><th>Where defined</th><th>Used by</th></tr>
+      <tr><td>Local class</td><td>Inside a report (SE38/SE80)</td><td>That one program</td></tr>
+      <tr><td>Global class</td><td>SE24</td><td>Any program in the system</td></tr>
+    </table>
+  </div>
+
+  <p>Global classes can contain <strong>class methods/attributes</strong> and instance methods, just like local ones. They support the same OO features (inheritance, interfaces, exceptions).</p>
+
+  <h2>2. Utility / Helper Classes (static)</h2>
+  <p>Utility classes expose purely static methods — no state, callable anywhere without an object. Pattern:</p>
+
+  <pre><code>CLASS zcl_util_string DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS is_palindrome
+      IMPORTING iv_text TYPE string
+      RETURNING VALUE(rv_yes) TYPE abap_bool.
+
+    CLASS-METHODS reverse
+      IMPORTING iv_text TYPE string
+      RETURNING VALUE(rv_rev) TYPE string.
+ENDCLASS.
+
+CLASS zcl_util_string IMPLEMENTATION.
+  METHOD reverse.
+    DATA lv_len TYPE i.
+    lv_len = strlen( iv_text ).
+    DO lv_len TIMES.
+      rv_rev = rv_rev && iv_text+ ( lv_len - sy-index ) (1).
+    ENDDO.
+  ENDMETHOD.
+  " ... is_palindrome similar ...
+ENDCLASS.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Name it like SAP does</strong>
+    SAP's own helper classes use the <code>CL_</code> prefix and a domain, e.g., <code>CL_GUI_ALV_GRID</code>. Your custom ones use <code>ZCL_</code>.
+  </div>
+
+  <h2>3. Abstraction — ABSTRACT &amp; FINAL</h2>
+  <pre><code>CLASS zcl_export ABSTRACT.       " cannot be instantiated directly
+  PUBLIC SECTION.
+    METHODS export_abstract ABSTRACT.   " no body; subclasses must implement
+ENDCLASS.
+
+CLASS zcl_pdf_export DEFINITION INHERITING FROM zcl_export.
+  PUBLIC SECTION.
+    METHODS export_abstract REDEFINITION.
+ENDCLASS.
+
+CLASS zcl_csv_export DEFINITION INHERITING FROM zcl_export.
+  PUBLIC SECTION.
+    METHODS export_abstract REDEFINITION.
+ENDCLASS.</code></pre>
+
+  <ul>
+    <li><code>ABSTRACT</code> class: cannot create objects; exists to be inherited.</li>
+    <li><code>ABSTRACT</code> method: no implementation; subclasses are forced to provide one.</li>
+    <li><code>FINAL</code> class: cannot be a parent (nothing may inherit from it).</li>
+    <li><code>FINAL</code> method: cannot be redefined.</li>
+  </ul>
+
+  <h2>4. The Singleton Pattern</h2>
+  <p>A singleton ensures only one instance of a class exists. Common for DB helpers, logger, and configuration readers. Achieved via a <code>CLASS-DATA</code> reference and a static accessor.</p>
+
+  <pre><code>CLASS zcl_db_helper DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance
+      RETURNING VALUE(ro_instance) TYPE REF TO zcl_db_helper.
+    METHODS read_material
+      IMPORTING iv_matnr TYPE matnr
+      RETURNING VALUE(rs_mara) TYPE mara.
+  PRIVATE SECTION.
+    CLASS-DATA go_instance TYPE REF TO zcl_db_helper.
+ENDCLASS.
+
+CLASS zcl_db_helper IMPLEMENTATION.
+  METHOD get_instance.
+    IF go_instance IS NOT BOUND.
+      go_instance = NEW zcl_db_helper( ).
+    ENDIF.
+    ro_instance = go_instance.
+  ENDMETHOD.
+
+  METHOD read_material.
+    SELECT SINGLE * FROM mara INTO rs_mara
+      WHERE matnr = @iv_matnr.
+  ENDMETHOD.
+ENDCLASS.
+
+" Usage anywhere:
+DATA(lo_helper) = zcl_db_helper=&gt;get_instance( ).
+DATA(ls_mara) = lo_helper-&gt;read_material( iv_matnr = 'MAT001' ).</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">IS NOT BOUND</strong>
+    <code>go_instance IS NOT BOUND</code> / <code>IS BOUND</code> checks whether an object reference points to an existing object — the modern replacement for <code>IS INITIAL</code> on references.
+  </div>
+
+  <h2>5. Layering — Keep business logic out of the screen</h2>
+  <p>A common, clean structure for a report:</p>
+  <ol>
+    <li><strong>Data-access class</strong> (e.g., <code>zcl_dao_material</code>) — only SELECTs. Returns data, no UI.</li>
+    <li><strong>Business/service class</strong> — validation + rules, calls the DAO.</li>
+    <li><strong>UI layer</strong> (report + ALV) — calls the service, renders output.</li>
+  </ol>
+
+  <pre><code>CLASS zcl_material_service DEFINITION.
+  PUBLIC SECTION.
+    METHODS get_materials
+      IMPORTING iv_bukrs TYPE bukrs
+      RETURNING VALUE(rt_mara) TYPE TABLE OF mara.
+ENDCLASS.
+
+CLASS zcl_material_service IMPLEMENTATION.
+  METHOD get_materials.
+    " DAO would be injected here; for simplicity direct select
+    SELECT * FROM mara INTO TABLE @rt_mara UP TO 100 ROWS.
+  ENDMETHOD.
+ENDCLASS.</code></pre>
+
+  <h2>6. Composition over inheritance</h2>
+  <p>Prefer grouping responsibilities into small classes and injecting them, rather than deep inheritance chains. For example, a report object that "has a" logger and "has a" data-access class instead of inheriting logger behavior.</p>
+
+  <h2>7. Exercises</h2>
+  <ol>
+    <li>Create a global utility class <code>zcl_util_string</code> in SE24 with static <code>reverse</code> and <code>is_palindrome</code> methods.</li>
+    <li>Refactor Week 1's calculator into a class with instance methods <code>add</code>, <code>subtract</code>, etc.</li>
+    <li>Build an abstract <code>zcl_export</code> with two concrete subclasses <code>zcl_csv_export</code> and <code>zcl_pdf_export</code>; call them polymorphically via the base reference.</li>
+    <li>Implement a singleton configuration class that reads system settings once and caches them.</li>
+    <li>Split one of your earlier reports into a DAO + service + report structure.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    <code>SE24</code>, global class, <code>ZCL_</code>, utility class, <code>ABSTRACT</code>, <code>FINAL</code>, singleton, <code>CLASS-DATA</code>, <code>IS BOUND</code>, DAO, layering, composition.
+  </div>
+
+  <div class="pagination">
+    <a href="week-05.html">← Week 5</a>
+    <a class="next" href="week-07.html">Next: Week 7 — Enhancement Framework →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 6
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 9 — ALV + Fiori/OData Bridge | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 9 — ALV + Fiori/OData Bridge</h1>
+  <p class="muted">Modern ALV (with <code>CL_SALV_TABLE</code>) is far simpler than classic ALV, and OData is how Fiori apps get data from SAP. This week ties both together.</p>
+
+  <div class="callout info">
+    <strong class="label">What you'll build this week</strong>
+    Expose the Week-4 report as an OData service.
+  </div>
+
+  <h2>1. Modern ALV — CL_SALV_TABLE</h2>
+  <p><code>CL_SALV_TABLE</code> is the simpler, object-oriented way to build ALV reports. You pass a data table; it auto-builds the field catalog, sorting, filtering, and layout. Much less boilerplate than classic ALV.</p>
+
+  <pre><code>SELECT bukrs, lifnr, netwr
+  FROM ekko
+  INTO TABLE @DATA(lt_alv).
+
+IF sy-subrc NE 0.
+  MESSAGE 'No data' TYPE 'I'.
+  RETURN.
+ENDIF.
+
+TRY.
+    cl_salv_table=&gt;factory(
+      IMPORTING
+        r_salv_table = DATA(lo_alv)
+      CHANGING
+        t_table      = lt_alv ).
+
+    " Access the columns/display objects
+    DATA(lo_columns) = lo_alv-&gt;get_columns( ).
+    lo_columns-&gt;set_optimize( abap_true ).
+
+    " Turn on totals/summation is via aggregate — or just display
+    lo_alv-&gt;display( ).
+
+  CATCH cx_salv_msg.
+    MESSAGE 'Cannot build ALV' TYPE 'E'.
+ENDTRY.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Why CL_SALV_TABLE?</strong>
+    Fewer lines, auto field catalog, and most standard features (sort/filter/export) come for free. Great for typical reports. Use classic ALV/CL_GUI_ALV_GRID when you need deep custom control (cell edits, events).
+  </div>
+
+  <h3>Adding layout, sorting, and totals to SALV</h3>
+  <pre><code>DATA(lo_layout) = lo_alv-&gt;get_layout( ).
+lo_layout-&gt;set_zebra( abap_true ).
+lo_layout-&gt;set_key( VALUE salv_s_layout_key(
+  report = sy-repid ) ).   " persist user layout per report
+
+" Sorting by company code
+DATA(lo_sorts) = lo_alv-&gt;get_sorts( ).
+lo_sorts-&gt;add_sort(
+  columnname = 'BUKRS'
+  subtotal   = abap_true ).   " subtotal groups
+
+" Totals row: use something like lo_columns-&gt;get_column('NETWR')
+DATA(lo_col) = lo_columns-&gt;get_column( 'NETWR' ).
+lo_col-&gt;set_aggr_planned( if_salv_c_aggregation-&gt;total ).</code></pre>
+
+  <h2>2. What is OData?</h2>
+  <p>OData is a REST-ish standard for data services. SAP exposes business data as an <strong>OData service</strong> (a set of entities with GET/POST/PUT/DELETE operations) so Fiori apps and external clients can consume it over HTTP(S).</p>
+
+  <p>Key concepts:</p>
+  <ul>
+    <li><strong>Entity</strong> — a data record type (like a table: e.g., <code>Product</code>).</li>
+    <li><strong>Entity set</strong> — a collection (like a table's rows).</li>
+    <li><strong>Service</strong> — the group of entity sets + operations.</li>
+    <li>JSON/XML as payload; the <code>$metadata</code> endpoint describes the service.</li>
+  </ul>
+
+  <h2>3. Building an OData service with SEGW</h2>
+  <p>The classic gateway builder is <code>SEGW</code> (Service Builder). The workflow:</p>
+
+  <ol>
+    <li><strong>Create a project</strong> in <code>SEGW</code> — pick a name (e.g., <code>ZPRODUCT_SRV</code>).</li>
+    <li><strong>Define a data model</strong> — you can import from a structure/table, RFC, or CDS view. This creates entity types.</li>
+    <li><strong>Generate the service</strong> — SEGW creates the OData model and code (MPC = model provider, DPC = data provider) as ABAP classes.</li>
+    <li><strong>Implement the DPC methods</strong> — e.g., <code>PRODUCTSET_GET_ENTITYSET</code> (list/get) to actually fetch data.</li>
+    <li><strong>Register/publish</strong> the service (via <code>/IWFND/MAINT_SERVICE</code> or the activation step) so it has a URL.</li>
+  </ol>
+
+  <p>A simplified DPC read implementation looks like:</p>
+  <pre><code>METHOD productset_get_entityset.
+  SELECT * FROM mara INTO TABLE @DATA(lt_mara).
+  MOVE-CORRESPONDING lt_mara TO et_entityset.
+ENDMETHOD.</code></pre>
+
+  <div class="callout info">
+    <strong class="label">The takeaway</strong>
+    You don't need to memorize every SEGW field. Understand the flow (project → model → generate → implement DPC → publish) and be able to implement a <code>GET_ENTITYSET</code> and <code>GET_ENTITY</code>.
+  </div>
+
+  <h2>4. OData CRUD operations</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Operation</th><th>DPC method</th><th>Purpose</th></tr>
+      <tr><td>Read list</td><td>..._GET_ENTITYSET</td><td>Get many records</td></tr>
+      <tr><td>Read single</td><td>..._GET_ENTITY</td><td>Get one record by key</td></tr>
+      <tr><td>Create</td><td>..._CREATE_ENTITY</td><td>POST a new record</td></tr>
+      <tr><td>Update</td><td>..._UPDATE_ENTITY</td><td>Modify existing (PUT/PATCH)</td></tr>
+      <tr><td>Delete</td><td>..._DELETE_ENTITY</td><td>Remove a record</td></tr>
+      <tr><td>Function/action</td><td>..._EXECUTE</td><td>Custom operations</td></tr>
+    </table>
+  </div>
+
+  <h2>5. From ALV report to OData in one sentence</h2>
+  <p>Your Week-4 ALV report produced a list of rows from a SELECT. An OData service does the same SELECT but returns the rows as JSON over HTTP. So "exposing the Week-4 report as OData" simply means: put that SELECT inside a DPC <code>GET_ENTITYSET</code> method instead of an ALV call.</p>
+
+  <h2>6. Exercises</h2>
+  <ol>
+    <li>Rewrite last week's simple ALV report using <code>CL_SALV_TABLE</code> instead of classic ALV. Compare the code size.</li>
+    <li>Add zebra layout, a sort on company code with subtotals, and a totals row on net value.</li>
+    <li>In <code>SEGW</code>, create a project and import a structure/table as an entity type.</li>
+    <li>Generate the service and implement the <code>GET_ENTITYSET</code> to return data from MARA.</li>
+    <li>Publish the service and test it in the browser via the service URL/<code>$metadata</code>.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    <code>CL_SALV_TABLE</code>, <code>factory( )</code>, <code>get_columns( )</code>, <code>display( )</code>, OData, <code>SEGW</code>, Service Builder, entity/entity set, DPC, MPC, <code>$metadata</code>, Fiori.
+  </div>
+
+  <div class="pagination">
+    <a href="week-08.html">← Week 8</a>
+    <a class="next" href="week-10.html">Next: Week 10 — ABAP Cloud / RAP →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 9
+</footer>
+
+</body>
+</html>

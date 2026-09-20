@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07 Error Handling — Tutorial</title>
+<style>
+  :root { --bg:#f6f8fb; --card:#fff; --text:#1a2433; --muted:#5b6b80; --border:#e2e8f0; --primary:#0f7bff; --primary-dark:#0b5fc4; --accent:#00a870; --accent-bg:#e6f7f0; --warn:#ff9800; --warn-bg:#fff4e0; --code-bg:#0f172a; --code-text:#e2e8f0; --radius:14px; --shadow:0 4px 20px rgba(15,32,39,.08); }
+  *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0 0 4rem}
+  header.hero{background:linear-gradient(135deg,#0f2027,#2c5364);color:#fff;padding:3.5rem 1.5rem 4.5rem;text-align:center}
+  header.hero .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:.25rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+  header.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;margin-bottom:.5rem}
+  header.hero p{color:rgba(255,255,255,.85);font-size:1.1rem;max-width:660px;margin:0 auto}
+  header.hero .chips{margin-top:1.3rem}
+  header.hero .chip{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.35rem .9rem;font-size:.83rem;color:rgba(255,255,255,.9);margin:.2rem}
+  .container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+  .progress-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);max-width:760px;margin:-2.8rem auto 2.5rem;padding:1.4rem 1.6rem;position:relative}
+  .progress-wrap p.top{font-size:.85rem;color:var(--muted);margin-bottom:.5rem;font-weight:600}
+  .progress-bar{height:10px;background:#e8edf3;border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px;transition:width .6s ease}
+  .progress-stats{display:flex;justify-content:space-between;margin-top:.6rem;font-size:.83rem;color:var(--muted)}
+  .progress-stats b{color:var(--primary)}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.6rem}
+  nav.toc h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:1rem}
+  nav.toc ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.35rem 1.5rem}
+  nav.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--muted);padding:.45rem .6rem;border-radius:8px;font-size:.94rem;transition:background .15s,color .15s}
+  nav.toc a:hover{background:#eef4ff;color:var(--primary)}
+  nav.toc .dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+  nav.toc a.done .dot{background:var(--accent)}
+  section{margin-top:2.2rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem 2.2rem 2.4rem;scroll-margin-top:1rem}
+  section h2.header{display:flex;align-items:center;gap:.7rem;font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
+  section h2.header .num{display:inline-flex;align-items:center;justify-content:center;width:2.3rem;height:2.3rem;background:var(--primary);color:#fff;border-radius:10px;font-size:1.1rem;flex-shrink:0}
+  section>p.lead{color:var(--muted);margin-top:.6rem}
+  h3{font-size:1.18rem;font-weight:750;margin:1.8rem 0 .8rem;color:var(--primary-dark)}
+  h4{font-size:1.02rem;font-weight:700;margin:1.2rem 0 .4rem;color:var(--text)}
+  ul,ol{padding-left:1.5rem;margin:.5rem 0} ul li,ol li{margin:.35rem 0}
+  pre{background:var(--code-bg);color:var(--code-text);border-radius:10px;padding:1.1rem 1.3rem;overflow-x:auto;margin:.8rem 0;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87rem;line-height:1.6}
+  pre .cmt{color:#64748b}
+  p.caption{font-size:.8rem;color:var(--muted);margin:-.4rem 0 .8rem .2rem}
+  .table-wrap{overflow-x:auto;margin:.8rem 0}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;min-width:460px;font-size:.93rem}
+  thead th{background:var(--primary);color:#fff;text-align:left;padding:.7rem 1rem;font-weight:600}
+  tbody td{padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+  tbody tr:nth-child(even){background:#f9fbfe} tbody tr:last-child td{border-bottom:none}
+  code{background:#eef1f6;border-radius:4px;padding:.1rem .35rem;font-size:.88em;font-family:ui-monospace,Menlo,Consolas,monospace}
+  pre code{background:transparent;padding:0;color:inherit}
+  .tip,.warn,.note{border-radius:10px;padding:1rem 1.2rem;margin:1.1rem 0;font-size:.94rem}
+  .tip{background:#eef4ff;border-left:4px solid var(--primary)} .tip::before{content:"💡 Tip: ";font-weight:800;color:var(--primary)}
+  .warn{background:var(--warn-bg);border-left:4px solid var(--warn)} .warn::before{content:"⚠ Common pitfall: ";font-weight:800;color:#b26b00}
+  .note{background:var(--accent-bg);border-left:4px solid var(--accent)} .note::before{content:"📌 Note: ";font-weight:800;color:var(--accent)}
+  .exercise{border:2px dashed var(--primary);background:#fbfdff;border-radius:10px;padding:1.1rem 1.3rem;margin:1.3rem 0}
+  .exercise h4{color:var(--primary);margin-top:0} .exercise h4::before{content:"✏️ "}
+  blockquote.callout{background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.4rem;margin:1.2rem 0;font-size:.95rem}
+  blockquote.callout strong{color:var(--accent)}
+  .file-tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--primary);background:#eef4ff;border-radius:999px;padding:.2rem .8rem;margin-bottom:.5rem}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:3rem;padding:1.5rem 1rem}
+  @media(max-width:640px){section{padding:1.5rem 1.2rem}nav.toc ul{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">ABAP Learning &middot; Section 07</span>
+  <h1>Error Handling</h1>
+  <p>Handle failures gracefully with TRY/CATCH and user-friendly MESSAGE types instead of crashes.</p>
+  <div class="chips"><span class="chip">TRY / CATCH</span><span class="chip">MESSAGE</span></div>
+</header>
+<div class="container">
+  <div class="progress-wrap">
+    <p class="top">Section progress</p>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-stats"><span>2 lessons</span><span id="progLabel">0% complete</span></div>
+  </div>
+
+  <nav class="toc">
+    <h2>Lessons in this section</h2>
+    <ul>
+      <li><a href="#trycatch"><span class="dot"></span>Lesson 1 — TRY / CATCH</a></li>
+      <li><a href="#messages"><span class="dot"></span>Lesson 2 — MESSAGE types</a></li>
+      <li><a href="#practice"><span class="dot"></span>Practice &amp; Next Steps</a></li>
+    </ul>
+  </nav>
+
+  <section id="overview">
+    <h2 class="header"><span class="num">▶</span> Why Handle Errors?</h2>
+    <p class="lead">A short dump (crash) frustrates users and loses work. Proper handling keeps your program alive and explains problems clearly.</p>
+    <ul>
+      <li><strong>Exceptions</strong> — runtime errors caught by <code>TRY / CATCH</code>, like <code>try/catch</code> in PHP.</li>
+      <li><strong>Messages</strong> — user-facing notifications with a type (error, warning, success, info).</li>
+      <li>Always check <code>sy-subrc</code> after operations that can fail (e.g. <code>SELECT</code>, <code>READ TABLE</code>).</li>
+    </ul>
+  </section>
+
+  <section id="trycatch">
+    <h2 class="header"><span class="num">1</span> TRY / CATCH</h2>
+    <p class="lead">Wrap risky operations and catch exceptions instead of crashing.</p>
+    <span class="file-tag">07-error-handling/try_catch.abap</span>
+    <pre>REPORT z_try_catch.
+
+DATA: lv_num   TYPE i,
+      lv_value TYPE i.
+
+TRY.
+    lv_num = 10.
+    lv_value = 100 / lv_num.
+    WRITE: / 'Result:', lv_value.
+
+    " Force an error to demonstrate exception handling
+    lv_value = 100 / 0.
+
+  CATCH cx_sy_zerodivide.
+    WRITE: / 'Error: Division by zero caught!'.
+
+  CATCH cx_root.
+    WRITE: / 'Unknown error occurred'.
+ENDTRY.</pre>
+    <h3>Key points</h3>
+    <ul>
+      <li><code>TRY ... ENDTRY.</code> — the protected block.</li>
+      <li><code>CATCH cx_sy_zerodivide.</code> — catch a specific exception class.</li>
+      <li><code>CATCH cx_root.</code> — catch any exception (the base class, like catching <code>\Exception</code> in PHP).</li>
+      <li>Order matters: catch specific exceptions before the general <code>cx_root</code>.</li>
+    </ul>
+    <div class="warn">ABAP evaluates <code>CATCH</code> blocks top to bottom. Put specific exception classes first, and <code>cx_root</code> last, or the general catch will swallow the specific ones.</div>
+    <div class="tip">Common exception classes: <code>cx_sy_zerodivide</code> (division by zero), <code>cx_sy_conversion_error</code> (bad type conversion), <code>cx_sy_range_out_of_bounds</code> (index out of range).</div>
+  </section>
+
+  <section id="messages">
+    <h2 class="header"><span class="num">2</span> MESSAGE types</h2>
+    <p class="lead">Tell the user what happened with a clearly typed message.</p>
+    <span class="file-tag">07-error-handling/messages.abap</span>
+    <pre>REPORT z_messages.
+
+PARAMETERS: p_amount TYPE p LENGTH 10 DECIMALS 2 OBLIGATORY.
+
+AT SELECTION-SCREEN.
+  IF p_amount <= 0.
+    MESSAGE 'Amount must be positive' TYPE 'E'.
+  ENDIF.
+
+START-OF-SELECTION.
+  IF p_amount > 1000000.
+    MESSAGE 'Amount is very large' TYPE 'W'.
+  ENDIF.
+
+  MESSAGE 'Processing complete' TYPE 'S'.</pre>
+    <h3>The MESSAGE types</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Description</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>E</code></td><td>Error</td><td>Stops execution, shows error</td></tr>
+          <tr><td><code>W</code></td><td>Warning</td><td>Shows warning, continues</td></tr>
+          <tr><td><code>S</code></td><td>Success</td><td>Shows success message</td></tr>
+          <tr><td><code>I</code></td><td>Information</td><td>Shows info popup, continues</td></tr>
+          <tr><td><code>A</code></td><td>Abort</td><td>Terminates the program</td></tr>
+          <tr><td><code>X</code></td><td>Exit</td><td>Immediately terminates</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>TYPE 'E'</code> in a selection screen keeps the user on the screen until they fix the input.</li>
+      <li><code>TYPE 'W'</code> and <code>TYPE 'I'</code> let processing continue.</li>
+      <li><code>TYPE 'X'</code> generates a short dump &mdash; use sparingly.</li>
+    </ul>
+    <div class="note">In real projects, messages are usually defined in message classes and raised with <code>MESSAGE e001(...) </code> — but inline <code>MESSAGE 'text' TYPE 'E'</code> works for learning and quick programs.</div>
+  </section>
+
+  <section id="practice">
+    <h2 class="header"><span class="num">✓</span> Practice &amp; Next Steps</h2>
+    <div class="exercise">
+      <h4>Robust calculator</h4>
+      <ol>
+        <li>Accept two numbers and an operator as parameters.</li>
+        <li>Validate the operator and both numbers on the selection screen (message type E).</li>
+        <li>Wrap the calculation in <code>TRY</code> and catch <code>cx_sy_zerodivide</code>.</li>
+        <li>Show a success message when done.</li>
+      </ol>
+    </div>
+    <blockquote class="callout"><strong>Next up:</strong> Section 08 — File Handling with upload and download.</blockquote>
+  </section>
+
+  <footer>ABAP Learning &middot; Section 07 — Error Handling &middot; Open in any browser</footer>
+</div>
+<script>
+  const steps=['#overview','#trycatch','#messages','#practice'];let completed=new Set();completed.add('#overview');
+  function updateProgress(){const pct=Math.round((completed.size/steps.length)*100);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progLabel').textContent=pct+'% complete';}
+  const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){completed.add('#'+e.target.id);const l=document.querySelector('nav.toc a[href="#'+e.target.id+'"]');if(l)l.classList.add('done');updateProgress();}})},{threshold:.15});
+  steps.forEach(s=>{const el=document.querySelector(s);if(el)o.observe(el)});updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08 File Handling — Tutorial</title>
+<style>
+  :root { --bg:#f6f8fb; --card:#fff; --text:#1a2433; --muted:#5b6b80; --border:#e2e8f0; --primary:#0f7bff; --primary-dark:#0b5fc4; --accent:#00a870; --accent-bg:#e6f7f0; --warn:#ff9800; --warn-bg:#fff4e0; --code-bg:#0f172a; --code-text:#e2e8f0; --radius:14px; --shadow:0 4px 20px rgba(15,32,39,.08); }
+  *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0 0 4rem}
+  header.hero{background:linear-gradient(135deg,#0f2027,#2c5364);color:#fff;padding:3.5rem 1.5rem 4.5rem;text-align:center}
+  header.hero .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:.25rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+  header.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;margin-bottom:.5rem}
+  header.hero p{color:rgba(255,255,255,.85);font-size:1.1rem;max-width:660px;margin:0 auto}
+  header.hero .chips{margin-top:1.3rem}
+  header.hero .chip{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.35rem .9rem;font-size:.83rem;color:rgba(255,255,255,.9);margin:.2rem}
+  .container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+  .progress-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);max-width:760px;margin:-2.8rem auto 2.5rem;padding:1.4rem 1.6rem;position:relative}
+  .progress-wrap p.top{font-size:.85rem;color:var(--muted);margin-bottom:.5rem;font-weight:600}
+  .progress-bar{height:10px;background:#e8edf3;border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px;transition:width .6s ease}
+  .progress-stats{display:flex;justify-content:space-between;margin-top:.6rem;font-size:.83rem;color:var(--muted)}
+  .progress-stats b{color:var(--primary)}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.6rem}
+  nav.toc h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:1rem}
+  nav.toc ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.35rem 1.5rem}
+  nav.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--muted);padding:.45rem .6rem;border-radius:8px;font-size:.94rem;transition:background .15s,color .15s}
+  nav.toc a:hover{background:#eef4ff;color:var(--primary)}
+  nav.toc .dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+  nav.toc a.done .dot{background:var(--accent)}
+  section{margin-top:2.2rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem 2.2rem 2.4rem;scroll-margin-top:1rem}
+  section h2.header{display:flex;align-items:center;gap:.7rem;font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
+  section h2.header .num{display:inline-flex;align-items:center;justify-content:center;width:2.3rem;height:2.3rem;background:var(--primary);color:#fff;border-radius:10px;font-size:1.1rem;flex-shrink:0}
+  section>p.lead{color:var(--muted);margin-top:.6rem}
+  h3{font-size:1.18rem;font-weight:750;margin:1.8rem 0 .8rem;color:var(--primary-dark)}
+  h4{font-size:1.02rem;font-weight:700;margin:1.2rem 0 .4rem;color:var(--text)}
+  ul,ol{padding-left:1.5rem;margin:.5rem 0} ul li,ol li{margin:.35rem 0}
+  pre{background:var(--code-bg);color:var(--code-text);border-radius:10px;padding:1.1rem 1.3rem;overflow-x:auto;margin:.8rem 0;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87rem;line-height:1.6}
+  pre .cmt{color:#64748b}
+  p.caption{font-size:.8rem;color:var(--muted);margin:-.4rem 0 .8rem .2rem}
+  .table-wrap{overflow-x:auto;margin:.8rem 0}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;min-width:460px;font-size:.93rem}
+  thead th{background:var(--primary);color:#fff;text-align:left;padding:.7rem 1rem;font-weight:600}
+  tbody td{padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+  tbody tr:nth-child(even){background:#f9fbfe} tbody tr:last-child td{border-bottom:none}
+  code{background:#eef1f6;border-radius:4px;padding:.1rem .35rem;font-size:.88em;font-family:ui-monospace,Menlo,Consolas,monospace}
+  pre code{background:transparent;padding:0;color:inherit}
+  .tip,.warn,.note{border-radius:10px;padding:1rem 1.2rem;margin:1.1rem 0;font-size:.94rem}
+  .tip{background:#eef4ff;border-left:4px solid var(--primary)} .tip::before{content:"💡 Tip: ";font-weight:800;color:var(--primary)}
+  .warn{background:var(--warn-bg);border-left:4px solid var(--warn)} .warn::before{content:"⚠ Common pitfall: ";font-weight:800;color:#b26b00}
+  .note{background:var(--accent-bg);border-left:4px solid var(--accent)} .note::before{content:"📌 Note: ";font-weight:800;color:var(--accent)}
+  .exercise{border:2px dashed var(--primary);background:#fbfdff;border-radius:10px;padding:1.1rem 1.3rem;margin:1.3rem 0}
+  .exercise h4{color:var(--primary);margin-top:0} .exercise h4::before{content:"✏️ "}
+  blockquote.callout{background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.4rem;margin:1.2rem 0;font-size:.95rem}
+  blockquote.callout strong{color:var(--accent)}
+  .file-tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--primary);background:#eef4ff;border-radius:999px;padding:.2rem .8rem;margin-bottom:.5rem}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:3rem;padding:1.5rem 1rem}
+  @media(max-width:640px){section{padding:1.5rem 1.2rem}nav.toc ul{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">ABAP Learning &middot; Section 08</span>
+  <h1>File Handling</h1>
+  <p>Move data in and out of SAP — import files and export reports to your local machine.</p>
+  <div class="chips"><span class="chip">Upload</span><span class="chip">Download</span></div>
+</header>
+<div class="container">
+  <div class="progress-wrap">
+    <p class="top">Section progress</p>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-stats"><span>2 lessons</span><span id="progLabel">0% complete</span></div>
+  </div>
+
+  <nav class="toc">
+    <h2>Lessons in this section</h2>
+    <ul>
+      <li><a href="#upload"><span class="dot"></span>Lesson 1 — File Upload</a></li>
+      <li><a href="#download"><span class="dot"></span>Lesson 2 — File Download</a></li>
+      <li><a href="#practice"><span class="dot"></span>Practice &amp; Next Steps</a></li>
+    </ul>
+  </nav>
+
+  <section id="overview">
+    <h2 class="header"><span class="num">▶</span> Moving Data In and Out</h2>
+    <p class="lead">Businesses constantly import and export spreadsheets, CSVs, and flat files. These are the core patterns.</p>
+    <ul>
+      <li><strong>Upload</strong> — read a file from the user's machine into an internal table.</li>
+      <li><strong>Download</strong> — take an internal table and write it to a file the user can open.</li>
+      <li>Common via function modules that handle the file dialog, encoding, and error checking for you.</li>
+    </ul>
+    <div class="note">File handling needs a real SAP GUI to pick files — emulators can't run these. Learn the patterns here; practice on the SAP CAL sandbox.</div>
+  </section>
+
+  <section id="upload">
+    <h2 class="header"><span class="num">1</span> File Upload</h2>
+    <p class="lead">Use a function module to present a file dialog and read the data.</p>
+    <span class="file-tag">08-file-handling/upload.abap</span>
+    <pre>REPORT z_upload.
+
+TYPES: BEGIN OF ty_data,
+         field1 TYPE c LENGTH 20,
+         field2 TYPE c LENGTH 20,
+       END OF ty_data.
+
+DATA: lt_data    TYPE TABLE OF ty_data,
+      lv_filename TYPE string,
+      lv_rc      TYPE i.
+
+CALL FUNCTION 'GUI_UPLOAD'
+  EXPORTING
+    filename                = lv_filename
+  TABLES
+    data_tab                = lt_data
+  EXCEPTIONS
+    file_open_error         = 1
+    file_read_error         = 2
+    OTHERS                  = 3.
+
+IF sy-subrc = 0.
+  WRITE: / 'File uploaded successfully'.
+  LOOP AT lt_data INTO DATA(ls_data).
+    WRITE: / ls_data-field1, ls_data-field2.
+  ENDLOOP.
+ELSE.
+  MESSAGE 'Upload failed' TYPE 'E'.
+ENDIF.</pre>
+    <h3>Key points</h3>
+    <ul>
+      <li><code>GUI_UPLOAD</code> — reads a local file into <code>data_tab</code> (each file line becomes a row).</li>
+      <li>The <code>filename</code> can be filled via a file dialog (<code>F4</code> / <code>GUI_GET_FILE_NAME</code>).</li>
+      <li>Check <code>sy-subrc</code> (the <code>EXCEPTIONS</code> block) to report failures.</li>
+    </ul>
+    <div class="tip">Store each uploaded row as a string or a fixed-length structure, then validate and insert into the database.</div>
+  </section>
+
+  <section id="download">
+    <h2 class="header"><span class="num">2</span> File Download</h2>
+    <p class="lead">Export an internal table to a file the user can save.</p>
+    <span class="file-tag">08-file-handling/download.abap</span>
+    <pre>REPORT z_download.
+
+DATA: lt_data    TYPE TABLE OF string,
+      lv_filename TYPE string,
+      lv_line    TYPE string.
+
+lv_line = 'Hello, World!'. APPEND lv_line TO lt_data.
+lv_line = 'This is line two'. APPEND lv_line TO lt_data.
+
+lv_filename = 'C:\temp\output.txt'.
+
+CALL FUNCTION 'GUI_DOWNLOAD'
+  EXPORTING
+    filename                = lv_filename
+  TABLES
+    data_tab                = lt_data
+  EXCEPTIONS
+    file_write_error        = 1
+    OTHERS                  = 2.
+
+IF sy-subrc = 0.
+  MESSAGE 'File downloaded successfully' TYPE 'S'.
+ELSE.
+  MESSAGE 'Download failed' TYPE 'E'.
+ENDIF.</pre>
+    <h3>Key points</h3>
+    <ul>
+      <li><code>GUI_DOWNLOAD</code> — writes <code>data_tab</code> lines to the specified file.</li>
+      <li>Used to export reports, CSV extracts, and config to the local machine.</li>
+      <li>Check <code>sy-subrc</code> after the call.</li>
+    </ul>
+    <div class="warn">When exporting CSV, be careful with field separators and encoding (e.g. semicolons vs commas, character set). Wrong settings produce files Excel can't read correctly.</div>
+  </section>
+
+  <section id="practice">
+    <h2 class="header"><span class="num">✓</span> Practice &amp; Next Steps</h2>
+    <div class="exercise">
+      <h4>CSV export of a report</h4>
+      <ol>
+        <li>Select flight data into an internal table.</li>
+        <li>Convert each row to a CSV string line (fields separated by <code>;</code>).</li>
+        <li>Download the lines with <code>GUI_DOWNLOAD</code>.</li>
+      </ol>
+    </div>
+    <blockquote class="callout"><strong>Next up:</strong> Section 09 — OOP Basics: CLASSES and INTERFACES.</blockquote>
+  </section>
+
+  <footer>ABAP Learning &middot; Section 08 — File Handling &middot; Open in any browser</footer>
+</div>
+<script>
+  const steps=['#overview','#upload','#download','#practice'];let completed=new Set();completed.add('#overview');
+  function updateProgress(){const pct=Math.round((completed.size/steps.length)*100);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progLabel').textContent=pct+'% complete';}
+  const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){completed.add('#'+e.target.id);const l=document.querySelector('nav.toc a[href="#'+e.target.id+'"]');if(l)l.classList.add('done');updateProgress();}})},{threshold:.15});
+  steps.forEach(s=>{const el=document.querySelector(s);if(el)o.observe(el)});updateProgress();
+</script>
+</body>
+</html>

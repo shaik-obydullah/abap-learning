@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 Selection Screen — Tutorial</title>
+<style>
+  :root { --bg:#f6f8fb; --card:#fff; --text:#1a2433; --muted:#5b6b80; --border:#e2e8f0; --primary:#0f7bff; --primary-dark:#0b5fc4; --accent:#00a870; --accent-bg:#e6f7f0; --warn:#ff9800; --warn-bg:#fff4e0; --code-bg:#0f172a; --code-text:#e2e8f0; --radius:14px; --shadow:0 4px 20px rgba(15,32,39,.08); }
+  *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0 0 4rem}
+  header.hero{background:linear-gradient(135deg,#0f2027,#2c5364);color:#fff;padding:3.5rem 1.5rem 4.5rem;text-align:center}
+  header.hero .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:.25rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+  header.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;margin-bottom:.5rem}
+  header.hero p{color:rgba(255,255,255,.85);font-size:1.1rem;max-width:660px;margin:0 auto}
+  header.hero .chips{margin-top:1.3rem}
+  header.hero .chip{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.35rem .9rem;font-size:.83rem;color:rgba(255,255,255,.9);margin:.2rem}
+  .container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+  .progress-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);max-width:760px;margin:-2.8rem auto 2.5rem;padding:1.4rem 1.6rem;position:relative}
+  .progress-wrap p.top{font-size:.85rem;color:var(--muted);margin-bottom:.5rem;font-weight:600}
+  .progress-bar{height:10px;background:#e8edf3;border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px;transition:width .6s ease}
+  .progress-stats{display:flex;justify-content:space-between;margin-top:.6rem;font-size:.83rem;color:var(--muted)}
+  .progress-stats b{color:var(--primary)}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.6rem}
+  nav.toc h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:1rem}
+  nav.toc ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.35rem 1.5rem}
+  nav.toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--muted);padding:.45rem .6rem;border-radius:8px;font-size:.94rem;transition:background .15s,color .15s}
+  nav.toc a:hover{background:#eef4ff;color:var(--primary)}
+  nav.toc .dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+  nav.toc a.done .dot{background:var(--accent)}
+  section{margin-top:2.2rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem 2.2rem 2.4rem;scroll-margin-top:1rem}
+  section h2.header{display:flex;align-items:center;gap:.7rem;font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
+  section h2.header .num{display:inline-flex;align-items:center;justify-content:center;width:2.3rem;height:2.3rem;background:var(--primary);color:#fff;border-radius:10px;font-size:1.1rem;flex-shrink:0}
+  section>p.lead{color:var(--muted);margin-top:.6rem}
+  h3{font-size:1.18rem;font-weight:750;margin:1.8rem 0 .8rem;color:var(--primary-dark)}
+  h4{font-size:1.02rem;font-weight:700;margin:1.2rem 0 .4rem;color:var(--text)}
+  ul,ol{padding-left:1.5rem;margin:.5rem 0} ul li,ol li{margin:.35rem 0}
+  pre{background:var(--code-bg);color:var(--code-text);border-radius:10px;padding:1.1rem 1.3rem;overflow-x:auto;margin:.8rem 0;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87rem;line-height:1.6}
+  pre .cmt{color:#64748b}
+  p.caption{font-size:.8rem;color:var(--muted);margin:-.4rem 0 .8rem .2rem}
+  .table-wrap{overflow-x:auto;margin:.8rem 0}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;min-width:460px;font-size:.93rem}
+  thead th{background:var(--primary);color:#fff;text-align:left;padding:.7rem 1rem;font-weight:600}
+  tbody td{padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+  tbody tr:nth-child(even){background:#f9fbfe} tbody tr:last-child td{border-bottom:none}
+  code{background:#eef1f6;border-radius:4px;padding:.1rem .35rem;font-size:.88em;font-family:ui-monospace,Menlo,Consolas,monospace}
+  pre code{background:transparent;padding:0;color:inherit}
+  .tip,.warn,.note{border-radius:10px;padding:1rem 1.2rem;margin:1.1rem 0;font-size:.94rem}
+  .tip{background:#eef4ff;border-left:4px solid var(--primary)} .tip::before{content:"💡 Tip: ";font-weight:800;color:var(--primary)}
+  .warn{background:var(--warn-bg);border-left:4px solid var(--warn)} .warn::before{content:"⚠ Common pitfall: ";font-weight:800;color:#b26b00}
+  .note{background:var(--accent-bg);border-left:4px solid var(--accent)} .note::before{content:"📌 Note: ";font-weight:800;color:var(--accent)}
+  .exercise{border:2px dashed var(--primary);background:#fbfdff;border-radius:10px;padding:1.1rem 1.3rem;margin:1.3rem 0}
+  .exercise h4{color:var(--primary);margin-top:0} .exercise h4::before{content:"✏️ "}
+  blockquote.callout{background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.4rem;margin:1.2rem 0;font-size:.95rem}
+  blockquote.callout strong{color:var(--accent)}
+  .file-tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--primary);background:#eef4ff;border-radius:999px;padding:.2rem .8rem;margin-bottom:.5rem}
+  .flow{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem 1.3rem;font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--text);line-height:1.7;margin:.8rem 0}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:3rem;padding:1.5rem 1rem}
+  @media(max-width:640px){section{padding:1.5rem 1.2rem}nav.toc ul{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">ABAP Learning &middot; Section 02</span>
+  <h1>Selection Screens</h1>
+  <p>Input forms that appear before your program runs — collect user input, validate it, then process.</p>
+  <div class="chips"><span class="chip">Parameters</span><span class="chip">Select-Options</span><span class="chip">Events</span></div>
+</header>
+<div class="container">
+  <div class="progress-wrap">
+    <p class="top">Section progress</p>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-stats"><span>3 lessons</span><span id="progLabel">0% complete</span></div>
+  </div>
+
+  <nav class="toc">
+    <h2>Lessons in this section</h2>
+    <ul>
+      <li><a href="#parameters"><span class="dot"></span>Lesson 1 — Parameters</a></li>
+      <li><a href="#selectoptions"><span class="dot"></span>Lesson 2 — Select-Options</a></li>
+      <li><a href="#events"><span class="dot"></span>Lesson 3 — Events &amp; Validation</a></li>
+      <li><a href="#practice"><span class="dot"></span>Practice &amp; Next Steps</a></li>
+    </ul>
+  </nav>
+
+  <section id="overview">
+    <h2 class="header"><span class="num">▶</span> The Selection Screen Flow</h2>
+    <p class="lead">A selection screen is SAP's input form. The program shows it, waits for the user, validates, then runs.</p>
+    <div class="flow">
+User runs program<br>
+&nbsp;&nbsp;&nbsp;↓<br>
+INITIALIZATION (set default values)<br>
+&nbsp;&nbsp;&nbsp;↓<br>
+Selection screen appears → user fills in values → clicks Execute (F8)<br>
+&nbsp;&nbsp;&nbsp;↓<br>
+AT SELECTION-SCREEN (validate input)<br>
+&nbsp;&nbsp;&nbsp;↓<br>
+If valid → START-OF-SELECTION (process data)<br>
+If invalid → show error, stay on the screen
+    </div>
+    <div class="note"><code>PARAMETERS</code> gives single-value fields; <code>SELECT-OPTIONS</code> gives from/to ranges. Both appear on the screen before the main body runs.</div>
+  </section>
+
+  <section id="parameters">
+    <h2 class="header"><span class="num">1</span> Parameters</h2>
+    <p class="lead">Simple single-value input fields.</p>
+    <span class="file-tag">02-selection-screen/parameters.abap</span>
+    <pre>REPORT z_parameters.
+
+PARAMETERS: p_name   TYPE string,
+            p_age    TYPE i,
+            p_date   TYPE d,
+            p_amount TYPE p LENGTH 10 DECIMALS 2.
+
+WRITE: / 'Name:', p_name.
+WRITE: / 'Age:', p_age.
+WRITE: / 'Date:', p_date.
+WRITE: / 'Amount:', p_amount.</pre>
+    <h3>How it works</h3>
+    <ol>
+      <li>Program starts.</li>
+      <li>Selection screen appears with one field per parameter.</li>
+      <li>User fills in values and presses Execute (<code>F8</code>).</li>
+      <li>Program runs, and each <code>p_</code> variable holds the user's input.</li>
+    </ol>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Input example</th></tr></thead>
+        <tbody>
+          <tr><td><code>TYPE string</code></td><td>John Doe</td></tr>
+          <tr><td><code>TYPE i</code></td><td>25</td></tr>
+          <tr><td><code>TYPE d</code></td><td>20260819</td></tr>
+          <tr><td><code>TYPE p</code></td><td>1234.56</td></tr>
+          <tr><td><code>TYPE c</code></td><td>ABC (fixed length)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip">The <code>p_</code> prefix signals a parameter. Keep that convention — SAP programmers read it instantly.</div>
+    <div class="warn">Never trust user input. Validate it in <code>AT SELECTION-SCREEN</code> (next lesson).</div>
+  </section>
+
+  <section id="selectoptions">
+    <h2 class="header"><span class="num">2</span> Select-Options</h2>
+    <p class="lead">Range inputs (from/to) — perfect for date ranges, lists, and filtering database tables.</p>
+    <span class="file-tag">02-selection-screen/select-options.abap</span>
+    <pre>REPORT z_select_options.
+
+TABLES: mara.
+
+SELECT-OPTIONS: s_matnr FOR mara-matnr,
+                s_ersda FOR mara-ersda,
+                s_mtart FOR mara-mtart.
+
+WRITE: / 'Material Number:', s_matnr-low.
+WRITE: / 'Created Date:', s_ersda-low.
+WRITE: / 'Material Type:', s_mtart-low.</pre>
+    <h3>Parameter vs Select-Option</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>PARAMETERS</th><th>SELECT-OPTIONS</th></tr></thead>
+        <tbody>
+          <tr><td>Input</td><td>Single value</td><td>Range (from/to)</td></tr>
+          <tr><td>Screen</td><td>One field</td><td>Two fields + option</td></tr>
+          <tr><td>Use case</td><td>Simple input</td><td>Date ranges, lists</td></tr>
+          <tr><td>Prefix</td><td><code>p_</code></td><td><code>s_</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>TABLES: mara.</code> — references the database table structure so you can link fields to it.</li>
+      <li><code>FOR mara-matnr</code> — binds the select-option to a table field.</li>
+      <li>Each select-option internally has <code>-low</code> (from) and <code>-high</code> (to) values.</li>
+    </ul>
+    <div class="tip">Select-options accept a single value, a range, or even multiple ranges — far more flexible than a single <code>PARAMETERS</code> field.</div>
+  </section>
+
+  <section id="events">
+    <h2 class="header"><span class="num">3</span> Events &amp; Validation</h2>
+    <p class="lead">Control the lifecycle: set defaults, validate, then process.</p>
+    <span class="file-tag">02-selection-screen/events.abap</span>
+    <pre>REPORT z_selection_events.
+
+PARAMETERS: p_name TYPE string,
+            p_age  TYPE i.
+
+INITIALIZATION.
+  p_name = 'John Doe'.
+  p_age = 25.
+
+AT SELECTION-SCREEN.
+  IF p_name IS INITIAL.
+    MESSAGE 'Name is required' TYPE 'E'.
+  ENDIF.
+
+  IF p_age < 18.
+    MESSAGE 'Age must be 18 or older' TYPE 'E'.
+  ENDIF.
+
+START-OF-SELECTION.
+  WRITE: / 'Name:', p_name.
+  WRITE: / 'Age:', p_age.
+  WRITE: / 'Status: Valid'.</pre>
+    <h3>The three key events</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>When it runs</th><th>Typical use</th></tr></thead>
+        <tbody>
+          <tr><td><code>INITIALIZATION.</code></td><td>Before the screen appears</td><td>Set default values</td></tr>
+          <tr><td><code>AT SELECTION-SCREEN.</code></td><td>When user clicks Execute</td><td>Validate input</td></tr>
+          <tr><td><code>START-OF-SELECTION.</code></td><td>After validation passes</td><td>Main logic</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>MESSAGE types</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Description</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>E</code></td><td>Error</td><td>Stops execution, shows error</td></tr>
+          <tr><td><code>S</code></td><td>Success</td><td>Shows success message</td></tr>
+          <tr><td><code>W</code></td><td>Warning</td><td>Shows warning, continues</td></tr>
+          <tr><td><code>I</code></td><td>Information</td><td>Shows info, continues</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><code>IS INITIAL</code> checks if a field is empty.</li>
+      <li>A <code>TYPE 'E'</code> message stops the program and keeps the user on the screen until fixed.</li>
+    </ul>
+    <h3>Common attributes</h3>
+    <pre>PARAMETERS: p_name TYPE string OBLIGATORY,
+            p_date TYPE d DEFAULT sy-datum.</pre>
+    <p class="caption"><code>OBLIGATORY</code> = required field &middot; <code>DEFAULT sy-datum</code> = pre-fill with today's date.</p>
+  </section>
+
+  <section id="practice">
+    <h2 class="header"><span class="num">✓</span> Practice &amp; Next Steps</h2>
+    <p class="lead">Test in <a href="https://abapdojo.com" target="_blank">ABAP Dojo</a>.</p>
+    <div class="exercise">
+      <h4>Build an employee screen</h4>
+      <ol>
+        <li>Create parameters: employee name (string, obligatory), department (string), hire year (integer).</li>
+        <li>Add a select-option for hire date <code>s_hdate</code>.</li>
+        <li>Validate: name not empty; hire date must be in the past.</li>
+        <li>Print all inputs in <code>START-OF-SELECTION</code>.</li>
+      </ol>
+      <pre>REPORT z_employee_screen.
+
+PARAMETERS: p_name TYPE string OBLIGATORY,
+            p_dept TYPE string,
+            p_year TYPE i.
+SELECT-OPTIONS: s_hdate FOR sy-datum.
+
+AT SELECTION-SCREEN.
+  IF p_name IS INITIAL.
+    MESSAGE 'Name cannot be empty' TYPE 'E'.
+  ENDIF.
+  IF s_hdate-high > sy-datum.
+    MESSAGE 'Hire date must be in the past' TYPE 'E'.
+  ENDIF.
+
+START-OF-SELECTION.
+  WRITE: / 'Employee:', p_name.
+  WRITE: / 'Department:', p_dept.
+  WRITE: / 'Hired:', s_hdate-low.</pre>
+    </div>
+    <blockquote class="callout"><strong>Next up:</strong> Section 03 — Internal Tables, ABAP's arrays for storing multiple rows of data.</blockquote>
+  </section>
+
+  <footer>ABAP Learning &middot; Section 02 — Selection Screens &middot; Open in any browser</footer>
+</div>
+<script>
+  const steps=['#overview','#parameters','#selectoptions','#events','#practice'];let completed=new Set();completed.add('#overview');
+  function updateProgress(){const pct=Math.round((completed.size/steps.length)*100);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progLabel').textContent=pct+'% complete';}
+  const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){completed.add('#'+e.target.id);const l=document.querySelector('nav.toc a[href="#'+e.target.id+'"]');if(l)l.classList.add('done');updateProgress();}})},{threshold:.15});
+  steps.forEach(s=>{const el=document.querySelector(s);if(el)o.observe(el)});updateProgress();
+</script>
+</body>
+</html>

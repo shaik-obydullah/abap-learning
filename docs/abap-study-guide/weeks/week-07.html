@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7 — Enhancement Framework | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 7 — Enhancement Framework</h1>
+  <p class="muted">SAP gives you several ways to <strong>extend standard SAP code without modifying it</strong> — so your changes survive support-package upgrades. This is a core professional skill for AMS/support roles.</p>
+
+  <div class="callout info">
+    <strong class="label">What you'll build this week</strong>
+    Extend a standard program/screen without touching SAP's code.
+  </div>
+
+  <h2>1. Why enhance instead of modify?</h2>
+  <p>Modifying SAP source directly (<code>MOD SCREEN</code>, changing user-exits source) creates upgrade conflicts. The enhancement framework provides officially supported hooks so your logic runs without touching the original code.</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Technique</th><th>What it is</th><th>Transactions</th></tr>
+      <tr><td>BADI</td><td>Object-oriented enhancement spot you implement via a class</td><td><code>SE18</code>, <code>SE19</code></td></tr>
+      <tr><td>Customer Exits</td><td>Older function-module based hooks (FORM/CALL CUSTOMER-FUNCTION)</td><td><code>CMOD</code>, <code>SMOD</code></td></tr>
+      <tr><td>Enhancement Points</td><td>Implicit/explicit spots where you add code without a class</td><td><code>SE80</code> enhancement mode</td></tr>
+      <tr><td>Enhancement Sections</td><td>Replace/extend a whole section of code</td><td><code>SE80</code></td></tr>
+    </table>
+  </div>
+
+  <h2>2. BADIs (Business Add-Ins)</h2>
+  <p>A BADI is an interface (or <strong>enhancement spot</strong>) that SAP defines; you create an implementing class and register it. At runtime, SAP calls your implementation.</p>
+
+  <h3>The modern flow: Enhancement Spot + BADI</h3>
+  <p>SAP defines an <strong>enhancement spot</strong> (identifier) and a <strong>BADI interface</strong> (e.g., <code>IF_BADI_INTERFACE</code>). You:</p>
+
+  <ol>
+    <li><strong>Define/see the BADI</strong> in <code>SE18</code> (or find existing ones via <code>SE18</code> / SPAU/SU24).</li>
+    <li><strong>Create an implementation BADI</strong> in <code>SE19</code> — this creates a class that implements the interface methods.</li>
+    <li><strong>Implement the methods</strong> with your logic.</li>
+  </ol>
+
+  <p>Inside SAP's code, the call looks roughly like:</p>
+  <pre><code>" get the BADI instance
+GET BADI lr_badi.
+" call all registered implementations
+CALL BADI lr_badi-&gt;some_method
+  IMPORTING et_result = lt_result.</code></pre>
+
+  <p>Your job is only to create the <strong>implementation</strong> in <code>SE19</code> and fill in the method body.</p>
+
+  <div class="callout tip">
+    <strong class="label">Business Add-Ins vs old-style BADIs</strong>
+    Modern "new BADI" enhancements use <strong>enhancement spots</strong> and multiple implementations. Old-style BADIs (<code>EXIT_BADI</code> older versions) allowed only one implementation and are deprecated. Prefer the enhancement-spot-based ones.
+  </div>
+
+  <h2>3. Customer Exits (function-module based)</h2>
+  <p>Customer exits are integration points where SAP calls a special function module (e.g., <code>EXIT_SAPMM06E_001</code>) via <code>CALL CUSTOMER-FUNCTION</code>. You provide the code inside that function module.</p>
+
+  <ul>
+    <li>Activate a customer exit with <code>CMOD</code> (project) linked via <code>SMOD</code>.</li>
+    <li>The function module is empty; you fill it.</li>
+    <li>Used heavily in older projects (e.g., purchase order exits, sales document exits).</li>
+  </ul>
+
+  <p>While BADIs are the modern choice, customer exits still appear in AMS support work — understand both.</p>
+
+  <h2>4. Enhancement Points (implicit &amp; explicit)</h2>
+  <p>Enhancement points are marked spots inside SAP code where you can insert your own statements. SAP marks the spots; <strong>you</strong> decide what to insert (source-code enhancement).</p>
+
+  <pre><code>" SAP standard code:
+SELECT ... .
+"ENHANCEMENT-POINT Z_EXTRA_SPOT SPOTS Z_SPOT.
+" your inserted code runs here
+"END-ENHANCEMENT-POINT.
+"... rest of SAP code</code></pre>
+
+  <ul>
+    <li><strong>Explicit enhancement points</strong> — SAP authors place these markers deliberately.</li>
+    <li><strong>Implicit enhancement points</strong> — every statement block has implicit spots (e.g., before <code>ENDIF</code>, at subprogram start) that you can enhance without SAP placing markers.</li>
+    <li>Created/maintained in <code>SE80</code> after toggling enhancement mode.</li>
+  </ul>
+
+  <h2>5. Enhancement Sections</h2>
+  <p>An enhancement section lets you <strong>replace</strong> (or extend) an existing chunk of SAP code with your own version. More powerful and riskier than enhancement points — used when you must change the logic itself, not just add logic.</p>
+
+  <h2>6. Transactions you'll live in</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Transaction</th><th>Purpose</th></tr>
+      <tr><td><code>SE18</code></td><td>Define/display BADI definitions &amp; enhancement spots</td></tr>
+      <tr><td><code>SE19</code></td><td>Create/display BADI implementations</td></tr>
+      <tr><td><code>SMOD</code></td><td>Display enhancement (customer-exit) components</td></tr>
+      <tr><td><code>CMOD</code></td><td>Create an enhancement project linking components</td></tr>
+      <tr><td><code>SE80</code></td><td>Enhancement mode for points/sections</td></tr>
+      <tr><td><code>SPAU</code></td><td>Adjust objects after an upgrade (check enhancements)</td></tr>
+    </table>
+  </div>
+
+  <h2>7. A minimal BADI example (concept)</h2>
+  <p>Suppose SAP defines the interface <code>IF_ZPRICE_CALC</code> with method <code>get_price</code>. In <code>SE19</code> you create implementation BADI <code>ZCL_IM_ZPRICE_CALC</code> implementing that interface:</p>
+
+  <pre><code>CLASS zcl_im_zpricecalc IMPLEMENTATION.
+  METHOD if_zprice_calc~get_price.
+    " your override / augmentation logic
+    ev_price = iv_base_price * ( 1 - iv_discount ).
+  ENDMETHOD.
+ENDCLASS.</code></pre>
+
+  <p>Now every time SAP's code calls the BADI <code>get_price</code>, your method runs — without modifying SAP.</p>
+
+  <div class="callout warn">
+    <strong class="label">Less is more</strong>
+    Enhancements are powerful but can hurt performance (many BADIs) and complicate upgrade behavior. Only add what's needed, and prefer the least invasive option (implicit point over full section replacement).
+  </div>
+
+  <h2>8. Exercises</h2>
+  <ol>
+    <li>Use <code>SE18</code> to display the BADIs available for purchase order (<code>ME_PO_*</code>) — just explore and note which exist.</li>
+    <li>In <code>SE19</code>, create a BADI implementation for a price-calculation BADI and implement your own logic.</li>
+    <li>Read an implicit enhancement point of a standard program in <code>SE80</code> and add a harmless <code>WRITE</code> to understand the workflow.</li>
+    <li>Compare the effort of a source-code enhancement point vs a full enhancement section on a simple program.</li>
+    <li>Research <code>SPAU</code>/<code>SPDD</code> and explain why they matter after an upgrade.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    BADI, <code>SE18</code>, <code>SE19</code>, enhancement spot, <code>GET BADI</code>/<code>CALL BADI</code>, customer exit, <code>CMOD</code>/<code>SMOD</code>, enhancement point, enhancement section, implicit/explicit, <code>SPAU</code>.
+  </div>
+
+  <div class="pagination">
+    <a href="week-06.html">← Week 6</a>
+    <a class="next" href="week-08.html">Next: Week 8 — BAPIs &amp; RFCs →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 7
+</footer>
+
+</body>
+</html>

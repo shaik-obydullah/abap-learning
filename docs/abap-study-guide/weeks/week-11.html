@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 11 — Real Project Practice | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 11 — Real Project Practice</h1>
+  <p class="muted">Now build one realistic scenario end-to-end. Since most jobs in Bangladesh are still classic S/4HANA, we focus on the classic core: a report that reads data, can be extended with a BADI, posts via a BAPI, and is served through ALV and OData.</p>
+
+  <div class="callout info">
+    <strong class="label">Goal this week</strong>
+    A complete, portfolio-ready project on GitHub with a README that shows an interviewer you can deliver.
+  </div>
+
+  <h2>1. The project idea — Material Stock Report</h2>
+  <p>Scenario: a user wants a material stock report that</p>
+  <ol>
+    <li>Reads current stock from material tables.</li>
+    <li>Lets a <strong>BADI</strong> extend the calculation (e.g., a custom price or a bonus quantity).</li>
+    <li>Posts an adjustment via a <strong>BAPI</strong> (e.g., a goods/stock count update).</li>
+    <li>Shows results in <strong>ALV</strong>.</li>
+    <li>Also exposes the same data through <strong>OData</strong> for a simple web/Fiori view.</li>
+  </ol>
+
+  <p>This single project exercises almost everything from Weeks 1–9: internal tables, Open SQL, OO, field symbols, ALV, BADI, BAPI, and OData.</p>
+
+  <h2>2. Suggested architecture</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Layer</th><th>Artifact</th><th>Responsibilities</th></tr>
+      <tr><td>Data access</td><td>Class <code>zcl_dao_stock</code></td><td>SELECTs stock; returns internal table</td></tr>
+      <tr><td>Enhancement</td><td>BADI <code>z_stock_price</code> + impl</td><td>Optional price/bonus customization</td></tr>
+      <tr><td>Business/service</td><td>Class <code>zcl_stock_service</code></td><td>Orchestrates read + BADI + BAPI</td></tr>
+      <tr><td>Reporting</td><td>Report <code>z_stock_report</code></td><td>Selection screen + <code>CL_SALV_TABLE</code> display</td></tr>
+      <tr><td>Integration</td><td>OData service (<code>SEGW</code> or RAP)</td><td>Expose the stock list to Fiori/web</td></tr>
+    </table>
+  </div>
+
+  <h2>3. Build steps (a practical order)</h2>
+
+  <h3>Step 1 — Data layer</h3>
+  <p>Get the raw material stock. A classic starting point is <code>mara</code> + <code>makt</code> (descriptions). Real stock comes from <code>mard</code>/<code>mseg</code>/<code>mchb</code>, but for a portfolio project you can aggregate from <code>mara</code> + <code>mard</code>.</p>
+
+  <pre><code>METHOD get_stock.
+  SELECT a~matnr, b~maktx, a~matkl
+    FROM mara AS a
+    LEFT OUTER JOIN makt AS b
+      ON b~matnr = a~matnr AND b~spras = @sy-langu
+    INTO TABLE @rt_stock.
+ENDMETHOD.</code></pre>
+
+  <h3>Step 2 — BADI extension point</h3>
+  <p>Define a BADI (or use an enhancement spot) with a method like <code>adjust_price</code>. In the service, call it with <code>GET BADI</code>/<code>CALL BADI</code> and let your implementation modify the prices. This demonstrates "extend without modifying SAP."</p>
+
+  <h3>Step 3 — Service that orchestrates</h3>
+  <pre><code>METHOD build_report.
+  rt_out = get_stock( ).
+  " call the BADI once to allow custom logic
+  GET BADI DATA(lr_badi) = z_badi_stock_price.
+  CALL BADI lr_badi-&gt;adjust_prices
+    CHANGING ct_stock = rt_out.
+ENDMETHOD.</code></pre>
+
+  <h3>Step 4 — ALV display</h3>
+  <pre><code>TRY.
+    cl_salv_table=&gt;factory(
+      IMPORTING r_salv_table = DATA(lo_alv)
+      CHANGING  t_table      = lt_out ).
+    lo_alv-&gt;get_functions( )-&gt;set_all( abap_true ).
+    lo_alv-&gt;display( ).
+  CATCH cx_salv_msg.
+    MESSAGE 'ALV error' TYPE 'E'.
+ENDTRY.</code></pre>
+
+  <h3>Step 5 — BAPI posting</h3>
+  <p>For a stock-relevant post, use a goods-movement style BAPI OR a simpler custom remote function. On a trial system that lacks business docs, you can either use <code>BAPI_MATERIAL_SAVEDATA</code> for a materials master table or write a custom RFC you control end-to-end. Either way, demonstrate the <strong>create → check RETURN → commit</strong> discipline from Week 8.</p>
+
+  <h3>Step 6 — OData exposure</h3>
+  <p>Reuse the same service class inside a DPC <code>GET_ENTITYSET</code> (from Week 9) so the exact same stock list is available over HTTP.</p>
+
+  <h2>4. Make it portfolio-ready</h2>
+  <ul>
+    <li>Commit clean code with meaningful names (<code>z_*</code> prefixes).</li>
+    <li>Write a <strong>README.md</strong>: problem, architecture (diagram), how to run, what each artifact does, screenshots of the ALV.</li>
+    <li>Add a <strong>test</strong> if you have ABAP Unit available (at least a couple of methods for the service).</li>
+    <li>Screenshot the ALV output and the OData JSON — interview gold.</li>
+    <li>Keep it small but complete; depth on one scenario beats breadth on many.</li>
+  </ul>
+
+  <h2>5. What an interviewer wants to see</h2>
+  <ul>
+    <li>Clean separation of concerns (data vs logic vs UI).</li>
+    <li>Correct use of internal tables, field symbols, performance awareness.</li>
+    <li>Proper BADI/BAPI usage with error handling.</li>
+    <li>Ability to explain each layer — you'll get asked "why did you structure it this way?"</li>
+  </ul>
+
+  <h2>6. Exercises / checklist</h2>
+  <ol>
+    <li>Create the data-access class and a working stock SELECT.</li>
+    <li>Define a BADI and wire it into the service.</li>
+    <li>Add the ALV report with selection screen (plant/material group).</li>
+    <li>Add a post action via a BAPI or your own remote function, with commit + RETURN handling.</li>
+    <li>Expose the same data as OData and capture the JSON response.</li>
+    <li>Write the README and push to GitHub.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Keep it shippable</strong>
+    A working, explained 3-layer project beats a sprawling one that doesn't run. Prioritize "it runs and I can explain it" over more features.
+  </div>
+
+  <div class="pagination">
+    <a href="week-10.html">← Week 10</a>
+    <a class="next" href="week-12.html">Next: Week 12 — Job-Package Polish →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 11
+</footer>
+
+</body>
+</html>

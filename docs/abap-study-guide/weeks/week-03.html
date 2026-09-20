@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3 — Open SQL &amp; Field Symbols | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 3 — Open SQL &amp; Field Symbols</h1>
+  <p class="muted">This is where you start pulling real data from the SAP database. Open SQL lets you query database tables as if writing SQL, but in ABAP syntax.</p>
+
+  <div class="callout info">
+    <strong class="label">What you'll build this week</strong>
+    A report that joins two tables (e.g., EKKO/EKPO purchase documents) and outputs a summary list.
+  </div>
+
+  <h2>1. What is Open SQL?</h2>
+  <p>Open SQL is ABAP's standard interface to the database. It's database-independent (works on HANA, DB2, Oracle, ...). The most important command is <code>SELECT</code>.</p>
+
+  <div class="callout warn">
+    <strong class="label">Only SELECT in releases &gt; 7.40</strong>
+    Everything below uses the modern <code>SELECT ... INTO TABLE @DATA(...)</code> syntax with inline declaration and <code>@</code> for host variables. On older systems you'd write <code>INTO TABLE lt_table</code> with pre-declared variables.
+  </div>
+
+  <h2>2. The Basic SELECT</h2>
+  <pre><code>SELECT * FROM ekko INTO TABLE @DATA(lt_ekko).
+IF sy-subrc EQ 0.
+  WRITE: / 'Rows read: ', lines( lt_ekko ).
+ENDIF.</code></pre>
+
+  <p><code>*</code> selects all columns. You can select specific columns instead:</p>
+  <pre><code>SELECT ebeln, bukrs, lifnr
+  FROM ekko
+  INTO TABLE @DATA(lt_headers).</code></pre>
+
+  <h2>3. WHERE — filtering</h2>
+  <pre><code>SELECT ebeln, bukrs, lifnr, netwr
+  FROM ekko
+  WHERE bukrs EQ '1000'
+  INTO TABLE @DATA(lt_open).</code></pre>
+
+  <p>Comparison operators and the <code>@</code> escape for host variables:</p>
+  <pre><code>DATA(lv_company) = '1000'.
+
+SELECT ebeln, bukrs, lifnr
+  FROM ekko
+  WHERE bukrs = @lv_company
+    AND bsart IN ('NB', 'RE')
+    AND netwr &gt; 1000
+  INTO TABLE @DATA(lt_sel).</code></pre>
+
+  <h2>4. SELECT SINGLE, UP TO 1 ROWS</h2>
+  <pre><code>* Exactly one row expected (best for a key lookup)
+SELECT SINGLE ebeln, bukrs
+  FROM ekko
+  WHERE ebeln = @lv_ebeln
+  INTO @DATA(ls_one).
+
+* Limit an arbitrary select
+SELECT ebeln, bukrs
+  FROM ekko
+  UP TO 1 ROWS
+  INTO TABLE @DATA(lt_first).</code></pre>
+
+  <h2>5. ORDER BY, GROUP BY</h2>
+  <pre><code>* Order rows
+SELECT bukrs, netwr
+  FROM ekko
+  ORDER BY bukrs ASCENDING, netwr DESCENDING
+  INTO TABLE @DATA(lt_ordered).
+
+* Aggregate: count + sum per company
+SELECT bukrs,
+       COUNT( * ) AS cnt,
+       SUM( netwr ) AS total
+  FROM ekko
+  GROUP BY bukrs
+  INTO TABLE @DATA(lt_totals).</code></pre>
+
+  <h2>6. JOINs</h2>
+  <p>Join the header table (EKKO) with its line items (EKPO):</p>
+  <pre><code>SELECT a~ebeln, a~bukrs, b~ebelp, b~matnr, b~menge
+  FROM ekko AS a
+  INNER JOIN ekpo AS b ON b~ebeln = a~ebeln
+  WHERE a~ebeln = @lv_ebeln
+  INTO TABLE @DATA(lt_join).</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Table aliases (a~, b~)</strong>
+    When columns have the same name in both tables (like <code>ebeln</code>), you must prefix with the alias to avoid ambiguity. Use <code>FROM ekko AS a</code> then <code>a~ebeln</code>.
+  </div>
+
+  <h2>7. FOR ALL ENTRIES (FAE)</h2>
+  <p>A classic ABAP pattern for selecting data based on a list of keys already in an internal table. Very common in real reports.</p>
+
+  <pre><code>DATA: BEGIN OF ls_key,
+        ebeln TYPE ekko-ebeln,
+      END OF ls_key,
+      lt_keys LIKE TABLE OF ls_key.
+
+" ... fill lt_keys with business docs ...
+
+IF lt_keys IS NOT INITIAL.
+  SELECT ebeln, bukrs, lifnr
+    FROM ekko
+    FOR ALL ENTRIES IN @lt_keys
+    WHERE ebeln = @lt_keys-ebeln
+    INTO TABLE @DATA(lt_fae).
+ENDIF.</code></pre>
+
+  <div class="callout warn">
+    <strong class="label">FAE best practices</strong>
+    <ul>
+      <li>Always check the source table <code>IS NOT INITIAL</code> before FAE (empty tables cause an empty result).</li>
+      <li>With a big source table, the generated SQL can be huge — batch large lists.</li>
+      <li>The target table is implicit; you don't select with <code>SELECT SINGLE</code> + FAE.</li>
+    </ul>
+  </div>
+
+  <h2>8. Field Symbols</h2>
+  <p>A field symbol is a pointer/alias to a memory area — like PHP's <code>&amp;$var</code> references but aimed at structured data. Declared with <code>FIELD-SYMBOLS: &lt;fs&gt; TYPE ...</code>.</p>
+
+  <pre><code>FIELD-SYMBOLS &lt;fs_row&gt; TYPE ls_person.
+
+LOOP AT lt_persons ASSIGNING &lt;fs_row&gt;.
+  " No copy — &lt;fs_row&gt; points to the actual table row
+  &lt;fs_row&gt;-age = &lt;fs_row&gt;-age + 1.
+  WRITE: / &lt;fs_row&gt;-name, &lt;fs_row&gt;-age.
+ENDLOOP.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">ASSIGNING vs INTO</strong>
+    <code>INTO</code> copies the row into a work area. <code>ASSIGNING &lt;fs&gt;</code> points at the row, so changes to the field symbol update the table directly — faster and avoids copies for large data.
+  </div>
+
+  <p>Field symbols also work with <code>READ TABLE</code>:</p>
+  <pre><code>READ TABLE lt_persons ASSIGNING &lt;fs_row&gt; WITH KEY name = 'Bob'.
+IF sy-subrc EQ 0.
+  &lt;fs_row&gt;-age = 27.   " updates the table in place
+ENDIF.</code></pre>
+
+  <p>Always check the field symbol is assigned with <code>IS ASSIGNED</code> before use:</p>
+  <pre><code>IF &lt;fs_row&gt; IS ASSIGNED.
+  WRITE: / &lt;fs_row&gt;-name.
+ENDIF.</code></pre>
+
+  <h2>9. Putting It Together — EKKO/EKPO summary</h2>
+  <pre><code>REPORT ZPO_SUMMARY.
+
+DATA: BEGIN OF ls_sum,
+        ebeln TYPE ekko-ebeln,
+        bukrs TYPE ekko-bukrs,
+        lifnr TYPE ekko-lifnr,
+        netwr TYPE ekpo-netwr,
+      END OF ls_sum,
+      lt_sum LIKE TABLE OF ls_sum.
+
+SELECT a~ebeln, a~bukrs, a~lifnr, b~netwr
+  FROM ekko AS a
+  INNER JOIN ekpo AS b ON b~ebeln = a~ebeln
+  INTO TABLE @DATA(lt_join).
+
+" Aggregate by document
+FIELD-SYMBOLS &lt;fs_join&gt; LIKE LINE OF lt_join.
+SORT lt_join BY ebeln.
+LOOP AT lt_join ASSIGNING &lt;fs_join&gt;.
+  READ TABLE lt_sum ASSIGNING FIELD-SYMBOL(&lt;fs_sum&gt;)
+    WITH KEY ebeln = &lt;fs_join&gt;-ebeln.
+  IF sy-subrc NE 0.
+    ls_sum-ebeln = &lt;fs_join&gt;-ebeln.
+    ls_sum-bukrs = &lt;fs_join&gt;-bukrs.
+    ls_sum-lifnr = &lt;fs_join&gt;-lifnr.
+    ls_sum-netwr = &lt;fs_join&gt;-netwr.
+    APPEND ls_sum TO lt_sum.
+  ELSE.
+    &lt;fs_sum&gt;-netwr = &lt;fs_sum&gt;-netwr + &lt;fs_join&gt;-netwr.
+  ENDIF.
+ENDLOOP.
+
+LOOP AT lt_sum INTO ls_sum.
+  WRITE: / ls_sum-ebeln, ls_sum-bukrs, ls_sum-lifnr, ls_sum-netwr.
+ENDLOOP.</code></pre>
+
+  <h2>10. Exercises</h2>
+  <ol>
+    <li>Select all rows from <code>mara</code> into an internal table and print the material number.</li>
+    <li>Select materials from <code>makt</code> where the description contains a keyword using <code>LIKE</code>.</li>
+    <li>Write a JOIN between <code>ekko</code> and <code>ekpo</code> and print document + line item.</li>
+    <li>Rewrite the JOIN loop: instead of INTO + READ TABLE, use <code>ASSIGNING</code> everywhere.</li>
+    <li>Use <code>FOR ALL ENTRIES</code> to load <code>ekpo</code> based on a list of <code>ebeln</code> you built in memory.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    <code>SELECT</code>, <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code>, <code>GROUP BY</code>, <code>UP TO 1 ROWS</code>, <code>FOR ALL ENTRIES</code>, <code>SELECT SINGLE</code>, <code>FIELD-SYMBOLS</code>, <code>ASSIGNING</code>, <code>IS ASSIGNED</code>.
+  </div>
+
+  <div class="pagination">
+    <a href="week-02.html">← Week 2</a>
+    <a class="next" href="week-04.html">Next: Week 4 — Data Dictionary &amp; ALV Basics →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 3
+</footer>
+
+</body>
+</html>

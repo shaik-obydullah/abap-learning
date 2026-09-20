@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 10 — ABAP Cloud / RAP | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 10 — ABAP Cloud / RAP</h1>
+  <p class="muted">RAP (ABAP RESTful Application Programming Model) is the modern, cloud-ready way to build SAP applications: CDS-based data models plus behavior for create/update/delete. It enforces the <strong>clean core</strong> principle — no direct table access in cloud.</p>
+
+  <div class="callout info">
+    <strong class="label">What you'll build this week</strong>
+    A minimal RAP business object with read + create.
+  </div>
+
+  <h2>1. The big idea: RAP</h2>
+  <p>RAP = ABAP RESTful Application Programming Model. Instead of writing function modules and manually handling database access, you:</p>
+
+  <ol>
+    <li>Define a <strong>data model</strong> with <strong>CDS views</strong> (Core Data Services).</li>
+    <li>Define <strong>behavior</strong> (what operations are allowed: create, update, delete, feature control).</li>
+    <li>Expose it as an <strong>OData service</strong> automatically.</li>
+    <li>Optionally add an app layer (Fiori Elements for UI).</li>
+  </ol>
+
+  <h2>2. CDS Views — the data model</h2>
+  <p>A CDS view is a SQL-like definition that projects, filters, and joins data. It's a database view defined in ABAP source rather than <code>SE11</code>.</p>
+
+  <pre><code>@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Z RAP Product CDS'
+define root view entity ZR_RapProduct
+  as select from mara
+  association to makt as _makt on _makt.matnr = mara.matnr
+{
+  key mara.matnr as ProductId,
+      mara.mtart as MaterialType,
+      mara.mbrsh as IndustrySector,
+      _makt.maktx as Description
+}
+where mara.mtart = 'ROH'</code></pre>
+
+  <ul>
+    <li><code>define root view entity</code> — a root entity (no parent).</li>
+    <li><code>key ...</code> — marks the (composite) key.</li>
+    <li><code>as select from mara</code> — selects from table/another view.</li>
+    <li>Annotations (<code>@...</code>) drive UI behavior, semantics, and access control.</li>
+  </ul>
+
+  <div class="callout warn">
+    <strong class="label">Clean core</strong>
+    In ABAP Cloud, applications may <strong>not</strong> access base tables directly (no <code>SELECT * FROM mara</code> in application code). All access goes through CDS views and RAP entities. This keeps the core clean and upgrade-safe.
+  </div>
+
+  <h2>3. Looking at a CDS structure</h2>
+  <p>CDS has several view kinds you'll meet:</p>
+  <p><code>define view</code> (plain), <code>define root view entity</code> (RAP root), <code>define view entity</code> (non-root entity), plus <code>abstract entity</code> for interface views. Projection views (<code>define root view entity ZC_...</code>) are what actually get exposed to OData for the app.</p>
+
+  <h2>4. Behavior — what the user can do</h2>
+  <p>The <strong>behavior definition</strong> (BDEF) states the operations. For a minimal object with read + create:</p>
+
+  <pre><code>define behavior for ZR_RapProduct alias Product
+implementation in class zcl_bp_rap_product unique
+
+define behavior for ZR_RapProduct
+  persistent table mara
+  lock master
+  authorization master ( instance )
+  create ;
+  field ( readonly ) ProductId, MaterialType, IndustrySector, Description ;
+
+define behavior for ZR_RapProduct alias Product
+  create;      // user can create
+  // updating/deleteing are omitted or specified here</code></pre>
+
+  <p>The behavior is backed by a <strong>behavior implementation class</strong> where you write the create/update/delete logic (e.g., filling defaults, calling validation, setting the key).</p>
+
+  <pre><code>CLASS zcl_bp_rap_product IMPLEMENTATION.
+  METHOD create.
+    " loop over the modified instances provided by RAP framework
+    LOOP AT entities ASSIGNING FIELD-SYMBOL(&lt;entity&gt;).
+      " set key if not given
+      IF &lt;entity&gt;-ProductId IS INITIAL.
+        &lt;entity&gt;-ProductId = cl_system_uuid=&gt;create_uuid_c32_static( ).
+      ENDIF.
+      " ... persist via baked-in INSERT on the persistent table
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Don't hand-write everything</strong>
+    ADT (ABAP Development Tools) and the RAP generator create most RAP scaffolding for you — the BDEF, implementation class skeleton, and service definition. You mostly fill in the custom logic. Focus on the concepts, not rote syntax.
+  </div>
+
+  <h2>5. From RAP to OData (service definition)</h2>
+  <p>To expose the RAP business object to Fiori/consumers, you define:</p>
+
+  <pre><code>@EndUserText.label: 'Product service definition'
+define service ZUI_RapProduct {
+  expose ZC_RapProduct as Product;   " projection view exposed
+}</code></pre>
+
+  <p>This creates an OData service that Fiori Elements apps bind to, giving you list, detail, create, and edit UIs almost automatically.</p>
+
+  <h2>6. Classic vs Cloud recap</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th></th><th>Classic S/4HANA</th><th>ABAP Cloud / RAP</th></tr>
+      <tr><td>Data access</td><td>Direct <code>SELECT *</code> from tables</td><td>CDS views + RAP entities only</td></tr>
+      <tr><td>Model</td><td>Function modules, ALV, dynpro screens</td><td>CDS + behavior + Fiori</td></tr>
+      <tr><td>UI</td><td>SAP GUI / ALV / dynpro</td><td>Fiori Elements / SAPUI5</td></tr>
+      <tr><td>Upgrade safety</td><td>Moderate (enhancements needed)</td><td>Clean core, fully upgrade-safe</td></tr>
+    </table>
+  </div>
+
+  <h2>7. Exercises</h2>
+  <ol>
+    <li>Write a CDS view that selects material data from MARA joined to their descriptions in MAKT.</li>
+    <li>Add annotations for label and a semantic key so the view is RAP-ready.</li>
+    <li>Create a RAP business object via the ADT generator (or at least map out every artifact it creates).</li>
+    <li>Define behavior enabling read + create and implement the create method in the behavior class.</li>
+    <li>Define a service definition exposing your projection view, then preview it in Fiori Elements.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    RAP, CDS, Core Data Services, <code>define view entity</code>, <code>define root view entity</code>, BDEF (behavior definition), behavior implementation class, projection view, clean core, service definition, Fiori Elements, ADT.
+  </div>
+
+  <div class="pagination">
+    <a href="week-09.html">← Week 9</a>
+    <a class="next" href="week-11.html">Next: Week 11 — Real Project Practice →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 10
+</footer>
+
+</body>
+</html>

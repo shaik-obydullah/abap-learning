@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 1 — Syntax, Data Types, Flow Control | ABAP Study Guide</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">ABAP<span>Course</span></div>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#phase-1">Phase 1</a>
+      <a href="../index.html#phase-2">Phase 2</a>
+      <a href="../index.html#phase-3">Phase 3</a>
+      <a href="../environment.html">Environment</a>
+      <a href="../interviews.html">Interviews</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <h1>Week 1 — Syntax, Data Types &amp; Flow Control</h1>
+  <p class="muted">Your first week of the ABAP journey. By the end you'll write your first report and a small console-style calculator.</p>
+
+  <div class="callout info">
+    <strong class="label">What you'll build this week</strong>
+    A "Hello World" report and a small calculator (no screens yet).
+  </div>
+
+  <h2>1. What is ABAP?</h2>
+  <p>ABAP (Advanced Business Application Programming) is SAP's own programming language. Code lives in <strong>reports</strong> (executable programs) that run in the SAP system. ABAP programs are written in the ABAP Editor — transaction <code>SE38</code> (classic) or object navigator <code>SE80</code>.</p>
+  <p>The simplest programs are called <strong>executable programs</strong> and start with the statement <code>REPORT</code>.</p>
+
+  <pre><code>REPORT ZHELLO_WORLD.
+
+WRITE: 'Hello, world!'.</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Naming convention</strong>
+    Customer/developer objects in SAP start with the letter <code>Z</code> or <code>Y</code> to keep them separate from SAP-standard objects. Always name your programs starting with <code>Z</code>.
+  </div>
+
+  <h2>2. Basic Data Types</h2>
+  <p>ABAP has elementary data types. The most important primitives:</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+      <tr><td><code>I</code></td><td>Integer (whole number)</td><td><code>42</code></td></tr>
+      <tr><td><code>C</code></td><td>Character string (text)</td><td><code>'ABAP'</code></td></tr>
+      <tr><td><code>N</code></td><td>Numeric text (string that can hold digits)</td><td><code>'0042'</code></td></tr>
+      <tr><td><code>D</code></td><td>Date (YYYYMMDD)</td><td><code>'20260907'</code></td></tr>
+      <tr><td><code>T</code></td><td>Time (HHMMSS)</td><td><code>'143000'</code></td></tr>
+      <tr><td><code>P</code></td><td>Packed number (decimals, for money/quantities)</td><td><code>123.45</code></td></tr>
+      <tr><td><code>X</code></td><td>Hexadecimal / byte string</td><td><code>'FF'</code></td></tr>
+      <tr><td><code>STRING</code></td><td>Variable-length string</td><td><code>'Any length text'</code></td></tr>
+    </table>
+  </div>
+
+  <h3>Declaring data</h3>
+  <pre><code>DATA lv_number TYPE i.
+DATA lv_name   TYPE string.
+DATA lv_price  TYPE p DECIMALS 2.
+DATA lv_date   TYPE d.
+DATA lv_text(10) TYPE c.
+
+lv_number = 100.
+lv_name = 'SAP'.
+lv_price = 19.99.
+lv_date = sy-datum.
+lv_text = 'Hello'.</code></pre>
+
+  <div class="callout info">
+    <strong class="label">Naming prefixes</strong>
+    A common naming convention helps you read code fast:
+    <ul>
+      <li><code>lv_</code> — local variable (<code>lv_number</code>)</li>
+      <li><code>lt_</code> — internal table (<code>lt_data</code>)</li>
+      <li><code>ls_</code> — structure / work area (<code>ls_row</code>)</li>
+      <li><code>gs_</code> — global structure, <code>gt_</code> — global table</li>
+      <li><code>mv_</code> — class attribute</li>
+    </ul>
+  </div>
+
+  <h2>3. System Fields (sy)</h2>
+  <p>ABAP provides built-in system fields you can read. The most common:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Meaning</th></tr>
+      <tr><td><code>sy-uname</code></td><td>Current user name</td></tr>
+      <tr><td><code>sy-datum</code></td><td>Current date</td></tr>
+      <tr><td><code>sy-uzeit</code></td><td>Current time</td></tr>
+      <tr><td><code>sy-subrc</code></td><td>Return code (0 = success)</td></tr>
+      <tr><td><code>sy-tabix</code></td><td>Current line index in a table loop</td></tr>
+      <tr><td><code>sy-index</code></td><td>Loop index of DO/WHILE</td></tr>
+    </table>
+  </div>
+
+  <h2>4. Arithmetic &amp; Operations</h2>
+  <pre><code>DATA lv_a TYPE i VALUE 10.
+DATA lv_b TYPE i VALUE 3.
+DATA lv_r TYPE i.
+
+lv_r = lv_a + lv_b.   " addition        -> 13
+lv_r = lv_a - lv_b.   " subtraction     -> 7
+lv_r = lv_a * lv_b.   " multiplication  -> 30
+lv_r = lv_a / lv_b.   " division        -> 3 (integer)
+lv_r = lv_a MOD lv_b. " remainder       -> 1
+lv_r = lv_a ** 2.     " power           -> 100
+
+ADD 1 TO lv_a.        " add shorthand
+lv_a += 5.            " add shorthand (modern)</code></pre>
+
+  <div class="callout warn">
+    <strong class="label">Strings are case-sensitive</strong>
+    <code>'abap'</code> and <code>'ABAP'</code> are different. Use string functions when comparing case-insensitively.
+  </div>
+
+  <h2>5. String Operations</h2>
+  <pre><code>DATA lv_s TYPE string.
+DATA lv_len TYPE i.
+
+lv_s = 'Hello ABAP'.
+lv_len = strlen( lv_s ).          " length -> 10
+CONCATENATE 'Hello' ' World' INTO lv_s.     " 'Hello World'
+CONDENSE lv_s.                    " remove leading/trailing spaces
+lv_s = to_upper( lv_s ).          " 'HELLO WORLD'
+lv_s = to_lower( lv_s ).          " 'hello world'
+REPLACE 'Hello' IN lv_s WITH 'Hi'.
+SEARCH lv_s FOR 'ABAP'.</code></pre>
+
+  <h2>6. Flow Control</h2>
+
+  <h3>IF / ELSEIF / ELSE</h3>
+  <pre><code>DATA lv_n TYPE i VALUE 15.
+
+IF lv_n GT 10.
+  WRITE: / 'Greater than 10'.
+ELSEIF lv_n EQ 10.
+  WRITE: / 'Equal to 10'.
+ELSE.
+  WRITE: / 'Less than 10'.
+ENDIF.</code></pre>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Operator</th><th>Meaning</th><th>Alias</th></tr>
+      <tr><td><code>EQ</code></td><td>Equal</td><td><code>=</code></td></tr>
+      <tr><td><code>NE</code></td><td>Not equal</td><td><code>&lt;&gt;</code></td></tr>
+      <tr><td><code>GT</code></td><td>Greater than</td><td><code>&gt;</code></td></tr>
+      <tr><td><code>LT</code></td><td>Less than</td><td><code>&lt;</code></td></tr>
+      <tr><td><code>GE</code></td><td>Greater or equal</td><td><code>&gt;=</code></td></tr>
+      <tr><td><code>LE</code></td><td>Less or equal</td><td><code>&lt;=</code></td></tr>
+      <tr><td><code>CS</code></td><td>Contains string</td><td></td></tr>
+      <tr><td><code>CO</code></td><td>Contains only</td><td></td></tr>
+      <tr><td><code>IS INITIAL</code></td><td>Is empty</td><td></td></tr>
+      <tr><td><code>IS NOT INITIAL</code></td><td>Is not empty</td><td></td></tr>
+    </table>
+  </div>
+
+  <h3>CASE</h3>
+  <pre><code>CASE lv_n.
+  WHEN 1.
+    WRITE: / 'One'.
+  WHEN 2 OR 3.
+    WRITE: / 'Two or three'.
+  WHEN OTHERS.
+    WRITE: / 'Something else'.
+ENDCASE.</code></pre>
+
+  <h3>Loops — DO (finite counting)</h3>
+  <pre><code>DATA lv_i TYPE i.
+DO 5 TIMES.
+  lv_i = sy-index.
+  WRITE: / lv_i.
+ENDDO.</code></pre>
+
+  <h3>Loops — WHILE (condition based)</h3>
+  <pre><code>DATA lv_c TYPE i VALUE 0.
+WHILE lv_c LT 3.
+  lv_c = lv_c + 1.
+  WRITE: / lv_c.
+ENDWHILE.</code></pre>
+
+  <h3>Loop control: CONTINUE, EXIT, CHECK</h3>
+  <pre><code>DO 10 TIMES.
+  IF sy-index EQ 3.
+    CONTINUE.        " skip iteration 3
+  ENDIF.
+  IF sy-index EQ 7.
+    EXIT.            " stop the loop entirely
+  ENDIF.
+  WRITE: / sy-index.
+ENDDO.</code></pre>
+
+  <h2>7. Output: WRITE</h2>
+  <pre><code>WRITE: 'Simple text'.
+WRITE: / 'On a new line'.
+WRITE: 10 'Positioned'.
+WRITE: / 'Name: ', lv_name.
+ULINE.               " horizontal line
+SKIP 2.              " skip 2 blank lines</code></pre>
+
+  <div class="callout tip">
+    <strong class="label">Slash = new line</strong>
+    The <code>/</code> before a value in <code>WRITE</code> jumps to the next line. Useful inside loops to print one row per line.
+  </div>
+
+  <h2>8. Comments</h2>
+  <pre><code>* This is a full-line comment.
+
+DATA lv_x TYPE i.   " Inline comment after a statement
+
+" Another way to write an inline comment</code></pre>
+
+  <h2>9. Putting It Together — Mini Calculator</h2>
+  <pre><code>REPORT ZCALCULATOR.
+
+DATA: lv_a TYPE p DECIMALS 2,
+      lv_b TYPE p DECIMALS 2,
+      lv_op TYPE c,
+      lv_r  TYPE p DECIMALS 2.
+
+lv_a = 10.
+lv_b = 3.
+lv_op = '/'.
+
+CASE lv_op.
+  WHEN '+'.
+    lv_r = lv_a + lv_b.
+  WHEN '-'.
+    lv_r = lv_a - lv_b.
+  WHEN '*'.
+    lv_r = lv_a * lv_b.
+  WHEN '/'.
+    IF lv_b EQ 0.
+      WRITE: / 'Cannot divide by zero'.
+    ELSE.
+      lv_r = lv_a / lv_b.
+    ENDIF.
+  WHEN OTHERS.
+    WRITE: / 'Unknown operator'.
+ENDCASE.
+
+IF lv_b NE 0.
+  WRITE: / 'Result = ', lv_r.
+ENDIF.</code></pre>
+
+  <h2>10. Exercises</h2>
+  <ol>
+    <li>Write a report that prints your name, today's date, and the current time using system fields.</li>
+    <li>Declare variables of each primitive type (<code>I</code>, <code>C</code>, <code>N</code>, <code>D</code>, <code>T</code>, <code>P</code>) and WRITE each one.</li>
+    <li>Write a loop that prints even numbers from 2 to 20 using <code>DO</code> and <code>sy-index</code>.</li>
+    <li>Enhance the calculator to compare two numbers and print which is larger.</li>
+    <li>Use <code>CONCATENATE</code> to build a greeting "Hello, &lt;username&gt;!" and print it.</li>
+  </ol>
+
+  <div class="callout tip">
+    <strong class="label">Vocabulary boosters</strong>
+    <code>ABAP</code>, <code>REPORT</code>, <code>DATA</code>, <code>WRITE</code>, <code>TYPE</code>, <code>IF/ELSE/ENDIF</code>, <code>CASE/ENDCASE</code>, <code>DO/ENDDO</code>, <code>WHILE/ENDWHILE</code>, <code>sy-datum</code>, <code>sy-uname</code>.
+  </div>
+
+  <div class="pagination">
+    <span></span>
+    <a class="next" href="week-02.html">Next: Week 2 — Internal Tables →</a>
+  </div>
+
+</main>
+
+<footer>
+  ABAP Study Guide · Week 1
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABAP Study Plan (12 Weeks)</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface-2: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #2dd4bf;
+    --border: #334155;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  h1 {
+    font-size: 2.1rem;
+    margin: 0 0 8px;
+    color: #fff;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin: 0 0 4px;
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0 8px;
+  }
+
+  .pill {
+    background: var(--surface-2);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+  }
+
+  .phase {
+    margin-top: 40px;
+  }
+
+  .phase-title {
+    font-size: 1.35rem;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px;
+    margin: 32px 0 0;
+  }
+
+  .week {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 18px 0;
+  }
+
+  .week h3 {
+    margin: 0 0 10px;
+    font-size: 1.05rem;
+    color: #fff;
+  }
+
+  .week ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .week li { margin: 5px 0; }
+
+  code {
+    background: #0b1120;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    color: var(--accent-2);
+  }
+
+  .deliverable {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--accent-2);
+    background: var(--surface-2);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.92rem;
+    color: #d1fae5;
+  }
+
+  .deliverable strong { color: #fff; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  h2.section {
+    font-size: 1.5rem;
+    color: var(--accent-2);
+    margin-top: 48px;
+  }
+
+  .note {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+
+  .note strong { color: #fff; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>ABAP Study Plan (12 Weeks)</h1>
+  <p class="subtitle">Built for a working developer (~1–2 hrs/weekday + 4–6 hrs/weekend).</p>
+  <p class="subtitle">Target: SAP developer jobs in Bangladesh (S/4HANA implementation + AMS support).</p>
+  <div class="pills">
+    <span class="pill">Phase 1 · Foundations</span>
+    <span class="pill">Phase 2 · OO + Extensibility</span>
+    <span class="pill">Phase 3 · Modern ABAP + Cloud</span>
+  </div>
+
+  <!-- Phase 1 -->
+  <h2 class="phase-title" id="phase-1">Phase 1 — Foundations (Weeks 1–4)</h2>
+
+  <div class="week">
+    <h3>Week 1 — Syntax, data types, flow control</h3>
+    <ul>
+      <li>Fields, <code>WRITE</code>, basic types (<code>I</code>, <code>C</code>, <code>N</code>, <code>D</code>, <code>T</code>, <code>P</code>), <code>MOVE</code>, IF/CASE, DO/WHILE loops, string ops.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> "Hello World" report + a small calculator (no screens).</div>
+  </div>
+
+  <div class="week">
+    <h3>Week 2 — Internal Tables (the ABAP bread &amp; butter)</h3>
+    <ul>
+      <li><code>DATA: lt_... TYPE TABLE OF ...</code>, <code>APPEND</code>, <code>INSERT</code>, <code>READ TABLE</code>, <code>MODIFY</code>, <code>DELETE</code>, <code>LOOP AT</code>, work areas. Standard/key/unique sorted tables.</li>
+      <li>Laravel brain: think of them as Laravel collections.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> report that loads a file/data and filters/aggregates with internal tables.</div>
+  </div>
+
+  <div class="week">
+    <h3>Week 3 — Open SQL + Field Symbols</h3>
+    <ul>
+      <li><code>SELECT</code>, <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code>, <code>GROUP BY</code>, <code>UP TO 1 ROWS</code>, <code>SELECT ... FOR ALL ENTRIES</code>, <code>SELECT SINGLE</code>.</li>
+      <li>Field symbols (<code>ASSIGNING &lt;fs&gt;</code>) — like PHP references but on collections.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> report joining 2 tables (e.g., EKKO/EKPO purchase docs) and outputting a summary list.</div>
+  </div>
+
+  <div class="week">
+    <h3>Week 4 — Consolidate + ALV basics</h3>
+    <ul>
+      <li>Data dictionary intro: <code>SE11</code> (tables, structures, data elements).</li>
+      <li>Classic ALV: <code>REUSE_ALV_GRID_DISPLAY</code> / <code>CL_GUI_ALV_GRID</code>.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> an ALV report with sorting, totals, and layout settings.</div>
+  </div>
+
+  <!-- Phase 2 -->
+  <h2 class="phase-title" id="phase-2">Phase 2 — Object Orientation + Extensibility (Weeks 5–8)</h2>
+
+  <div class="week">
+    <h3>Week 5 — ABAP Objects core</h3>
+    <ul>
+      <li>Classes/local + global, methods, attributes, inheritance, interfaces, exception classes (<code>CX_*</code>), constructor.</li>
+    </ul>
+  </div>
+
+  <div class="week">
+    <h3>Week 6 — OO in practice (the SE80 day job)</h3>
+    <ul>
+      <li>Local classes, <code>CL_...</code> utility classes, abstract/final, singleton DB helpers.</li>
+      <li>Every OOP concept maps 1:1 to PHP except syntax.</li>
+    </ul>
+  </div>
+
+  <div class="week">
+    <h3>Week 7 — Enhancement framework</h3>
+    <ul>
+      <li>BADIs (<code>GET BADI</code>/<code>CALL BADI</code>, <code>IF_BADI_INTERFACE</code>), Customer Exits, Implicit/Explicit Enhancement Points, <code>SE18/SE19</code>.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> extend a standard program/screen without touching SAP code.</div>
+  </div>
+
+  <div class="week">
+    <h3>Week 8 — BAPIs + RFCs</h3>
+    <ul>
+      <li>RFC function modules, <code>BAPI_*</code> (e.g., <code>BAPI_PO_CREATE1</code>, <code>BAPI_MATERIAL_GETLIST</code>), <code>SE37/SE80</code>, function group basics.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> call <code>BAPI_PO_CREATE1</code> from a custom program.</div>
+  </div>
+
+  <!-- Phase 3 -->
+  <h2 class="phase-title" id="phase-3">Phase 3 — Modern ABAP + Cloud (Weeks 9–12)</h2>
+
+  <div class="week">
+    <h3>Week 9 — ALV + Fiori/ODATA bridge</h3>
+    <ul>
+      <li><code>CL_SALV_TABLE</code> (simpler modern ALV), define a basic OData service (<code>SEGW</code>), list/get entities.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> expose the Week-4 report as an OData service.</div>
+  </div>
+
+  <div class="week">
+    <h3>Week 10 — ABAP Cloud / RAP fundamentals</h3>
+    <ul>
+      <li>Business objects as RAP (ABAP RESTful Application Programming Model) CDS views + behavior. Clean core: no direct table access in cloud.</li>
+    </ul>
+    <div class="deliverable"><strong>Deliverable:</strong> a minimal RAP business object with read + create.</div>
+  </div>
+
+  <div class="week">
+    <h3>Week 11 — Real project practice</h3>
+    <ul>
+      <li>Build one realistic scenario end-to-end (classic core, since most BD jobs are still classic S/4HANA).</li>
+      <li>Scenario idea: a material stock report with BADI to extend, BAPI to post, ALV + OData to serve.</li>
+      <li>Put it on GitHub with a README (looks good in interviews).</li>
+    </ul>
+  </div>
+
+  <div class="week">
+    <h3>Week 12 — Job-package polish</h3>
+    <ul>
+      <li>Review tricky topics likely asked in Bangladeshi interviews: internal table performance (sorted/hashed vs standard), <code>FOR ALL ENTRIES</code>, <code>COMMIT/ROLLBACK</code>, locks (<code>ENQUEUE_*</code>), message handling (<code>MESSAGE ... TYPE 'E'</code>), screen involvement (dynpro basics <code>SE51</code>).</li>
+      <li>Take a mock certification test. Start <code>C_TAW12_750</code> (classic) or <code>C_ABAPD_2309</code> (cloud) prep if aiming for the cert.</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <h2 class="section" id="environment">Environment (start Week 1, don't wait)</h2>
+  <div class="note">
+    <ul>
+      <li>Trial S/4HANA / ABAP: SAP BTP ABAP free tier, or Docker <code>sap-no-userabap:latest</code> (check MDDN docs/set-up guide).</li>
+      <li>Transactions to bookmark: <code>SE11</code>, <code>SE38/SE80</code>, <code>SE37</code>, <code>SE93</code>, <code>SM50</code>, <code>ST22</code>, <code>SLG1</code>.</li>
+    </ul>
+  </div>
+
+  <h2 class="section" id="reality-check">Reality check for Bangladesh hiring</h2>
+  <div class="note">
+    <ul>
+      <li>Most openings: classic ABAP (S/4HANA migration + AMS support). Weeks 1–8 are the job-getting weeks.</li>
+      <li>ABAP Cloud (RAP) is where growth is but commands fewer junior seats right now — hence placed Weeks 9–11, not Week 1.</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
